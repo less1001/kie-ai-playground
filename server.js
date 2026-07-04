@@ -3,11 +3,15 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const axios = require('axios');
 const path = require('path');
+const multer = require('multer');
+const FormData = require('form-data');
+const fs = require('fs');
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
+const upload = multer({ dest: 'uploads/' });
 const PORT = process.env.PORT || 3000;
 const KIE_API_KEY = process.env.KIE_API_KEY;
 
@@ -95,6 +99,60 @@ app.get('/api/record-info', async (req, res) => {
     });
   }
 });
+
+// Endpoint 4: Upload local image and return public URL (useful for local avatars)
+app.post('/api/upload', upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded.' });
+  }
+
+  const filePath = req.file.path;
+
+  try {
+    console.log(`[Upload] Uploading ${req.file.originalname} to Catbox...`);
+    const form = new FormData();
+    form.append('reqtype', 'fileupload');
+    form.append('fileToUpload', fs.createReadStream(filePath));
+
+    const catboxRes = await axios.post('https://catbox.moe/user/api.php', form, {
+      headers: form.getHeaders(),
+      timeout: 15000
+    });
+
+    const publicUrl = catboxRes.data.trim();
+    console.log(`[Upload] Catbox URL: ${publicUrl}`);
+
+    fs.unlink(filePath, () => {});
+    return res.json({ code: 200, url: publicUrl });
+  } catch (error) {
+    console.error('[Upload] Catbox upload failed, trying tmpfiles fallback:', error.message);
+    
+    try {
+      const form = new FormData();
+      form.append('file', fs.createReadStream(filePath));
+
+      const tmpRes = await axios.post('https://tmpfiles.org/api/v1/upload', form, {
+        headers: form.getHeaders(),
+        timeout: 15000
+      });
+
+      if (tmpRes.data && tmpRes.data.data && tmpRes.data.data.url) {
+        const directUrl = tmpRes.data.data.url.replace('https://tmpfiles.org/', 'https://tmpfiles.org/dl/');
+        console.log(`[Upload] Tmpfiles URL: ${directUrl}`);
+
+        fs.unlink(filePath, () => {});
+        return res.json({ code: 200, url: directUrl });
+      }
+      
+      throw new Error('Invalid response from tmpfiles.org');
+    } catch (fallbackError) {
+      console.error('[Upload] All fallback uploads failed:', fallbackError.message);
+      fs.unlink(filePath, () => {});
+      return res.status(500).json({ error: 'Failed to upload image to a public URL.', details: fallbackError.message });
+    }
+  }
+});
+
 
 // Start Server
 app.listen(PORT, () => {

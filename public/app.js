@@ -13,7 +13,12 @@ const PIPELINES = {
     tag: { en: "Most Popular", zh: "最热门", type: "hot" },
     sections: ["avatar", "script", "voice"],
     featured: true,
-    model: "omnihuman-v1.5"
+    model: "omnihuman-v1.5",
+    models: [
+      { id: "omnihuman-v1.5", name: "OmniHuman v1.5", desc: { en: "Realistic expressions and natural gestures (Recommended)", zh: "超逼真面部表情与动作（推荐）" } },
+      { id: "seedance-v2.0", name: "Seedance v2.0", desc: { en: "Consistent body rendering and high frame rate", zh: "高保真身体姿态与高帧率" } },
+      { id: "volcengine/video-to-video-lip-sync", name: "Volcengine Lip-Sync", desc: { en: "Speedy mouth-movement synthesis from video+audio", zh: "超快速口型动作匹配合成" } }
+    ]
   },
   "animated-explainer": {
     name: { en: "Animated Explainer", zh: "动画解说视频" },
@@ -23,7 +28,11 @@ const PIPELINES = {
     tag: { en: "Popular", zh: "热门", type: "hot" },
     sections: ["script"],
     featured: true,
-    model: "imagen4"
+    model: "imagen4",
+    models: [
+      { id: "imagen4", name: "Google Imagen 4", desc: { en: "Educational and illustrative diagrams (Recommended)", zh: "适合学术说明与图形绘制（推荐）" } },
+      { id: "flux-schnell", name: "Flux.1 Schnell", desc: { en: "High quality photorealistic illustrations", zh: "高质量写实图像与海报生成" } }
+    ]
   },
   "cinematic": {
     name: { en: "Cinematic Trailer", zh: "电影预告片" },
@@ -33,7 +42,12 @@ const PIPELINES = {
     tag: { en: "New", zh: "新功能", type: "new" },
     sections: ["script"],
     featured: true,
-    model: "kling-v3"
+    model: "kling-v3",
+    models: [
+      { id: "kling-v3", name: "Kling v3.0", desc: { en: "Highly dynamic action sequences (Recommended)", zh: "高动态动作镜头与光影效果（推荐）" } },
+      { id: "veo-3.1", name: "Google Veo 3.1", desc: { en: "Cinematic depth, realistic lighting, and composition", zh: "电影级构图与景深深度" } },
+      { id: "wan-v2.7", name: "Alibaba Wan 2.7", desc: { en: "Excellent visual layout and prompt adherence", zh: "阿里开源模型，文字排版遵从度好" } }
+    ]
   },
   "talking-head": {
     name: { en: "Lip-Sync Video", zh: "口型同步视频" },
@@ -43,7 +57,10 @@ const PIPELINES = {
     tag: null,
     sections: ["media"],
     featured: false,
-    model: "volcengine/video-to-video-lip-sync"
+    model: "volcengine/video-to-video-lip-sync",
+    models: [
+      { id: "volcengine/video-to-video-lip-sync", name: "Volcengine Lip-Sync", desc: { en: "Speedy mouth-movement synthesis from video+audio", zh: "超快速口型动作匹配合成" } }
+    ]
   },
   "localization-dub": {
     name: { en: "Video Dubbing", zh: "视频翻译配音" },
@@ -53,7 +70,10 @@ const PIPELINES = {
     tag: null,
     sections: ["media-dub"],
     featured: false,
-    model: "volcengine/video-to-video-lip-sync"
+    model: "volcengine/video-to-video-lip-sync",
+    models: [
+      { id: "volcengine/video-to-video-lip-sync", name: "Volcengine Lip-Sync", desc: { en: "Speedy mouth-movement synthesis from video+audio", zh: "超快速口型动作匹配合成" } }
+    ]
   },
   "documentary-montage": {
     name: { en: "Documentary Montage", zh: "纪录片蒙太奇" },
@@ -63,7 +83,10 @@ const PIPELINES = {
     tag: null,
     sections: ["script"],
     featured: false,
-    model: "grok-imagine"
+    model: "grok-imagine",
+    models: [
+      { id: "grok-imagine", name: "Grok Imagine", desc: { en: "Creative montages with historical and cinematic styles", zh: "具有历史或纪实风格的创意合成" } }
+    ]
   },
   "clip-factory": {
     name: { en: "Clip Factory", zh: "长视频智能切片" },
@@ -73,7 +96,10 @@ const PIPELINES = {
     tag: null,
     sections: ["media"],
     featured: false,
-    model: "kling-v3"
+    model: "kling-v3",
+    models: [
+      { id: "kling-v3", name: "Kling v3.0", desc: { en: "Intelligent cutting based on visual rhythm", zh: "基于画面节奏的智能镜头裁切" } }
+    ]
   },
   "animation": {
     name: { en: "Motion Graphics", zh: "动态图形视频" },
@@ -83,7 +109,10 @@ const PIPELINES = {
     tag: null,
     sections: ["script"],
     featured: false,
-    model: "ideogram-v3"
+    model: "ideogram-v3",
+    models: [
+      { id: "ideogram-v3", name: "Ideogram v3.0", desc: { en: "Typography design and flat motion layouts", zh: "排版文字与平面扁平化图形设计" } }
+    ]
   },
   "screen-demo": {
     name: { en: "Screen Demo", zh: "录屏演示增强" },
@@ -93,7 +122,10 @@ const PIPELINES = {
     tag: null,
     sections: ["media"],
     featured: false,
-    model: "kling-v3"
+    model: "kling-v3",
+    models: [
+      { id: "kling-v3", name: "Kling v3.0", desc: { en: "Screen details enhancement", zh: "增强画面细节并生成画外讲解" } }
+    ]
   },
   "hybrid": {
     name: { en: "Hybrid Video", zh: "混合合成视频" },
@@ -103,7 +135,10 @@ const PIPELINES = {
     tag: null,
     sections: ["media"],
     featured: false,
-    model: "kling-v3"
+    model: "kling-v3",
+    models: [
+      { id: "kling-v3", name: "Kling v3.0", desc: { en: "High fidelity layer blending", zh: "高质量多图层智能画中画融合" } }
+    ]
   },
   "podcast-repurpose": {
     name: { en: "Podcast to Video", zh: "播客转视频" },
@@ -113,7 +148,10 @@ const PIPELINES = {
     tag: null,
     sections: ["media"],
     featured: false,
-    model: "kling-v3"
+    model: "kling-v3",
+    models: [
+      { id: "kling-v3", name: "Kling v3.0", desc: { en: "Generates high quality video elements for audio podcast", zh: "基于音频波形生成高质量视频辅助画面" } }
+    ]
   }
 };
 
@@ -160,6 +198,8 @@ const I18N = {
     chooseTemplateTitle: "What would you like to create?",
     chooseTemplateSub: "Select a production pipeline to get started",
     backBtn: "Back", newVideoBtn: "Create New Video",
+    selectModel: "Select AI Model",
+    uploadLocalImage: "Upload Local Image",
     selectAvatar: "Select Presenter", customAvatarPlaceholder: "Or paste a custom portrait image URL...",
     scriptTitle: "Script & Content", scriptPlaceholder: "Write your script, topic description, or paste a URL...",
     mediaTitle: "Source Media", videoUrlLabel: "Video URL", audioUrlLabel: "Audio Track URL (Optional)", dubLangLabel: "Target Language",
@@ -179,6 +219,8 @@ const I18N = {
     chooseTemplateTitle: "您想创建什么类型的视频？",
     chooseTemplateSub: "选择一条视频生产流水线以开始",
     backBtn: "返回", newVideoBtn: "创建新视频",
+    selectModel: "选择生成模型",
+    uploadLocalImage: "上传本地图片",
     selectAvatar: "选择数字人主播", customAvatarPlaceholder: "或粘贴自定义肖像图片 URL...",
     scriptTitle: "脚本与内容", scriptPlaceholder: "输入您的带货文案、解说大纲或画面分镜脚本...",
     mediaTitle: "源素材", videoUrlLabel: "视频 URL", audioUrlLabel: "音频 URL（可选）", dubLangLabel: "目标翻译语言",
@@ -274,6 +316,44 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("view-create").classList.add("active");
     goToStep(1);
   });
+
+  // Handle local avatar file upload
+  const fileInput = document.getElementById("local-avatar-file");
+  if (fileInput) {
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const statusDiv = document.getElementById("upload-status");
+      statusDiv.style.display = "flex";
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (res.ok && result.code === 200 && result.url) {
+          document.getElementById("custom-avatar-url").value = result.url;
+          selectedAvatarId = null;
+          document.querySelectorAll(".avatar-card").forEach(c => c.classList.remove("selected"));
+          updatePreviewAvatar();
+        } else {
+          alert(lang === "en" ? `Upload failed: ${result.error || "Unknown"}` : `上传失败：${result.error || "未知原因"}`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert(lang === "en" ? "Upload connection error" : "上传网络错误");
+      } finally {
+        statusDiv.style.display = "none";
+        fileInput.value = "";
+      }
+    });
+  }
 });
 
 // ── i18n Apply ──
@@ -386,7 +466,35 @@ function renderStep2() {
   // Update preview
   updatePreviewAvatar();
   updatePreviewScript();
-  document.getElementById("preview-engine").textContent = pipe.engines[0];
+  
+  // Render model selection dropdown
+  const modelSelect = document.getElementById("model-select");
+  const modelHelp = document.getElementById("model-help-text");
+  modelSelect.innerHTML = "";
+  
+  if (pipe.models && pipe.models.length > 0) {
+    document.getElementById("section-model").style.display = "block";
+    pipe.models.forEach(modelOpt => {
+      const opt = document.createElement("option");
+      opt.value = modelOpt.id;
+      opt.textContent = `${modelOpt.name}`;
+      modelSelect.appendChild(opt);
+    });
+    
+    const updateModelDetails = () => {
+      const selectedModel = pipe.models.find(m => m.id === modelSelect.value);
+      if (selectedModel) {
+        modelHelp.textContent = selectedModel.desc[lang] || "";
+        document.getElementById("preview-engine").textContent = selectedModel.name;
+      }
+    };
+    
+    modelSelect.onchange = updateModelDetails;
+    updateModelDetails();
+  } else {
+    document.getElementById("section-model").style.display = "none";
+    document.getElementById("preview-engine").textContent = pipe.engines[0];
+  }
 
   lucide.createIcons();
 }
@@ -546,6 +654,8 @@ async function handleGenerate() {
     }
   }
 
+  const selectedModelId = document.getElementById("model-select").value || pipe.model;
+
   // Disable button
   const btn = document.getElementById("generate-btn");
   const loader = document.getElementById("btn-loader");
@@ -556,12 +666,12 @@ async function handleGenerate() {
     const res = await fetch("/api/create-task", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: pipe.model, input })
+      body: JSON.stringify({ model: selectedModelId, input })
     });
     const result = await res.json();
 
     if (result.code === 200 && result.data && result.data.taskId) {
-      startGeneration(result.data.taskId, selectedPipeline, pipe.model, script || `Pipeline: ${pipe.name[lang]}`);
+      startGeneration(result.data.taskId, selectedPipeline, selectedModelId, script || `Pipeline: ${pipe.name[lang]}`);
     } else {
       alert(lang === "en" ? `Error: ${result.msg || "Unknown"}` : `错误：${result.msg || "未知错误"}`);
     }
