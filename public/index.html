@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kie AI Creative Studio - Image & Video Generator</title>
+  <!-- Google Fonts Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Style Sheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="main-header">
+      <div class="logo-area">
+        <div class="logo-icon"><i data-lucide="sparkles"></i></div>
+        <div>
+          <h1>Kie AI Creative Studio</h1>
+          <p class="subtitle">Next-Gen Multi-Modal AI Generator</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <!-- Balance Indicator -->
+        <div class="credit-card" id="credit-container">
+          <div class="credit-icon"><i data-lucide="wallet"></i></div>
+          <div class="credit-details">
+            <span class="credit-label">Remaining Balance</span>
+            <span class="credit-value" id="credit-value">--.--</span>
+          </div>
+          <button class="refresh-btn" id="refresh-credits" title="Refresh Balance">
+            <i data-lucide="refresh-cw" id="refresh-icon"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-grid">
+      <!-- Left Column: Controls -->
+      <section class="control-section glass-panel">
+        <h2 class="section-title"><i data-lucide="sliders"></i> Studio Controls</h2>
+        
+        <!-- Tab Selectors -->
+        <div class="tabs-container">
+          <button class="tab-btn active" id="tab-image" data-type="image">
+            <i data-lucide="image"></i> Image Generation
+          </button>
+          <button class="tab-btn" id="tab-video" data-type="video">
+            <i data-lucide="video"></i> Video Generation
+          </button>
+        </div>
+
+        <form id="generator-form">
+          <!-- Model Selection -->
+          <div class="form-group">
+            <label for="model-select">AI Model</label>
+            <div class="select-wrapper">
+              <select id="model-select" name="model" required>
+                <!-- Prepopulated via JS depending on current active tab -->
+              </select>
+            </div>
+            <p class="field-desc" id="model-desc">Select the AI engine for your task.</p>
+          </div>
+
+          <!-- Prompt Input -->
+          <div class="form-group">
+            <label for="prompt-input">Prompt Description</label>
+            <textarea id="prompt-input" name="prompt" rows="4" placeholder="Describe what you want to create in vivid detail..." required></textarea>
+            <div class="prompt-suggestions-wrapper">
+              <span class="suggest-label">Try:</span>
+              <div class="suggestions-chips" id="suggestions-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Aspect Ratio Selection -->
+          <div class="form-group">
+            <label>Aspect Ratio</label>
+            <div class="radio-tiles">
+              <label class="radio-tile">
+                <input type="radio" name="aspectRatio" value="16:9" checked>
+                <div class="tile-content">
+                  <div class="ratio-box landscape"></div>
+                  <span>16:9 Widescreen</span>
+                </div>
+              </label>
+              <label class="radio-tile">
+                <input type="radio" name="aspectRatio" value="9:16">
+                <div class="tile-content">
+                  <div class="ratio-box portrait"></div>
+                  <span>9:16 Vertical</span>
+                </div>
+              </label>
+              <label class="radio-tile">
+                <input type="radio" name="aspectRatio" value="1:1">
+                <div class="tile-content">
+                  <div class="ratio-box square"></div>
+                  <span>1:1 Square</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Image-to-Video / Source Image (Dynamic field, only shown for video I2V or custom image inputs) -->
+          <div class="form-group hidden" id="source-image-group">
+            <label for="image-url-input">Source Image URL (Optional)</label>
+            <input type="url" id="image-url-input" name="imageUrl" placeholder="https://example.com/source-image.jpg">
+            <p class="field-desc">Provide an image URL for Image-to-Video models.</p>
+          </div>
+
+          <!-- Advanced Parameters (Toggleable) -->
+          <div class="advanced-toggle" id="advanced-toggle-btn">
+            <span>Advanced Settings</span>
+            <i data-lucide="chevron-down" id="advanced-chevron"></i>
+          </div>
+
+          <div class="advanced-params hidden" id="advanced-params-panel">
+            <div class="form-grid">
+              <!-- Duration (for video) -->
+              <div class="form-group" id="param-duration-group">
+                <label for="duration-select">Duration (Seconds)</label>
+                <div class="select-wrapper">
+                  <select id="duration-select" name="duration">
+                    <option value="5" selected>5 Seconds</option>
+                    <option value="10">10 Seconds</option>
+                  </select>
+                </div>
+              </div>
+              <!-- Resolution/Quality -->
+              <div class="form-group">
+                <label for="quality-select">Quality/Resolution</label>
+                <div class="select-wrapper">
+                  <select id="quality-select" name="quality">
+                    <option value="720p" selected>720p HD</option>
+                    <option value="1080p">1080p Full HD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="generate-btn" id="generate-submit">
+            <span class="btn-text">Generate Masterpiece</span>
+            <div class="spinner hidden" id="btn-spinner"></div>
+          </button>
+        </form>
+      </section>
+
+      <!-- Right Column: Workplace & Gallery -->
+      <section class="workplace-section">
+        <!-- Active Tasks Panel -->
+        <div class="tasks-panel glass-panel" id="active-tasks-container">
+          <h2 class="section-title"><i data-lucide="loader"></i> Active Generations</h2>
+          <div class="task-list" id="active-tasks-list">
+            <div class="empty-state">
+              <i data-lucide="info"></i>
+              <p>No active generations. Submit a prompt to start!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery Panel -->
+        <div class="gallery-panel glass-panel">
+          <div class="gallery-header">
+            <h2 class="section-title"><i data-lucide="gallery-thumbnails"></i> Creative Gallery</h2>
+            <div class="gallery-filters">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="images">Images</button>
+              <button class="filter-btn" data-filter="videos">Videos</button>
+            </div>
+          </div>
+          
+          <div class="gallery-grid" id="gallery-grid">
+            <!-- Empty state loaded initially, populated via JavaScript -->
+            <div class="empty-state">
+              <i data-lucide="image-off"></i>
+              <p>Your generated masterpieces will appear here.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Media Preview Modal -->
+  <div class="modal hidden" id="media-modal">
+    <div class="modal-backdrop" id="modal-close-backdrop"></div>
+    <div class="modal-content glass-panel">
+      <button class="modal-close-btn" id="modal-close-btn"><i data-lucide="x"></i></button>
+      <div class="modal-media-wrapper" id="modal-media-container">
+        <!-- Rendered media goes here -->
+      </div>
+      <div class="modal-info-panel">
+        <h3 class="modal-title" id="modal-title">Masterpiece Preview</h3>
+        <div class="metadata-grid">
+          <div class="meta-item">
+            <span class="meta-label">Model:</span>
+            <span class="meta-val" id="modal-model-val">--</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Task ID:</span>
+            <span class="meta-val" id="modal-task-id-val">--</span>
+          </div>
+        </div>
+        <div class="prompt-display">
+          <span class="meta-label">Prompt:</span>
+          <p id="modal-prompt-text"></p>
+        </div>
+        <div class="modal-actions">
+          <button class="action-btn primary" id="modal-download-btn"><i data-lucide="download"></i> Download Media</button>
+          <button class="action-btn secondary" id="modal-use-prompt-btn"><i data-lucide="copy"></i> Use Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
