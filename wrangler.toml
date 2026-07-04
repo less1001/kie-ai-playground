@@ -1,0 +1,7 @@
+name = "kie-ai-playground"
+compatibility_date = "2026-07-04"
+pages_build_output_dir = "./dist"
+
+[[kv_namespaces]]
+binding = "AVATAR_STORAGE"
+id = "5101c3013cb740eeadeffb9c6c74db5b"
