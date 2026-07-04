@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kie AI Creative Studio</title>
-  <!-- Google Fonts Inter & Fira Code for Figma/Claude style -->
+  <title>Kie AI - Digital Human E-commerce Generator</title>
+  <!-- Google Fonts Inter & Fira Code -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -15,13 +15,13 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Top Navigation Bar (Figma style) -->
+    <!-- Top Navigation Bar -->
     <header class="figma-navbar">
       <div class="nav-left">
-        <div class="logo-icon"><i data-lucide="layers"></i></div>
+        <div class="logo-icon"><i data-lucide="user-square"></i></div>
         <div class="nav-brand">
-          <span class="brand-title" data-i18n="title">Kie AI Creative Studio</span>
-          <span class="brand-ver" data-i18n="subtitle">Professional Image & Video Workspace</span>
+          <span class="brand-title" data-i18n="title">AI Digital Human E-commerce Studio</span>
+          <span class="brand-ver" data-i18n="subtitle">AI 数字人带货视频生成平台</span>
         </div>
       </div>
       
@@ -49,119 +49,129 @@
     <!-- Main Workspace Layout -->
     <main class="workspace-layout">
       
-      <!-- Left Panel: Sidebar Controls (Figma Properties Panel) -->
+      <!-- Left Panel: Sidebar Controls -->
       <aside class="sidebar-panel">
         <!-- Tab Bar -->
         <div class="sidebar-tabs">
           <button class="sidebar-tab active" id="tab-image" data-type="image" data-i18n="tabImage">
-            Image Generation
+            Text to Avatar
           </button>
           <button class="sidebar-tab" id="tab-video" data-type="video" data-i18n="tabVideo">
-            Video Generation
+            Video Lip-Sync
           </button>
         </div>
 
         <form id="generator-form" class="sidebar-content">
           <!-- Model Selection -->
           <div class="sidebar-group">
-            <label class="group-label" data-i18n="modelLabel">Model</label>
+            <label class="group-label" data-i18n="modelLabel">AI Model</label>
             <div class="select-container">
               <select id="model-select" name="model" required>
                 <!-- JS populated -->
               </select>
             </div>
-            <p class="group-desc" id="model-desc" data-i18n="modelDesc">Select the AI engine for your task.</p>
+            <p class="group-desc" id="model-desc" data-i18n="modelDesc">Select the digital human generation model.</p>
           </div>
 
-          <!-- Prompt Area -->
+          <!-- Avatar Selection (Dynamic Grid) -->
+          <div class="sidebar-group" id="avatar-selection-group">
+            <label class="group-label" data-i18n="avatarLabel">Choose Host Avatar</label>
+            <div class="avatar-grid" id="avatar-grid-container">
+              <!-- JS populated pre-defined avatars -->
+            </div>
+            <!-- Custom Avatar URL -->
+            <div class="custom-avatar-url-wrapper">
+              <input type="url" id="custom-avatar-url" name="customAvatarUrl" placeholder="Or paste custom portrait photo URL...">
+            </div>
+          </div>
+
+          <!-- E-commerce Script Copywriter -->
           <div class="sidebar-group">
-            <label class="group-label" data-i18n="promptLabel">Prompt Description</label>
-            <textarea id="prompt-input" name="prompt" rows="5" placeholder="Describe what you want to create in vivid detail..." data-i18n-placeholder="promptPlaceholder" required></textarea>
-            
-            <div class="suggestions-section">
-              <span class="suggest-lbl" data-i18n="tryLabel">Try:</span>
-              <div class="suggestions-grid" id="suggestions-container">
-                <!-- Dynamically populated -->
+            <label class="group-label" data-i18n="promptLabel">E-commerce Script</label>
+            <div class="script-template-bar">
+              <span class="small-label" data-i18n="templateLabel">Template:</span>
+              <div class="template-chips" id="template-chips-container">
+                <!-- JS populated script templates -->
               </div>
             </div>
+            <textarea id="prompt-input" name="prompt" rows="5" placeholder="Enter your sales script here..." data-i18n-placeholder="promptPlaceholder" required></textarea>
           </div>
 
-          <!-- Aspect Ratio (Figma Layout Options) -->
-          <div class="sidebar-group">
-            <label class="group-label" data-i18n="aspectRatioLabel">Aspect Ratio</label>
-            <div class="ratio-selectors">
-              <label class="ratio-option">
-                <input type="radio" name="aspectRatio" value="16:9" checked>
-                <div class="ratio-box-wrapper">
-                  <div class="box-shape r-16-9"></div>
-                  <span data-i18n="aspectRatio169">16:9 Landscape</span>
-                </div>
-              </label>
-              <label class="ratio-option">
-                <input type="radio" name="aspectRatio" value="9:16">
-                <div class="ratio-box-wrapper">
-                  <div class="box-shape r-9-16"></div>
-                  <span data-i18n="aspectRatio916">9:16 Vertical</span>
-                </div>
-              </label>
-              <label class="ratio-option">
-                <input type="radio" name="aspectRatio" value="1:1">
-                <div class="ratio-box-wrapper">
-                  <div class="box-shape r-1-1"></div>
-                  <span data-i18n="aspectRatio11">1:1 Square</span>
-                </div>
-              </label>
+          <!-- Voice & Audio Configuration (Shown for Text-to-Avatar) -->
+          <div class="sidebar-group" id="voice-group">
+            <label class="group-label" data-i18n="voiceLabel">Voice Tone</label>
+            <div class="select-container">
+              <select id="voice-select" name="voice">
+                <option value="female-sales-fast" data-i18n="voiceFemaleSalesFast" selected>Female Sales (High Energy)</option>
+                <option value="female-sweet" data-i18n="voiceFemaleSweet">Sweet & Friendly Female</option>
+                <option value="male-professional" data-i18n="voiceMaleProfessional">Professional Explainer Male</option>
+                <option value="english-female" data-i18n="voiceEnglishFemale">English Host Female</option>
+              </select>
             </div>
           </div>
 
-          <!-- Image-to-Video URL input (Hidden initially) -->
-          <div class="sidebar-group hidden" id="source-image-group">
-            <label class="group-label" data-i18n="sourceImageLabel">Source Image URL (Optional)</label>
-            <input type="url" id="image-url-input" name="imageUrl" placeholder="https://example.com/image.jpg">
-            <p class="group-desc" data-i18n="sourceImageDesc">Provide an image URL for Image-to-Video models.</p>
+          <!-- Target Audio URL (Shown for Video Lip-Sync) -->
+          <div class="sidebar-group hidden" id="target-audio-group">
+            <label class="group-label" data-i18n="targetAudioLabel">Target Audio URL</label>
+            <input type="url" id="audio-url-input" name="audioUrl" placeholder="https://example.com/audio.mp3">
+            <p class="group-desc" data-i18n="targetAudioDesc">Provide the voiceover audio track URL to synchronize lips with.</p>
           </div>
 
-          <!-- Advanced Settings Panel -->
+          <!-- Video Lip-Sync Source Video (Shown for Video Lip-Sync) -->
+          <div class="sidebar-group hidden" id="source-video-group">
+            <label class="group-label" data-i18n="sourceVideoLabel">Source Avatar Video URL</label>
+            <input type="url" id="video-url-input" name="videoUrl" placeholder="https://example.com/host-video.mp4">
+            <p class="group-desc" data-i18n="sourceVideoDesc">Provide the source video showing the host's face.</p>
+          </div>
+
+          <!-- Parameters Accordion -->
           <div class="sidebar-accordion">
             <div class="accordion-header" id="advanced-toggle-btn">
-              <span data-i18n="advancedSettings">Advanced Settings</span>
+              <span data-i18n="advancedSettings">Advanced Parameters</span>
               <i data-lucide="chevron-down" id="advanced-chevron"></i>
             </div>
             
             <div class="accordion-content hidden" id="advanced-params-panel">
-              <!-- Duration Selector (for video) -->
-              <div class="sidebar-group" id="param-duration-group">
-                <label class="group-label" data-i18n="durationLabel">Duration</label>
-                <div class="select-container">
-                  <select id="duration-select" name="duration">
-                    <option value="5" data-i18n="duration5" selected>5 Seconds</option>
-                    <option value="10" data-i18n="duration10">10 Seconds</option>
-                  </select>
+              <!-- Aspect Ratio -->
+              <div class="sidebar-group">
+                <label class="group-label" data-i18n="aspectRatioLabel">Aspect Ratio</label>
+                <div class="ratio-selectors">
+                  <label class="ratio-option">
+                    <input type="radio" name="aspectRatio" value="9:16" checked>
+                    <div class="ratio-box-wrapper">
+                      <div class="box-shape r-9-16"></div>
+                      <span data-i18n="aspectRatio916">9:16 Mobile</span>
+                    </div>
+                  </label>
+                  <label class="ratio-option">
+                    <input type="radio" name="aspectRatio" value="16:9">
+                    <div class="ratio-box-wrapper">
+                      <div class="box-shape r-16-9"></div>
+                      <span data-i18n="aspectRatio169">16:9 Desktop</span>
+                    </div>
+                  </label>
                 </div>
               </div>
               
-              <!-- Quality Resolution -->
-              <div class="sidebar-group">
-                <label class="group-label" data-i18n="qualityLabel">Quality / Resolution</label>
-                <div class="select-container">
-                  <select id="quality-select" name="quality">
-                    <option value="720p" data-i18n="quality720" selected>720p HD</option>
-                    <option value="1080p" data-i18n="quality1080">1080p Full HD</option>
-                  </select>
-                </div>
+              <!-- Lip sync alignment toggle -->
+              <div class="sidebar-group" id="param-align-group">
+                <label class="checkbox-wrapper">
+                  <input type="checkbox" id="align-audio-check" name="alignAudio" checked>
+                  <span data-i18n="alignAudioLabel">Forced Audio Lip-Sync Alignment</span>
+                </label>
               </div>
             </div>
           </div>
 
           <!-- Action Button -->
           <button type="submit" class="action-submit-btn" id="generate-submit">
-            <span class="btn-lbl" data-i18n="generateBtn">Generate Media</span>
+            <span class="btn-lbl" data-i18n="generateBtn">Generate E-commerce Video</span>
             <div class="btn-loader hidden" id="btn-spinner"></div>
           </button>
         </form>
       </aside>
 
-      <!-- Center & Right Panel: Editor Canvas and Library -->
+      <!-- Center Panel: Canvas Workspace -->
       <section class="editor-canvas">
         
         <!-- Top Half: Active Generations Queue -->
@@ -202,7 +212,7 @@
     </main>
   </div>
 
-  <!-- Fullscreen Lightbox Modal (Figma Layer style) -->
+  <!-- Fullscreen Lightbox Modal -->
   <div class="lightbox-modal hidden" id="media-modal">
     <div class="lightbox-backdrop" id="modal-close-backdrop"></div>
     <div class="lightbox-content">
@@ -228,15 +238,15 @@
           </div>
           
           <div class="prompt-section">
-            <span class="meta-row-label" data-i18n="promptLabel">Prompt Description</span>
+            <span class="meta-row-label" data-i18n="promptLabel">E-commerce Script</span>
             <div class="prompt-box">
-              <p id="modal-prompt-text">Prompt text goes here...</p>
+              <p id="modal-prompt-text">Script text goes here...</p>
             </div>
           </div>
           
           <div class="lightbox-actions">
             <button class="lightbox-btn primary" id="modal-download-btn">
-              <i data-lucide="download"></i> <span data-i18n="downloadBtn">Download Media</span>
+              <i data-lucide="download"></i> <span data-i18n="downloadBtn">Download Video</span>
             </button>
             <button class="lightbox-btn secondary" id="modal-use-prompt-btn">
               <i data-lucide="sliders"></i> <span data-i18n="useSettingsBtn">Use Settings</span>

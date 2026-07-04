@@ -1,102 +1,94 @@
-// Model Configurations with Bilingual Suggestions
+// Predefined Digital Human Avatars (Unsplash Professional Headshots)
+const PRESETS_AVATARS = [
+  {
+    id: "xiaomi",
+    name: { en: "Xiaomi (Beauty)", zh: "小米 (美妆服饰)" },
+    thumb: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=60",
+    full: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "xiaomei",
+    name: { en: "Xiaomei (Lifestyle)", zh: "小美 (生活百货)" },
+    thumb: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=60",
+    full: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "daqiang",
+    name: { en: "Daqiang (Tech)", zh: "大强 (数码科技)" },
+    thumb: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=60",
+    full: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80"
+  },
+  {
+    id: "lisa",
+    name: { en: "Lisa (English)", zh: "丽萨 (外贸英文)" },
+    thumb: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=60",
+    full: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80"
+  }
+];
+
+// E-commerce Script Templates
+const SCRIPT_TEMPLATES = [
+  {
+    id: "new-product",
+    label: { en: "New Release", zh: "新品首发" },
+    text: {
+      en: "Look at this brand new tech gadget in my hand! Today's launch gets an instant $50 off and a free 1-year warranty. Click below to buy now!",
+      zh: "大家看我手上这款最新上市的科技好物！今天首发直降300元，限时赠送一年质保，赶快点击下方链接购买吧！"
+    }
+  },
+  {
+    id: "flash-sale",
+    label: { en: "Flash Sale", zh: "限量秒杀" },
+    text: {
+      en: "Counting down the last 5 minutes! Lowest price online, limited to 50 orders, once gone it returns to full price! Don't wait, act now!",
+      zh: "倒计时最后五分钟！全网最低价，限量五十单，抢完立马恢复原价！犹豫一秒就没有了，大家手速一定要快！"
+    }
+  },
+  {
+    id: "recommendation",
+    label: { en: "Top Pick", zh: "爆款推荐" },
+    text: {
+      en: "Hey friends! I've personally used this absolute treasure of a product for 6 months. It's incredibly high-quality and practical. You won't regret this!",
+      zh: "亲们，这款宝藏产品我自用了半年，强烈推荐！不仅质量超赞，而且非常实用，今天下单立享专属折扣，买它绝对不后悔！"
+    }
+  }
+];
+
+// Model Configurations
 const MODELS = {
   image: [
     {
-      id: "flux-2",
-      name: "Flux-2 (Pro Image)",
+      id: "omnihuman-v1.5",
+      name: "OmniHuman 1.5 (Portrait Video)",
       desc: {
-        en: "Top-tier detailed image generator, excellent at text rendering and complex prompt adherence.",
-        zh: "顶级图像生成器，在文字渲染和复杂提示词遵循方面表现优异。"
-      },
-      suggestions: {
-        en: ["A cyber-punk coffee shop in the neon rain", "A hyper-detailed oil painting of an astronaut cat", "Steampunk laboratory with glowing plasma vials"],
-        zh: ["霓虹雨中的赛博朋克咖啡馆", "宇航员猫的超精细油画", "摆放着发光等离子药瓶的蒸汽朋克实验室"]
+        en: "Generates realistic, expressive talking head video from portrait image and text script.",
+        zh: "结合主播肖像照片与文本，生成逼真、极富表现力的数字人口播视频。"
       }
     },
     {
-      id: "ideogram-v3",
-      name: "Ideogram V3",
+      id: "sadtalker",
+      name: "SadTalker (Image to Video)",
       desc: {
-        en: "Superior typography capabilities. Perfect for posters, logos, and graphic designs.",
-        zh: "卓越的排版和文字生成能力。非常适合制作海报、徽标和平面设计。"
-      },
-      suggestions: {
-        en: ["Retro typography poster saying 'CREATE THE FUTURE'", "A glowing neon sign of a coffee mug", "Minimalist cover design with text 'THE VOID'"],
-        zh: ["写有'CREATE THE FUTURE'的复古排版海报", "咖啡杯图案的发光霓虹灯牌", "印有文字'THE VOID'的极简风封面设计"]
+        en: "Classic image-driven digital human animation, highly efficient and stable lip movement.",
+        zh: "经典的图像驱动数字人模型，生成速度快，口型动作稳定逼真。"
       }
     },
     {
-      id: "imagen4",
-      name: "Google Imagen 4",
+      id: "wav2lip",
+      name: "Wav2Lip (Lip Sync Generator)",
       desc: {
-        en: "Google's latest visual model, highly realistic textures, lighting, and diverse compositions.",
-        zh: "谷歌最新的图像生成模型，具备高度逼真的纹理、光效及多元的构图。"
-      },
-      suggestions: {
-        en: ["Macro photo of a dragonfly covered in morning dew", "Cinematic shot of a medieval castle on a misty peak", "Modern living room with floor-to-ceiling glass windows"],
-        zh: ["覆满晨露的蜻蜓微距照片", "云雾缭绕山巅之上的中世纪城堡电影镜头", "配有落地玻璃窗的现代客厅"]
-      }
-    },
-    {
-      id: "grok-imagine",
-      name: "Grok Imagine Image",
-      desc: {
-        en: "Expressive artistic styles, high-contrast imagery, and creative lighting effects.",
-        zh: "表现力丰富的艺术风格、高对比度画面以及创新的光影效果。"
-      },
-      suggestions: {
-        en: ["Surreal dreamscape with floating islands", "Cybernetic raven perched on a computer server", "Impressionist painting of a bustling market at dusk"],
-        zh: ["带有浮空岛的超现实梦境景象", "栖息在服务器上的赛博朋克渡鸦", "黄昏时分繁华集市的印象派画作"]
+        en: "Speedy mouth movement generation matching the voiceover audio perfectly.",
+        zh: "快速唇形生成模型，能够将任意人像嘴部动作完美贴合配音音频。"
       }
     }
   ],
   video: [
     {
-      id: "kling-v3",
-      name: "Kling v3.0 (Advanced Video)",
+      id: "volcengine/video-to-video-lip-sync",
+      name: "Volcengine Lip-Sync (Video to Video)",
       desc: {
-        en: "State-of-the-art cinematic video generation with natural motion, sound effects, and multi-shot editing.",
-        zh: "最先进的电影级视频生成，拥有自然运动、音效和多镜头剪辑。"
-      },
-      suggestions: {
-        en: ["Camera pans around a futuristic spacecraft launching", "A majestic tiger walking through a neon rainforest", "First-person perspective flying through a stone canyon"],
-        zh: ["镜头环绕一艘发射中的未来飞船移动", "一只雄伟的老虎穿行在霓虹雨林中", "穿过石头峡谷飞行的第一人称视角"]
-      }
-    },
-    {
-      id: "veo-v3.1",
-      name: "Google Veo v3.1",
-      desc: {
-        en: "Ultra HD physics-aligned video generation. Native 9:16 and 4K capabilities.",
-        zh: "符合物理规律的超高清视频生成。原生支持 9:16 和 4K 分辨率。"
-      },
-      suggestions: {
-        en: ["Slow-motion splash of water in a crystalline bowl", "Time-lapse of a blooming cherry blossom tree", "Drone shot of ocean waves crashing on black volcanic sand"],
-        zh: ["水晶碗中水花溅起的慢动作镜头", "樱花盛开的延时摄影", "海浪拍打黑色火山沙滩的无人机航拍"]
-      }
-    },
-    {
-      id: "wan-v2.7",
-      name: "Wan v2.7 Video",
-      desc: {
-        en: "High quality-to-render speed ratio, excellent facial animation and realistic physics.",
-        zh: "优异的画质渲染速度比，出色的面部动画和逼真的物理动态。"
-      },
-      suggestions: {
-        en: ["A robot painting on a canvas in a sunlit art studio", "Golden retriever puppy chasing autumn leaves", "Melting ice sculpture revealing a glowing crystal heart"],
-        zh: ["机器人在阳光明媚的画室里在画布上作画", "金毛幼犬追逐秋天落叶", "冰雕融化露出闪耀的水晶爱心"]
-      }
-    },
-    {
-      id: "bytedance-seedance-v1.5-pro",
-      name: "Bytedance Seedance v1.5 Pro",
-      desc: {
-        en: "Smooth motion tracking and superb camera movements. Supports Image-to-Video.",
-        zh: "平滑的动作跟踪和顶级的摄像机运动控制。支持图生视频。"
-      },
-      suggestions: {
-        en: ["Detailed close-up of a clockwork mechanism turning", "Cinematic drone flyby of ancient Roman ruins", "Abstract ink droplets diffusing in water, slow motion"],
-        zh: ["钟表发条机械结构咬合转动的特写", "古罗马废墟的电影级无人机飞越", "水里扩散的抽象墨滴，慢动作"]
+        en: "Volcengine high-fidelity video lip-sync. Aligns host video mouth movements with target audio track.",
+        zh: "火山引擎高保真视频口型同步模型。将已录制的主播视频嘴部口型完美贴合新的音频轨道。"
       }
     }
   ]
@@ -105,29 +97,32 @@ const MODELS = {
 // Bilingual Dictionaries
 const TRANSLATIONS = {
   en: {
-    title: "Kie AI Creative Studio",
-    subtitle: "Professional Image & Video Workspace",
+    title: "AI E-commerce Digital Human Studio",
+    subtitle: "AI 数字人带货视频生成平台",
     balance: "Balance",
-    tabImage: "Image Generation",
-    tabVideo: "Video Generation",
-    modelLabel: "Model",
-    modelDesc: "Select the AI engine for your task.",
-    promptLabel: "Prompt Description",
-    promptPlaceholder: "Describe what you want to create in vivid detail...",
+    tabImage: "Text to Avatar",
+    tabVideo: "Video Lip-Sync",
+    modelLabel: "AI Model",
+    modelDesc: "Select the digital human generation model.",
+    avatarLabel: "Choose Host Avatar",
+    templateLabel: "Template:",
+    promptLabel: "E-commerce Script",
+    promptPlaceholder: "Enter your sales script here...",
+    voiceLabel: "Voice Tone",
+    voiceFemaleSalesFast: "Female Sales (High Energy)",
+    voiceFemaleSweet: "Sweet & Friendly Female",
+    voiceMaleProfessional: "Professional Explainer Male",
+    voiceEnglishFemale: "English Host Female",
+    targetAudioLabel: "Target Audio URL",
+    targetAudioDesc: "Provide the voiceover audio track URL to synchronize lips with.",
+    sourceVideoLabel: "Source Avatar Video URL",
+    sourceVideoDesc: "Provide the source video showing the host's face.",
+    advancedSettings: "Advanced Parameters",
     aspectRatioLabel: "Aspect Ratio",
-    aspectRatio169: "16:9 Landscape",
-    aspectRatio916: "9:16 Vertical",
-    aspectRatio11: "1:1 Square",
-    sourceImageLabel: "Source Image URL (Optional)",
-    sourceImageDesc: "Provide an image URL for Image-to-Video models.",
-    advancedSettings: "Advanced Settings",
-    durationLabel: "Duration",
-    duration5: "5 Seconds",
-    duration10: "10 Seconds",
-    qualityLabel: "Quality / Resolution",
-    quality720: "720p HD",
-    quality1080: "1080p Full HD",
-    generateBtn: "Generate Media",
+    aspectRatio916: "9:16 Mobile",
+    aspectRatio169: "16:9 Desktop",
+    alignAudioLabel: "Forced Audio Lip-Sync Alignment",
+    generateBtn: "Generate E-commerce Video",
     activeGenerations: "Active Generations",
     noActiveTasks: "No active generations. Submit a prompt to start!",
     creativeGallery: "Creative Gallery",
@@ -136,7 +131,7 @@ const TRANSLATIONS = {
     filterVideos: "Videos",
     noMasterpieces: "Your generated masterpieces will appear here.",
     modalTitle: "Masterpiece Preview",
-    downloadBtn: "Download Media",
+    downloadBtn: "Download Video",
     useSettingsBtn: "Use Settings",
     tryLabel: "Try:",
     statusPending: "Pending",
@@ -145,43 +140,46 @@ const TRANSLATIONS = {
     statusFailed: "Failed"
   },
   zh: {
-    title: "Kie AI 创意工作室",
-    subtitle: "专业级图像与视频工作台",
+    title: "AI 数字人带货视频工作室",
+    subtitle: "AI 数字人带货视频生成平台",
     balance: "账户余额",
-    tabImage: "图像生成",
-    tabVideo: "视频生成",
+    tabImage: "文本生成数字人",
+    tabVideo: "视频口型同步",
     modelLabel: "AI 模型",
-    modelDesc: "选择用于当前任务的 AI 引擎。",
-    promptLabel: "提示词描述",
-    promptPlaceholder: "请生动、详细地描述您想要创建的画面...",
+    modelDesc: "选择数字人生成或同步模型。",
+    avatarLabel: "选择带货主播人像",
+    templateLabel: "话术模板:",
+    promptLabel: "带货文案脚本",
+    promptPlaceholder: "在此输入您的带货文案或选择上方模板...",
+    voiceLabel: "主播配音音色",
+    voiceFemaleSalesFast: "带货女声 (高能量/激情)",
+    voiceFemaleSweet: "亲和甜美型女声",
+    voiceMaleProfessional: "专业男声 (沉稳/适合科技数码)",
+    voiceEnglishFemale: "外贸英语女声",
+    targetAudioLabel: "配音音频 URL (目标音频)",
+    targetAudioDesc: "提供您需要同步的主播配音音频 URL 链接。",
+    sourceVideoLabel: "主播原始视频 URL (源视频)",
+    sourceVideoDesc: "提供需要修改口型的原始主播面部视频 URL 链接。",
+    advancedSettings: "高级参数设定",
     aspectRatioLabel: "画面比例",
-    aspectRatio169: "16:9 宽屏",
-    aspectRatio916: "9:16 竖屏",
-    aspectRatio11: "1:1 正方形",
-    sourceImageLabel: "源图片 URL (可选)",
-    sourceImageDesc: "为“图生视频”模型提供参考图片链接。",
-    advancedSettings: "高级设置",
-    durationLabel: "视频时长",
-    duration5: "5 秒",
-    duration10: "10 秒",
-    qualityLabel: "清晰度 / 分辨率",
-    quality720: "720p 高清",
-    quality1080: "1080p 超清",
-    generateBtn: "开始生成",
-    activeGenerations: "正在生成",
-    noActiveTasks: "暂无生成中的任务。提交提示词以开始！",
-    creativeGallery: "创作画廊",
+    aspectRatio916: "9:16 手机竖屏",
+    aspectRatio169: "16:9 电脑横屏",
+    alignAudioLabel: "强制进行人声口型对齐",
+    generateBtn: "开始合成带货视频",
+    activeGenerations: "正在合成队列",
+    noActiveTasks: "暂无合成中的任务。在左侧配置并提交以开始！",
+    creativeGallery: "作品画廊",
     filterAll: "全部",
     filterImages: "图片",
     filterVideos: "视频",
     noMasterpieces: "您生成的艺术作品将显示在这里。",
     modalTitle: "作品预览",
-    downloadBtn: "下载媒体",
+    downloadBtn: "下载视频",
     useSettingsBtn: "使用此配置",
     tryLabel: "推荐:",
     statusPending: "排队中",
-    statusProcessing: "生成中",
-    statusSuccess: "成功",
+    statusProcessing: "合成中",
+    statusSuccess: "完成",
     statusFailed: "失败"
   }
 };
@@ -189,6 +187,7 @@ const TRANSLATIONS = {
 // Application State
 let currentLang = "en"; // 'en' or 'zh'
 let activeTab = "image"; // 'image' or 'video'
+let selectedAvatarId = "xiaomi"; // default selected preset avatar
 let activeTasks = [];
 let galleryItems = [];
 
@@ -199,10 +198,16 @@ const tabImage = document.getElementById("tab-image");
 const tabVideo = document.getElementById("tab-video");
 const modelSelect = document.getElementById("model-select");
 const modelDesc = document.getElementById("model-desc");
+const avatarSelectionGroup = document.getElementById("avatar-selection-group");
+const avatarGridContainer = document.getElementById("avatar-grid-container");
+const customAvatarUrl = document.getElementById("custom-avatar-url");
+const templateChipsContainer = document.getElementById("template-chips-container");
 const promptInput = document.getElementById("prompt-input");
-const suggestionsContainer = document.getElementById("suggestions-container");
-const sourceImageGroup = document.getElementById("source-image-group");
-const imageUrlInput = document.getElementById("image-url-input");
+const voiceGroup = document.getElementById("voice-group");
+const targetAudioGroup = document.getElementById("target-audio-group");
+const audioUrlInput = document.getElementById("audio-url-input");
+const sourceVideoGroup = document.getElementById("source-video-group");
+const videoUrlInput = document.getElementById("video-url-input");
 const generatorForm = document.getElementById("generator-form");
 const generateSubmit = document.getElementById("generate-submit");
 const btnSpinner = document.getElementById("btn-spinner");
@@ -216,14 +221,12 @@ const refreshIcon = document.getElementById("refresh-icon");
 const advancedToggleBtn = document.getElementById("advanced-toggle-btn");
 const advancedChevron = document.getElementById("advanced-chevron");
 const advancedParamsPanel = document.getElementById("advanced-params-panel");
-const paramDurationGroup = document.getElementById("param-duration-group");
 
 // Modal Elements
 const mediaModal = document.getElementById("media-modal");
 const modalCloseBackdrop = document.getElementById("modal-close-backdrop");
 const modalCloseBtn = document.getElementById("modal-close-btn");
 const modalMediaContainer = document.getElementById("modal-media-container");
-const modalTitle = document.getElementById("modal-title");
 const modalModelVal = document.getElementById("modal-model-val");
 const modalTaskIdVal = document.getElementById("modal-task-id-val");
 const modalPromptText = document.getElementById("modal-prompt-text");
@@ -232,22 +235,28 @@ const modalUsePromptBtn = document.getElementById("modal-use-prompt-btn");
 
 // Initialize Application
 window.addEventListener("DOMContentLoaded", () => {
-  // Load preferred language from localStorage if exists
+  // Load preferred language
   const savedLang = localStorage.getItem("kie_ai_lang");
   if (savedLang === "en" || savedLang === "zh") {
     currentLang = savedLang;
   }
   
-  // Set Lang UI Text and Run Translate
+  // Translate UI
   updateLanguageUI();
   
-  // Load gallery from localStorage
+  // Render Preset Avatars
+  renderPresetAvatars();
+  
+  // Render Script Templates
+  renderScriptTemplates();
+  
+  // Load gallery
   loadGallery();
   
   // Set initial models
   updateModelDropdown();
   
-  // Fetch credits
+  // Fetch credits balance
   fetchCredits();
   
   // Initialize Lucide Icons
@@ -260,6 +269,7 @@ window.addEventListener("DOMContentLoaded", () => {
   modelSelect.addEventListener("change", handleModelChange);
   generatorForm.addEventListener("submit", handleFormSubmit);
   refreshCredits.addEventListener("click", fetchCredits);
+  customAvatarUrl.addEventListener("input", handleCustomAvatarInput);
   
   // Advanced Toggle
   advancedToggleBtn.addEventListener("click", () => {
@@ -283,25 +293,78 @@ window.addEventListener("DOMContentLoaded", () => {
   modalCloseBackdrop.addEventListener("click", closeModal);
 });
 
-// Switch language
+// Render predefined avatars
+function renderPresetAvatars() {
+  avatarGridContainer.innerHTML = "";
+  PRESETS_AVATARS.forEach(avatar => {
+    const card = document.createElement("div");
+    card.className = `avatar-card ${avatar.id === selectedAvatarId ? 'active' : ''}`;
+    card.dataset.id = avatar.id;
+    card.title = avatar.name[currentLang];
+    
+    card.innerHTML = `
+      <img src="${avatar.thumb}" alt="${avatar.name[currentLang]}" class="avatar-thumbnail">
+    `;
+    
+    card.addEventListener("click", () => selectAvatar(avatar.id));
+    avatarGridContainer.appendChild(card);
+  });
+}
+
+// Select preset avatar
+function selectAvatar(avatarId) {
+  selectedAvatarId = avatarId;
+  customAvatarUrl.value = ""; // clear custom URL
+  
+  document.querySelectorAll(".avatar-card").forEach(card => {
+    card.classList.toggle("active", card.dataset.id === avatarId);
+  });
+}
+
+// Handle custom avatar url pasting
+function handleCustomAvatarInput() {
+  if (customAvatarUrl.value.trim() !== "") {
+    selectedAvatarId = null;
+    document.querySelectorAll(".avatar-card").forEach(card => {
+      card.classList.remove("active");
+    });
+  }
+}
+
+// Render script templates chips
+function renderScriptTemplates() {
+  templateChipsContainer.innerHTML = "";
+  SCRIPT_TEMPLATES.forEach(tmpl => {
+    const chip = document.createElement("div");
+    chip.className = "template-chip";
+    chip.textContent = tmpl.label[currentLang];
+    
+    chip.addEventListener("click", () => {
+      promptInput.value = tmpl.text[currentLang];
+    });
+    
+    templateChipsContainer.appendChild(chip);
+  });
+}
+
+// Toggle language
 function toggleLanguage() {
   currentLang = currentLang === "en" ? "zh" : "en";
   localStorage.setItem("kie_ai_lang", currentLang);
   
   updateLanguageUI();
-  handleModelChange(); // Refresh suggestions and model description
-  renderActiveTasks();  // Refresh active task status badge translations
-  renderGallery();      // Refresh gallery empty state translation
+  renderPresetAvatars();
+  renderScriptTemplates();
+  handleModelChange();
+  renderActiveTasks();
+  renderGallery();
 }
 
-// Translate UI elements using translation dictionary
+// Translate UI elements
 function updateLanguageUI() {
   const dictionary = TRANSLATIONS[currentLang];
-  
-  // Toggle button indicator text
   langText.textContent = currentLang === "en" ? "中文" : "English";
   
-  // Translate nodes with data-i18n
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     if (dictionary[key]) {
@@ -309,7 +372,6 @@ function updateLanguageUI() {
     }
   });
   
-  // Translate placeholders with data-i18n-placeholder
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
     if (dictionary[key]) {
@@ -318,23 +380,31 @@ function updateLanguageUI() {
   });
 }
 
-// Switch between Image and Video tabs
+// Switch Tab (Text to Avatar vs. Video Lip Sync)
 function switchTab(type) {
   if (activeTab === type) return;
-  
   activeTab = type;
   
   if (type === "image") {
+    // Text to Avatar
     tabImage.classList.add("active");
     tabVideo.classList.remove("active");
-    sourceImageGroup.classList.add("hidden");
-    imageUrlInput.value = "";
-    paramDurationGroup.classList.add("hidden");
+    
+    avatarSelectionGroup.classList.remove("hidden");
+    voiceGroup.classList.remove("hidden");
+    
+    targetAudioGroup.classList.add("hidden");
+    sourceVideoGroup.classList.add("hidden");
   } else {
+    // Video Lip Sync
     tabVideo.classList.add("active");
     tabImage.classList.remove("active");
-    sourceImageGroup.classList.remove("hidden");
-    paramDurationGroup.classList.remove("hidden");
+    
+    avatarSelectionGroup.classList.add("hidden");
+    voiceGroup.classList.add("hidden");
+    
+    targetAudioGroup.classList.remove("hidden");
+    sourceVideoGroup.classList.remove("hidden");
   }
   
   updateModelDropdown();
@@ -362,22 +432,7 @@ function handleModelChange() {
   const model = models.find(m => m.id === modelId);
   
   if (model) {
-    // Set localized model description
     modelDesc.textContent = model.desc[currentLang];
-    
-    // Update Prompt Suggestions Chips
-    suggestionsContainer.innerHTML = "";
-    const list = model.suggestions[currentLang];
-    list.forEach(suggestion => {
-      const chip = document.createElement("div");
-      chip.className = "chip";
-      chip.textContent = suggestion;
-      chip.title = suggestion;
-      chip.addEventListener("click", () => {
-        promptInput.value = suggestion;
-      });
-      suggestionsContainer.appendChild(chip);
-    });
   }
 }
 
@@ -407,9 +462,6 @@ async function handleFormSubmit(e) {
   const model = modelSelect.value;
   const prompt = promptInput.value.trim();
   const aspectRatio = document.querySelector('input[name="aspectRatio"]:checked').value;
-  const quality = document.getElementById("quality-select").value;
-  const imageUrl = imageUrlInput.value.trim();
-  const duration = parseInt(document.getElementById("duration-select").value, 10);
   
   if (!prompt) return;
   
@@ -417,13 +469,27 @@ async function handleFormSubmit(e) {
   generateSubmit.disabled = true;
   btnSpinner.classList.remove("hidden");
   
-  // Prepare input block
-  const input = { prompt, aspectRatio, quality };
-  if (activeTab === "video") {
-    input.duration = duration;
-    if (imageUrl) {
-      input.imageUrl = imageUrl;
+  // Prepare input block depending on active tab
+  const input = {};
+  
+  if (activeTab === "image") {
+    // Text to Avatar
+    input.prompt = prompt;
+    input.voice = document.getElementById("voice-select").value;
+    input.aspectRatio = aspectRatio;
+    
+    // Avatar portrait source
+    if (selectedAvatarId) {
+      const avatar = PRESETS_AVATARS.find(a => a.id === selectedAvatarId);
+      input.avatarUrl = avatar ? avatar.full : "";
+    } else {
+      input.avatarUrl = customAvatarUrl.value.trim();
     }
+  } else {
+    // Video Lip Sync
+    input.video_url = videoUrlInput.value.trim();
+    input.audio_url = audioUrlInput.value.trim();
+    input.align_audio = document.getElementById("align-audio-check").checked;
   }
   
   try {
@@ -436,11 +502,14 @@ async function handleFormSubmit(e) {
     const result = await res.json();
     
     if (result.code === 200 && result.data && result.data.taskId) {
+      // Clear inputs
       promptInput.value = "";
-      imageUrlInput.value = "";
+      customAvatarUrl.value = "";
+      videoUrlInput.value = "";
+      audioUrlInput.value = "";
       
       const taskId = result.data.taskId;
-      addTaskToQueue(taskId, model, activeTab, prompt);
+      addTaskToQueue(taskId, model, "video", prompt || `Lip-sync task for video`);
     } else {
       alert(currentLang === "en" 
         ? `Generation Failed: ${result.msg || "Server returned error status"}`

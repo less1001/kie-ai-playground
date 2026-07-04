@@ -173,7 +173,7 @@ body {
   background-color: var(--border-color);
 }
 
-/* Language Toggle Button (Figma Dropdown style) */
+/* Language Toggle Button */
 .lang-toggle-btn {
   background: none;
   border: 1px solid var(--border-color);
@@ -285,7 +285,105 @@ body {
   line-height: 1.4;
 }
 
-/* Input Fields (Figma/Claude styled) */
+/* Avatar Grid Styles */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.avatar-card {
+  position: relative;
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.avatar-card:hover {
+  border-color: var(--border-hover);
+}
+
+.avatar-card.active {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 8px rgba(12, 140, 233, 0.4);
+}
+
+.avatar-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-name-overlay {
+  display: none; /* simple Tooltips or just visual portrait */
+}
+
+.custom-avatar-url-wrapper {
+  margin-top: 4px;
+}
+
+/* E-commerce Script Templates Chips */
+.script-template-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.small-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.template-chips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.template-chip {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-color);
+  color: var(--text-body);
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.template-chip:hover {
+  border-color: var(--accent-blue);
+  background: rgba(12, 140, 233, 0.05);
+}
+
+/* Checkbox Styles */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  accent-color: var(--accent-blue);
+  width: 14px;
+  height: 14px;
+}
+
+.checkbox-wrapper span {
+  font-size: 0.75rem;
+  color: var(--text-body);
+}
+
+/* Input Fields */
 input[type="url"],
 select,
 textarea {
@@ -342,48 +440,7 @@ select {
   padding-right: 24px;
 }
 
-/* Prompt Suggestions Chips (Minimalist) */
-.suggestions-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.suggest-lbl {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.suggestions-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.chip {
-  background: var(--bg-canvas);
-  border: 1px solid var(--border-color);
-  color: var(--text-body);
-  font-size: 0.7rem;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: var(--transition-fast);
-}
-
-.chip:hover {
-  border-color: var(--accent-blue);
-  background: rgba(12, 140, 233, 0.05);
-  color: var(--text-title);
-}
-
-/* Aspect Ratio Selectors (Grid style like Figma layout panels) */
+/* Aspect Ratio Selectors */
 .ratio-selectors {
   display: flex;
   gap: 8px;
@@ -521,7 +578,7 @@ select {
   animation: spin 0.8s linear infinite;
 }
 
-/* Editor Canvas (Right Area) */
+/* Editor Canvas */
 .editor-canvas {
   display: flex;
   flex-direction: column;
@@ -652,7 +709,7 @@ select {
   border: 1px solid rgba(244, 67, 54, 0.2);
 }
 
-/* Gallery filters (Figma Design style filters) */
+/* Gallery filters */
 .gallery-filters {
   display: flex;
   background: var(--bg-canvas);
@@ -713,7 +770,7 @@ select {
   font-size: 0.75rem;
 }
 
-/* Gallery Cards (Minimalist Flat Layout like Figma files) */
+/* Gallery Cards */
 .gallery-card {
   position: relative;
   background: var(--bg-canvas);
@@ -787,7 +844,7 @@ select {
 .card-badge.image { color: var(--accent-blue); }
 .card-badge.video { color: #f06292; }
 
-/* Lightbox Modal (Figma Layer View style) */
+/* Lightbox Modal */
 .lightbox-modal {
   position: fixed;
   top: 0;
