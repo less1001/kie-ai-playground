@@ -26,188 +26,325 @@ const PRESETS_AVATARS = [
   }
 ];
 
-// E-commerce Script Templates
-const SCRIPT_TEMPLATES = [
-  {
-    id: "new-product",
-    label: { en: "New Release", zh: "新品首发" },
-    text: {
-      en: "Look at this brand new tech gadget in my hand! Today's launch gets an instant $50 off and a free 1-year warranty. Click below to buy now!",
-      zh: "大家看我手上这款最新上市的科技好物！今天首发直降300元，限时赠送一年质保，赶快点击下方链接购买吧！"
-    }
-  },
-  {
-    id: "flash-sale",
-    label: { en: "Flash Sale", zh: "限量秒杀" },
-    text: {
-      en: "Counting down the last 5 minutes! Lowest price online, limited to 50 orders, once gone it returns to full price! Don't wait, act now!",
-      zh: "倒计时最后五分钟！全网最低价，限量五十单，抢完立马恢复原价！犹豫一秒就没有了，大家手速一定要快！"
-    }
-  },
-  {
-    id: "recommendation",
-    label: { en: "Top Pick", zh: "爆款推荐" },
-    text: {
-      en: "Hey friends! I've personally used this absolute treasure of a product for 6 months. It's incredibly high-quality and practical. You won't regret this!",
-      zh: "亲们，这款宝藏产品我自用了半年，强烈推荐！不仅质量超赞，而且非常实用，今天下单立享专属折扣，买它绝对不后悔！"
-    }
-  }
-];
-
-// Model Configurations
-const MODELS = {
-  image: [
+// E-commerce & Explainer Script Templates
+const SCRIPT_TEMPLATES = {
+  "animated-explainer": [
     {
-      id: "omnihuman-v1.5",
-      name: "OmniHuman 1.5 (Portrait Video)",
-      desc: {
-        en: "Generates realistic, expressive talking head video from portrait image and text script.",
-        zh: "结合主播肖像照片与文本，生成逼真、极富表现力的数字人口播视频。"
+      id: "exp-tech",
+      label: { en: "AI Explainer", zh: "AI科普解说" },
+      text: {
+        en: "Explain how neural networks learn in 60 seconds, using analog analogies like training a dog.",
+        zh: "用60秒通俗解释神经网络是如何学习的，使用像驯狗一样的生活化类比。"
       }
     },
     {
-      id: "sadtalker",
-      name: "SadTalker (Image to Video)",
-      desc: {
-        en: "Classic image-driven digital human animation, highly efficient and stable lip movement.",
-        zh: "经典的图像驱动数字人模型，生成速度快，口型动作稳定逼真。"
-      }
-    },
-    {
-      id: "wav2lip",
-      name: "Wav2Lip (Lip Sync Generator)",
-      desc: {
-        en: "Speedy mouth movement generation matching the voiceover audio perfectly.",
-        zh: "快速唇形生成模型，能够将任意人像嘴部动作完美贴合配音音频。"
+      id: "exp-finance",
+      label: { en: "Bitcoin Explained", zh: "比特币科普" },
+      text: {
+        en: "Explain the concept of blockchain ledger and bitcoin mining in simple terms for beginners.",
+        zh: "为初学者通俗讲解区块链账本与比特币挖矿的概念。"
       }
     }
   ],
-  video: [
+  "avatar-spokesperson": [
     {
-      id: "volcengine/video-to-video-lip-sync",
-      name: "Volcengine Lip-Sync (Video to Video)",
-      desc: {
-        en: "Volcengine high-fidelity video lip-sync. Aligns host video mouth movements with target audio track.",
-        zh: "火山引擎高保真视频口型同步模型。将已录制的主播视频嘴部口型完美贴合新的音频轨道。"
+      id: "sales-new",
+      label: { en: "New Release", zh: "新品首发" },
+      text: {
+        en: "Look at this brand new tech gadget in my hand! Today's launch gets an instant $50 off and a free 1-year warranty. Click below to buy now!",
+        zh: "大家看我手上这款最新上市的科技好物！今天首发直降300元，限时赠送一年质保，赶快点击下方链接购买吧！"
+      }
+    },
+    {
+      id: "sales-flash",
+      label: { en: "Flash Sale", zh: "限量秒杀" },
+      text: {
+        en: "Counting down the last 5 minutes! Lowest price online, limited to 50 orders, once gone it returns to full price! Don't wait, act now!",
+        zh: "倒计时最后五分钟！全网最低价，限量五十单，抢完立马恢复原价！犹豫一秒就没有了，大家手速一定要快！"
+      }
+    }
+  ],
+  "documentary-montage": [
+    {
+      id: "doc-city",
+      label: { en: "City at 4 AM", zh: "清晨四点的城市" },
+      text: {
+        en: "A dreamlike montage about coming home in the rain at 4 AM, using real stock footage, elegiac tone.",
+        zh: "一个关于凌晨四点雨中归家的梦幻蒙太奇，仅使用真实纪录档案片段，需要一种挽歌般的基调。"
       }
     }
   ]
 };
 
+// OpenMontage Pipelines Config
+const PIPELINES = {
+  "animated-explainer": {
+    name: { en: "Animated Explainer", zh: "动画解说" },
+    desc: {
+      en: "Multi-stage pipeline: writes educational script, generates visuals, synthesizes voice, and renders in Remotion.",
+      zh: "多阶段流水线：撰写科普脚本、生成对应图像视觉、合成旁白配音并使用 Remotion 动画渲染。"
+    },
+    panels: ["text-prompts"],
+    engines: "Imagen4 + Google TTS + Remotion"
+  },
+  "animation": {
+    name: { en: "Flat Motion Animation", zh: "扁平动态图形" },
+    desc: {
+      en: "Typography and GSAP-driven motion graphics for SaaS product introductions.",
+      zh: "以文字排版和 GSAP 动效驱动的动态图形视频，最适合 SaaS 产品发布介绍。"
+    },
+    panels: ["text-prompts"],
+    engines: "GSAP + HyperFrames"
+  },
+  "avatar-spokesperson": {
+    name: { en: "Avatar Spokesperson", zh: "数字人带货" },
+    desc: {
+      en: "Generates realistic, expressive talking head video from portrait image and text sales script.",
+      zh: "结合主播肖像照片与文本，生成逼真、极富销售表现力的 AI 数字人带货视频。"
+    },
+    panels: ["avatar-settings", "text-prompts"],
+    engines: "OmniHuman 1.5 + Volcengine Lip-Sync"
+  },
+  "cinematic": {
+    name: { en: "Cinematic Trailer", zh: "电影级预告片" },
+    desc: {
+      en: "Generates cinematic storyboard frames and triggers high-fidelity text-to-video engines.",
+      zh: "生成高水平电影分镜，并调用 Kling/Veo 视频模型制作电影画质的预告视频。"
+    },
+    panels: ["text-prompts"],
+    engines: "Kling v3.0 / Google Veo 3.1"
+  },
+  "documentary-montage": {
+    name: { en: "Documentary Montage", zh: "纪录片蒙太奇" },
+    desc: {
+      en: "CLIP-indexed retrieval from open databases (NASA, Wikimedia) to compile historical tone-poems.",
+      zh: "从开源数据库（NASA、维基共享、Pexels）中根据提示词语义检索真实的纪录片空镜头并拼接剪辑。"
+    },
+    panels: ["text-prompts"],
+    engines: "Archive.org + Wikimedia + FFmpeg"
+  },
+  "clip-factory": {
+    name: { en: "Clip Factory", zh: "长视频剪切切片" },
+    desc: {
+      en: "Splits a long video into short, viral social media clips automatically.",
+      zh: "自动将长视频进行精彩场景切片，提取出适合社交媒体分发的短视频片段。"
+    },
+    panels: ["media-sources"],
+    engines: "WhisperX + SceneDetect + FFmpeg"
+  },
+  "screen-demo": {
+    name: { en: "Screen Demo", zh: "产品录屏演示" },
+    desc: {
+      en: "Polishes raw computer screen recordings with dynamic zoom, layouts, and voice guidance.",
+      zh: "对原始电脑录屏添加平滑的缩放、排版边框、鼠标轨迹高亮及旁白配音。"
+    },
+    panels: ["media-sources"],
+    engines: "FFmpeg + Remotion Layouts"
+  },
+  "hybrid": {
+    name: { en: "Hybrid Video", zh: "混合合成视频" },
+    desc: {
+      en: "Fuses live-action recordings with AI overlays and graphics enhancements.",
+      zh: "将实拍录像与 AI 辅助图像视觉、特效进行图层融合与画中画合成。"
+    },
+    panels: ["media-sources"],
+    engines: "Remotion Compositor + FFmpeg"
+  },
+  "localization-dub": {
+    name: { en: "Localization & Dub", zh: "视频本地化配音" },
+    desc: {
+      en: "Translates speech, clones voiceover in target language, and burns-in subtitles.",
+      zh: "翻译原视频语音，以相同的音色克隆合成目标语种配音，并自动烧录中英字幕。"
+    },
+    panels: ["media-sources"],
+    engines: "WhisperX + GPT Translate + ElevenLabs"
+  },
+  "podcast-repurpose": {
+    name: { en: "Podcast Repurpose", zh: "播客音频转视频" },
+    desc: {
+      en: "Transforms raw audio podcasts into short video formats with waveforms and dynamic subtitles.",
+      zh: "为原始播客音频添加音频波形图、动态头像、产品贴图和逐词滚动字幕。"
+    },
+    panels: ["media-sources"],
+    engines: "WhisperX + Waveform Render + Remotion"
+  },
+  "talking-head": {
+    name: { en: "Talking Head", zh: "口播口型同步" },
+    desc: {
+      en: "Perfectly aligns custom host video mouth movements with a new voiceover track.",
+      zh: "将已有的主播面部视频口型与全新的音频文件重新同步对齐。"
+    },
+    panels: ["media-sources"],
+    engines: "Volcengine Lip-Sync"
+  }
+};
+
 // Bilingual Dictionaries
 const TRANSLATIONS = {
   en: {
-    title: "AI E-commerce Digital Human Studio",
-    subtitle: "AI 数字人带货视频生成平台",
+    title: "OpenMontage Web Console",
+    subtitle: "Industrial Agentic Video Production Console",
     balance: "Balance",
-    tabImage: "Text to Avatar",
-    tabVideo: "Video Lip-Sync",
-    modelLabel: "AI Model",
-    modelDesc: "Select the digital human generation model.",
+    controlPanelHeader: "Production Panel",
+    pipelineLabel: "Production Pipeline",
+    groupGenerated: "AI Generated & Explainers",
+    groupMaterial: "Source Material & Archival",
+    groupRepurpose: "Re-purpose & Localization",
+    pipeExplainer: "Animated Explainer",
+    pipeAnimation: "Flat Motion Animation",
+    pipeAvatar: "Avatar Spokesperson",
+    pipeCinematic: "Cinematic Trailer",
+    pipeDocumentary: "Documentary Montage",
+    pipeClipFactory: "Clip Factory",
+    pipeScreenDemo: "Screen Demo",
+    pipeHybrid: "Hybrid Video",
+    pipeDub: "Localization & Dub",
+    pipePodcast: "Podcast Repurpose",
+    pipeTalkingHead: "Talking Head",
+    promptLabel: "Script / Topic Brief",
+    promptPlaceholder: "Describe the video topic, script or storyboard...",
     avatarLabel: "Choose Host Avatar",
     templateLabel: "Template:",
-    promptLabel: "E-commerce Script",
-    promptPlaceholder: "Enter your sales script here...",
     voiceLabel: "Voice Tone",
-    voiceFemaleSalesFast: "Female Sales (High Energy)",
-    voiceFemaleSweet: "Sweet & Friendly Female",
-    voiceMaleProfessional: "Professional Explainer Male",
-    voiceEnglishFemale: "English Host Female",
+    voiceFemaleSales: "Sales Female (High Energy)",
+    voiceFemaleSweet: "Sweet Female",
+    voiceMaleProfessional: "Professional Male",
+    voiceEnglishFemale: "English Female",
     targetAudioLabel: "Target Audio URL",
     targetAudioDesc: "Provide the voiceover audio track URL to synchronize lips with.",
     sourceVideoLabel: "Source Avatar Video URL",
     sourceVideoDesc: "Provide the source video showing the host's face.",
-    advancedSettings: "Advanced Parameters",
+    targetLangLabel: "Target Dub Language",
+    advancedSettings: "Advanced Configuration",
     aspectRatioLabel: "Aspect Ratio",
     aspectRatio916: "9:16 Mobile",
-    aspectRatio169: "16:9 Desktop",
+    aspectRatio169: "16:9 Widescreen",
+    aspectRatio11: "1:1 Square",
+    qualityLabel: "Quality / Resolution",
+    quality720: "720p HD",
+    quality1080: "1080p Full HD",
+    budgetLabel: "Budget Governance",
+    budgetObserve: "Observe Only",
+    budgetWarn: "Warn on Overrun",
+    budgetCap: "Strict Cap ($5.00)",
     alignAudioLabel: "Forced Audio Lip-Sync Alignment",
-    generateBtn: "Generate E-commerce Video",
-    activeGenerations: "Active Generations",
-    noActiveTasks: "No active generations. Submit a prompt to start!",
-    creativeGallery: "Creative Gallery",
-    filterAll: "All",
+    generateBtn: "Start Production Pipeline",
+    activeGenerations: "Active Pipelines",
+    noActiveTasks: "No active pipelines running. Submit a task to begin.",
+    creativeGallery: "Project Outputs",
+    filterAll: "All Outputs",
     filterImages: "Images",
     filterVideos: "Videos",
-    noMasterpieces: "Your generated masterpieces will appear here.",
-    modalTitle: "Masterpiece Preview",
+    noMasterpieces: "Your completed projects will appear here.",
+    modalTitle: "Project Production Log",
     downloadBtn: "Download Video",
-    useSettingsBtn: "Use Settings",
+    useSettingsBtn: "Re-run Pipeline",
     tryLabel: "Try:",
     statusPending: "Pending",
     statusProcessing: "Processing",
     statusSuccess: "Success",
-    statusFailed: "Failed"
+    statusFailed: "Failed",
+    compilationPipeline: "OpenMontage Stage Director",
+    stepResearch: "Research",
+    stepScript: "Script",
+    stepStoryboard: "Storyboard",
+    stepAssets: "Asset Gen",
+    stepEdit: "Timeline",
+    stepRender: "Rendering",
+    stepReview: "Quality Gate"
   },
   zh: {
-    title: "AI 数字人带货视频工作室",
-    subtitle: "AI 数字人带货视频生成平台",
+    title: "OpenMontage Web 控制台",
+    subtitle: "工业级代理化视频制作系统",
     balance: "账户余额",
-    tabImage: "文本生成数字人",
-    tabVideo: "视频口型同步",
-    modelLabel: "AI 模型",
-    modelDesc: "选择数字人生成或同步模型。",
+    controlPanelHeader: "生产配置控制台",
+    pipelineLabel: "视频生产流水线",
+    groupGenerated: "AI 创意生成与解说",
+    groupMaterial: "素材检索与后期加工",
+    groupRepurpose: "视频重制与本地化",
+    pipeExplainer: "动画解说 (Animated Explainer)",
+    pipeAnimation: "扁平动态图形 (Animation)",
+    pipeAvatar: "数字人带货 (Spokesperson)",
+    pipeCinematic: "电影预告片 (Cinematic)",
+    pipeDocumentary: "纪录片蒙太奇 (Montage)",
+    pipeClipFactory: "长视频切片 (Clip Factory)",
+    pipeScreenDemo: "产品录屏演示 (Screen Demo)",
+    pipeHybrid: "混合合成视频 (Hybrid)",
+    pipeDub: "视频配音本地化 (Dubbing)",
+    pipePodcast: "播客重制 (Podcast)",
+    pipeTalkingHead: "口播口型同步 (Talking Head)",
+    promptLabel: "带货脚本 / 主题大纲",
+    promptPlaceholder: "在此输入您的带货文案、解说大纲或画面分镜脚本...",
     avatarLabel: "选择带货主播人像",
     templateLabel: "话术模板:",
-    promptLabel: "带货文案脚本",
-    promptPlaceholder: "在此输入您的带货文案或选择上方模板...",
     voiceLabel: "主播配音音色",
-    voiceFemaleSalesFast: "带货女声 (高能量/激情)",
+    voiceFemaleSales: "带货女声 (高能量/激情)",
     voiceFemaleSweet: "亲和甜美型女声",
-    voiceMaleProfessional: "专业男声 (沉稳/适合科技数码)",
+    voiceMaleProfessional: "专业男声 (沉稳/科技感)",
     voiceEnglishFemale: "外贸英语女声",
     targetAudioLabel: "配音音频 URL (目标音频)",
     targetAudioDesc: "提供您需要同步的主播配音音频 URL 链接。",
     sourceVideoLabel: "主播原始视频 URL (源视频)",
     sourceVideoDesc: "提供需要修改口型的原始主播面部视频 URL 链接。",
-    advancedSettings: "高级参数设定",
+    targetLangLabel: "目标翻译语种",
+    advancedSettings: "生产安全与通用设定",
     aspectRatioLabel: "画面比例",
-    aspectRatio916: "9:16 手机竖屏",
-    aspectRatio169: "16:9 电脑横屏",
+    aspectRatio916: "9:16 手机短视频",
+    aspectRatio169: "16:9 电脑宽屏",
+    aspectRatio11: "1:1 正方形",
+    qualityLabel: "清晰度 / 分辨率",
+    quality720: "720p 高清",
+    quality1080: "1080p 超清",
+    budgetLabel: "预算防超限治理",
+    budgetObserve: "仅跟踪记录",
+    budgetWarn: "超出时预警",
+    budgetCap: "硬性封顶 ($5.00)",
     alignAudioLabel: "强制进行人声口型对齐",
-    generateBtn: "开始合成带货视频",
-    activeGenerations: "正在合成队列",
-    noActiveTasks: "暂无合成中的任务。在左侧配置并提交以开始！",
-    creativeGallery: "作品画廊",
-    filterAll: "全部",
+    generateBtn: "启动视频生产流水线",
+    activeGenerations: "正在运行的流水线",
+    noActiveTasks: "暂无运行中的流水线。在左侧配置并提交以开始！",
+    creativeGallery: "项目渲染成果",
+    filterAll: "全部渲染产出",
     filterImages: "图片",
     filterVideos: "视频",
-    noMasterpieces: "您生成的艺术作品将显示在这里。",
-    modalTitle: "作品预览",
-    downloadBtn: "下载视频",
-    useSettingsBtn: "使用此配置",
+    noMasterpieces: "您完成的项目视频将显示在这里。",
+    modalTitle: "项目生产审计日志",
+    downloadBtn: "下载视频成果",
+    useSettingsBtn: "复制参数重跑",
     tryLabel: "推荐:",
     statusPending: "排队中",
     statusProcessing: "合成中",
     statusSuccess: "完成",
-    statusFailed: "失败"
+    statusFailed: "失败",
+    compilationPipeline: "OpenMontage 阶段导演",
+    stepResearch: "网络研究",
+    stepScript: "剧本编写",
+    stepStoryboard: "分镜场景",
+    stepAssets: "资产生成",
+    stepEdit: "时间线剪辑",
+    stepRender: "合成渲染",
+    stepReview: "质量把关"
   }
 };
 
 // Application State
 let currentLang = "en"; // 'en' or 'zh'
-let activeTab = "image"; // 'image' or 'video'
 let selectedAvatarId = "xiaomi"; // default selected preset avatar
 let activeTasks = [];
 let galleryItems = [];
+let selectedTaskId = null; // tracking which task is active in stage director
 
 // DOM Elements
 const langToggleBtn = document.getElementById("lang-toggle");
 const langText = document.getElementById("lang-text");
-const tabImage = document.getElementById("tab-image");
-const tabVideo = document.getElementById("tab-video");
-const modelSelect = document.getElementById("model-select");
+const pipelineSelect = document.getElementById("pipeline-select");
 const modelDesc = document.getElementById("model-desc");
+const promptInput = document.getElementById("prompt-input");
+const suggestionsContainer = document.getElementById("suggestions-container");
 const avatarSelectionGroup = document.getElementById("avatar-selection-group");
 const avatarGridContainer = document.getElementById("avatar-grid-container");
 const customAvatarUrl = document.getElementById("custom-avatar-url");
 const templateChipsContainer = document.getElementById("template-chips-container");
-const promptInput = document.getElementById("prompt-input");
-const voiceGroup = document.getElementById("voice-group");
-const targetAudioGroup = document.getElementById("target-audio-group");
-const audioUrlInput = document.getElementById("audio-url-input");
-const sourceVideoGroup = document.getElementById("source-video-group");
-const videoUrlInput = document.getElementById("video-url-input");
 const generatorForm = document.getElementById("generator-form");
 const generateSubmit = document.getElementById("generate-submit");
 const btnSpinner = document.getElementById("btn-spinner");
@@ -222,11 +359,23 @@ const advancedToggleBtn = document.getElementById("advanced-toggle-btn");
 const advancedChevron = document.getElementById("advanced-chevron");
 const advancedParamsPanel = document.getElementById("advanced-params-panel");
 
+// Dynamic panels
+const panelTextPrompts = document.getElementById("panel-text-prompts");
+const panelAvatarSettings = document.getElementById("panel-avatar-settings");
+const panelMediaSources = document.getElementById("panel-media-sources");
+const groupTargetAudio = document.getElementById("group-target-audio");
+const groupTargetLang = document.getElementById("group-target-lang");
+
+const audioUrlInput = document.getElementById("audio-url-input");
+const videoUrlInput = document.getElementById("video-url-input");
+const dubLangSelect = document.getElementById("dub-lang-select");
+
 // Modal Elements
 const mediaModal = document.getElementById("media-modal");
 const modalCloseBackdrop = document.getElementById("modal-close-backdrop");
 const modalCloseBtn = document.getElementById("modal-close-btn");
 const modalMediaContainer = document.getElementById("modal-media-container");
+const modalPipelineVal = document.getElementById("modal-pipeline-val");
 const modalModelVal = document.getElementById("modal-model-val");
 const modalTaskIdVal = document.getElementById("modal-task-id-val");
 const modalPromptText = document.getElementById("modal-prompt-text");
@@ -247,26 +396,21 @@ window.addEventListener("DOMContentLoaded", () => {
   // Render Preset Avatars
   renderPresetAvatars();
   
-  // Render Script Templates
-  renderScriptTemplates();
-  
   // Load gallery
   loadGallery();
   
-  // Set initial models
-  updateModelDropdown();
-  
   // Fetch credits balance
   fetchCredits();
+  
+  // Initial pipeline form render
+  handlePipelineChange();
   
   // Initialize Lucide Icons
   lucide.createIcons();
   
   // Event Listeners
   langToggleBtn.addEventListener("click", toggleLanguage);
-  tabImage.addEventListener("click", () => switchTab("image"));
-  tabVideo.addEventListener("click", () => switchTab("video"));
-  modelSelect.addEventListener("change", handleModelChange);
+  pipelineSelect.addEventListener("change", handlePipelineChange);
   generatorForm.addEventListener("submit", handleFormSubmit);
   refreshCredits.addEventListener("click", fetchCredits);
   customAvatarUrl.addEventListener("input", handleCustomAvatarInput);
@@ -293,6 +437,44 @@ window.addEventListener("DOMContentLoaded", () => {
   modalCloseBackdrop.addEventListener("click", closeModal);
 });
 
+// Switch Pipeline - Show / Hide Dynamic Panels
+function handlePipelineChange() {
+  const pipeKey = pipelineSelect.value;
+  const config = PIPELINES[pipeKey];
+  
+  if (!config) return;
+  
+  // Update description
+  modelDesc.textContent = config.desc[currentLang];
+  
+  // Hide all dynamic panels
+  panelTextPrompts.classList.add("hidden");
+  panelAvatarSettings.classList.add("hidden");
+  panelMediaSources.classList.add("hidden");
+  
+  // Show required panels
+  config.panels.forEach(p => {
+    if (p === "text-prompts") panelTextPrompts.classList.remove("hidden");
+    if (p === "avatar-settings") panelAvatarSettings.classList.remove("hidden");
+    if (p === "media-sources") panelMediaSources.classList.remove("hidden");
+  });
+  
+  // Sub-controls configuration depending on specific pipelines
+  if (pipeKey === "localization-dub") {
+    groupTargetAudio.classList.add("hidden");
+    groupTargetLang.classList.remove("hidden");
+  } else if (pipeKey === "talking-head") {
+    groupTargetAudio.classList.remove("hidden");
+    groupTargetLang.classList.add("hidden");
+  } else {
+    groupTargetAudio.classList.remove("hidden");
+    groupTargetLang.classList.remove("hidden");
+  }
+  
+  // Render templates
+  renderScriptTemplates(pipeKey);
+}
+
 // Render predefined avatars
 function renderPresetAvatars() {
   avatarGridContainer.innerHTML = "";
@@ -314,7 +496,7 @@ function renderPresetAvatars() {
 // Select preset avatar
 function selectAvatar(avatarId) {
   selectedAvatarId = avatarId;
-  customAvatarUrl.value = ""; // clear custom URL
+  customAvatarUrl.value = "";
   
   document.querySelectorAll(".avatar-card").forEach(card => {
     card.classList.toggle("active", card.dataset.id === avatarId);
@@ -331,10 +513,14 @@ function handleCustomAvatarInput() {
   }
 }
 
-// Render script templates chips
-function renderScriptTemplates() {
+// Render script templates chips based on active pipeline
+function renderScriptTemplates(pipeline) {
   templateChipsContainer.innerHTML = "";
-  SCRIPT_TEMPLATES.forEach(tmpl => {
+  
+  // Get script templates list or fall back to explainer
+  const templates = SCRIPT_TEMPLATES[pipeline] || SCRIPT_TEMPLATES["animated-explainer"];
+  
+  templates.forEach(tmpl => {
     const chip = document.createElement("div");
     chip.className = "template-chip";
     chip.textContent = tmpl.label[currentLang];
@@ -354,10 +540,10 @@ function toggleLanguage() {
   
   updateLanguageUI();
   renderPresetAvatars();
-  renderScriptTemplates();
-  handleModelChange();
+  handlePipelineChange();
   renderActiveTasks();
   renderGallery();
+  updateStageDirectorUI(); // Refresh pipeline stepper headers
 }
 
 // Translate UI elements
@@ -378,62 +564,6 @@ function updateLanguageUI() {
       el.setAttribute("placeholder", dictionary[key]);
     }
   });
-}
-
-// Switch Tab (Text to Avatar vs. Video Lip Sync)
-function switchTab(type) {
-  if (activeTab === type) return;
-  activeTab = type;
-  
-  if (type === "image") {
-    // Text to Avatar
-    tabImage.classList.add("active");
-    tabVideo.classList.remove("active");
-    
-    avatarSelectionGroup.classList.remove("hidden");
-    voiceGroup.classList.remove("hidden");
-    
-    targetAudioGroup.classList.add("hidden");
-    sourceVideoGroup.classList.add("hidden");
-  } else {
-    // Video Lip Sync
-    tabVideo.classList.add("active");
-    tabImage.classList.remove("active");
-    
-    avatarSelectionGroup.classList.add("hidden");
-    voiceGroup.classList.add("hidden");
-    
-    targetAudioGroup.classList.remove("hidden");
-    sourceVideoGroup.classList.remove("hidden");
-  }
-  
-  updateModelDropdown();
-}
-
-// Update model select options depending on the active tab
-function updateModelDropdown() {
-  const models = MODELS[activeTab];
-  modelSelect.innerHTML = "";
-  
-  models.forEach(model => {
-    const option = document.createElement("option");
-    option.value = model.id;
-    option.textContent = model.name;
-    modelSelect.appendChild(option);
-  });
-  
-  handleModelChange();
-}
-
-// Handle model change to update prompt suggestions and descriptions
-function handleModelChange() {
-  const modelId = modelSelect.value;
-  const models = MODELS[activeTab];
-  const model = models.find(m => m.id === modelId);
-  
-  if (model) {
-    modelDesc.textContent = model.desc[currentLang];
-  }
 }
 
 // Fetch Account Balance
@@ -459,26 +589,31 @@ async function fetchCredits() {
 async function handleFormSubmit(e) {
   e.preventDefault();
   
-  const model = modelSelect.value;
+  const pipeline = pipelineSelect.value;
   const prompt = promptInput.value.trim();
   const aspectRatio = document.querySelector('input[name="aspectRatio"]:checked').value;
+  const quality = document.getElementById("quality-select").value;
+  const budgetMode = document.getElementById("budget-select").value;
   
-  if (!prompt) return;
+  // Validation depending on pipeline requirements
+  let input = { pipeline, aspectRatio, quality, budgetMode };
+  let model_id = "omnihuman-v1.5"; // default fallback for avatar spokesperson
   
-  // Disable button & show spinner
-  generateSubmit.disabled = true;
-  btnSpinner.classList.remove("hidden");
-  
-  // Prepare input block depending on active tab
-  const input = {};
-  
-  if (activeTab === "image") {
-    // Text to Avatar
+  if (pipeline === "animated-explainer" || pipeline === "animation" || pipeline === "cinematic" || pipeline === "documentary-montage") {
+    if (!prompt) return;
+    input.prompt = prompt;
+    
+    // Select specific Kie.ai backend engine
+    if (pipeline === "animated-explainer") model_id = "imagen4";
+    if (pipeline === "animation") model_id = "ideogram-v3";
+    if (pipeline === "cinematic") model_id = "kling-v3";
+    if (pipeline === "documentary-montage") model_id = "grok-imagine";
+  } else if (pipeline === "avatar-spokesperson") {
+    if (!prompt) return;
     input.prompt = prompt;
     input.voice = document.getElementById("voice-select").value;
-    input.aspectRatio = aspectRatio;
+    model_id = "omnihuman-v1.5";
     
-    // Avatar portrait source
     if (selectedAvatarId) {
       const avatar = PRESETS_AVATARS.find(a => a.id === selectedAvatarId);
       input.avatarUrl = avatar ? avatar.full : "";
@@ -486,17 +621,34 @@ async function handleFormSubmit(e) {
       input.avatarUrl = customAvatarUrl.value.trim();
     }
   } else {
-    // Video Lip Sync
-    input.video_url = videoUrlInput.value.trim();
-    input.audio_url = audioUrlInput.value.trim();
-    input.align_audio = document.getElementById("align-audio-check").checked;
+    // Media Source pipelines
+    const videoUrl = videoUrlInput.value.trim();
+    const audioUrl = audioUrlInput.value.trim();
+    const dubLang = dubLangSelect.value;
+    
+    if (!videoUrl) return;
+    input.videoUrl = videoUrl;
+    
+    if (pipeline === "localization-dub") {
+      input.dubLang = dubLang;
+      model_id = "volcengine/video-to-video-lip-sync"; // uses Volcengine translation/lip-sync
+    } else if (pipeline === "talking-head") {
+      input.audioUrl = audioUrl;
+      model_id = "volcengine/video-to-video-lip-sync";
+    } else {
+      model_id = "kling-v3";
+    }
   }
+  
+  // Disable button
+  generateSubmit.disabled = true;
+  btnSpinner.classList.remove("hidden");
   
   try {
     const res = await fetch("/api/create-task", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model, input })
+      body: JSON.stringify({ model: model_id, input })
     });
     
     const result = await res.json();
@@ -509,7 +661,7 @@ async function handleFormSubmit(e) {
       audioUrlInput.value = "";
       
       const taskId = result.data.taskId;
-      addTaskToQueue(taskId, model, "video", prompt || `Lip-sync task for video`);
+      addTaskToQueue(taskId, pipeline, model_id, prompt || `Pipeline run: ${pipeline}`);
     } else {
       alert(currentLang === "en" 
         ? `Generation Failed: ${result.msg || "Server returned error status"}`
@@ -526,23 +678,35 @@ async function handleFormSubmit(e) {
 }
 
 // Add task to tracking queue
-function addTaskToQueue(taskId, model, type, prompt) {
+function addTaskToQueue(taskId, pipeline, model, prompt) {
   const task = {
     taskId,
+    pipeline,
     model,
-    type,
     prompt,
     status: "pending",
     elapsed: 0,
+    stage: "research", // Active OpenMontage compilation step
     intervalId: null
   };
   
   activeTasks.push(task);
+  selectedTaskId = taskId; // auto-focus stepper on newest task
   renderActiveTasks();
+  updateStageDirectorUI();
   
-  // Start Polling
+  // Start Polling & stage simulation
   task.intervalId = setInterval(() => {
     task.elapsed += 2;
+    
+    // Simulate pipeline stages progression based on elapsed seconds
+    if (task.elapsed > 4 && task.stage === "research") task.stage = "script";
+    else if (task.elapsed > 8 && task.stage === "script") task.stage = "storyboard";
+    else if (task.elapsed > 12 && task.stage === "storyboard") task.stage = "assets";
+    else if (task.elapsed > 18 && task.stage === "assets") task.stage = "edit";
+    else if (task.elapsed > 24 && task.stage === "edit") task.stage = "render";
+    else if (task.elapsed > 30 && task.stage === "render") task.stage = "review";
+    
     pollTaskStatus(task);
   }, 2000);
 }
@@ -560,11 +724,12 @@ async function pollTaskStatus(task) {
       if (remoteStatus === "success" || remoteStatus === "completed" || taskData.videoUrl || taskData.imageUrl) {
         clearInterval(task.intervalId);
         task.status = "success";
+        task.stage = "success";
         
         const mediaUrl = taskData.videoUrl || taskData.imageUrl || (taskData.output ? taskData.output[0] : null);
         
         if (mediaUrl) {
-          saveToGallery(task.taskId, task.model, task.type, task.prompt, mediaUrl);
+          saveToGallery(task.taskId, task.pipeline, task.model, task.prompt, mediaUrl);
         }
         
         removeTaskFromQueue(task.taskId);
@@ -572,11 +737,14 @@ async function pollTaskStatus(task) {
       } else if (remoteStatus === "failed" || remoteStatus === "error") {
         clearInterval(task.intervalId);
         task.status = "failed";
-        alert(currentLang === "en" ? `Task ${task.taskId} failed.` : `任务 ${task.taskId} 运行失败。`);
+        alert(currentLang === "en" ? `Pipeline task ${task.taskId} failed.` : `流水线任务 ${task.taskId} 失败。`);
         setTimeout(() => removeTaskFromQueue(task.taskId), 5000);
       } else if (remoteStatus === "processing" || remoteStatus === "running") {
         task.status = "processing";
         renderActiveTasks();
+        if (selectedTaskId === task.taskId) {
+          updateStageDirectorUI();
+        }
       } else {
         task.status = "pending";
         renderActiveTasks();
@@ -589,10 +757,14 @@ async function pollTaskStatus(task) {
 
 function removeTaskFromQueue(taskId) {
   activeTasks = activeTasks.filter(t => t.taskId !== taskId);
+  if (selectedTaskId === taskId) {
+    selectedTaskId = activeTasks.length > 0 ? activeTasks[0].taskId : null;
+  }
   renderActiveTasks();
+  updateStageDirectorUI();
 }
 
-// Render active queue
+// Render active queue list
 function renderActiveTasks() {
   const listContainer = document.getElementById("active-tasks-list");
   
@@ -612,14 +784,28 @@ function renderActiveTasks() {
   
   activeTasks.forEach(task => {
     const card = document.createElement("div");
-    card.className = "task-card";
+    // If selected/active, add highlighted style
+    const isSelectedClass = task.taskId === selectedTaskId ? "border-focus" : "";
+    card.className = `task-card ${isSelectedClass}`;
+    card.style.cursor = "pointer";
+    
+    // Add click to focus Stage Director stepper
+    card.addEventListener("click", () => {
+      selectedTaskId = task.taskId;
+      document.querySelectorAll(".task-card").forEach(c => c.classList.remove("border-focus"));
+      card.classList.add("border-focus");
+      updateStageDirectorUI();
+    });
     
     const badgeKey = task.status === "pending" ? "statusPending" : (task.status === "processing" ? "statusProcessing" : (task.status === "success" ? "statusSuccess" : "statusFailed"));
     const badgeText = TRANSLATIONS[currentLang][badgeKey];
     
+    // Capitalize pipeline friendly name
+    const pipelineFriendlyName = PIPELINES[task.pipeline]?.name[currentLang] || task.pipeline;
+    
     card.innerHTML = `
       <div class="task-info">
-        <span class="task-model">${task.model}</span>
+        <span class="task-model">${pipelineFriendlyName} • <span class="group-desc">${task.model}</span></span>
         <span class="task-prompt-preview" title="${task.prompt}">${task.prompt}</span>
         <span class="task-meta">ID: ${task.taskId} • Elapsed: ${task.elapsed}s</span>
       </div>
@@ -636,12 +822,57 @@ function renderActiveTasks() {
   lucide.createIcons();
 }
 
+// Update the visual OpenMontage Stage Director Stepper Nodes
+function updateStageDirectorUI() {
+  const steps = ["research", "script", "storyboard", "assets", "edit", "render", "review"];
+  
+  // If no task selected, grey out all stepper nodes
+  if (!selectedTaskId) {
+    steps.forEach(step => {
+      const el = document.getElementById(`step-${step}`);
+      if (el) el.className = "step-node";
+    });
+    // Grey out lines
+    document.querySelectorAll(".step-line").forEach(line => line.className = "step-line");
+    return;
+  }
+  
+  const task = activeTasks.find(t => t.taskId === selectedTaskId);
+  if (!task) return;
+  
+  const activeIndex = steps.indexOf(task.stage);
+  
+  steps.forEach((step, idx) => {
+    const el = document.getElementById(`step-${step}`);
+    if (!el) return;
+    
+    if (idx < activeIndex) {
+      el.className = "step-node completed";
+    } else if (idx === activeIndex) {
+      el.className = "step-node active";
+    } else {
+      el.className = "step-node";
+    }
+  });
+  
+  // Update step connection lines
+  const lines = document.querySelectorAll(".step-line");
+  lines.forEach((line, idx) => {
+    if (idx < activeIndex) {
+      line.className = "step-line completed";
+    } else {
+      line.className = "step-line";
+    }
+  });
+}
+
 // Gallery Management (persisted in localStorage)
-function saveToGallery(taskId, model, type, prompt, mediaUrl) {
+function saveToGallery(taskId, pipeline, model, prompt, mediaUrl) {
   const item = {
     taskId,
+    pipeline,
     model,
-    type,
+    type: "video", // OpenMontage outputs compiled e-commerce videos
     prompt,
     mediaUrl,
     timestamp: Date.now()
@@ -650,6 +881,7 @@ function saveToGallery(taskId, model, type, prompt, mediaUrl) {
   galleryItems.unshift(item);
   localStorage.setItem("kie_ai_gallery", JSON.stringify(galleryItems));
   renderGallery();
+  renderPipelineFilters();
 }
 
 function loadGallery() {
@@ -662,6 +894,35 @@ function loadGallery() {
     }
   }
   renderGallery();
+  renderPipelineFilters();
+}
+
+// Render dynamic tabs matching generated pipeline outputs
+function renderPipelineFilters() {
+  const container = document.getElementById("gallery-pipeline-filters");
+  const activeFilter = document.querySelector(".filter-tab.active")?.dataset.filter || "all";
+  
+  container.innerHTML = `<button class="filter-tab ${activeFilter === 'all' ? 'active' : ''}" data-filter="all" data-i18n="filterAll">${TRANSLATIONS[currentLang].filterAll}</button>`;
+  
+  // Find all unique pipelines in generated list
+  const uniquePipelines = [...new Set(galleryItems.map(item => item.pipeline))];
+  
+  uniquePipelines.forEach(pipe => {
+    const config = PIPELINES[pipe];
+    if (config) {
+      const button = document.createElement("button");
+      button.className = `filter-tab ${activeFilter === pipe ? 'active' : ''}`;
+      button.dataset.filter = pipe;
+      button.textContent = config.name[currentLang];
+      
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".filter-tab").forEach(b => b.classList.remove("active"));
+        button.classList.add("active");
+        renderGallery(pipe);
+      });
+      container.appendChild(button);
+    }
+  });
 }
 
 function renderGallery(filter = "all") {
@@ -669,9 +930,7 @@ function renderGallery(filter = "all") {
   
   const filtered = galleryItems.filter(item => {
     if (filter === "all") return true;
-    if (filter === "images") return item.type === "image";
-    if (filter === "videos") return item.type === "video";
-    return true;
+    return item.pipeline === filter;
   });
   
   if (filtered.length === 0) {
@@ -690,34 +949,24 @@ function renderGallery(filter = "all") {
     const card = document.createElement("div");
     card.className = "gallery-card";
     
-    const badgeIcon = item.type === "video" ? "video" : "image";
-    const badgeText = item.type === "video" ? "VIDEO" : "IMAGE";
-    
+    // Add video indicator badge
+    const badgeText = PIPELINES[item.pipeline]?.name[currentLang] || item.pipeline;
     card.innerHTML = `
-      <div class="card-badge ${item.type}">
-        <i data-lucide="${badgeIcon}"></i>
+      <div class="card-badge video">
+        <i data-lucide="video"></i>
         <span>${badgeText}</span>
       </div>
     `;
     
-    // Media preview in card
-    if (item.type === "video") {
-      const video = document.createElement("video");
-      video.src = item.mediaUrl;
-      video.className = "card-media";
-      video.muted = true;
-      video.loop = true;
-      video.playsInline = true;
-      card.addEventListener("mouseenter", () => video.play().catch(() => {}));
-      card.addEventListener("mouseleave", () => video.pause());
-      card.appendChild(video);
-    } else {
-      const img = document.createElement("img");
-      img.src = item.mediaUrl;
-      img.alt = item.prompt;
-      img.className = "card-media";
-      card.appendChild(img);
-    }
+    const video = document.createElement("video");
+    video.src = item.mediaUrl;
+    video.className = "card-media";
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    card.addEventListener("mouseenter", () => video.play().catch(() => {}));
+    card.addEventListener("mouseleave", () => video.pause());
+    card.appendChild(video);
     
     const overlay = document.createElement("div");
     overlay.className = "card-overlay";
@@ -736,23 +985,17 @@ function renderGallery(filter = "all") {
   lucide.createIcons();
 }
 
-// Fullscreen Modal Preview
+// Fullscreen Lightbox Modal Preview
 function showMediaModal(item) {
   modalMediaContainer.innerHTML = "";
   
-  if (item.type === "video") {
-    const video = document.createElement("video");
-    video.src = item.mediaUrl;
-    video.controls = true;
-    video.autoplay = true;
-    modalMediaContainer.appendChild(video);
-  } else {
-    const img = document.createElement("img");
-    img.src = item.mediaUrl;
-    img.alt = item.prompt;
-    modalMediaContainer.appendChild(img);
-  }
+  const video = document.createElement("video");
+  video.src = item.mediaUrl;
+  video.controls = true;
+  video.autoplay = true;
+  modalMediaContainer.appendChild(video);
   
+  modalPipelineVal.textContent = PIPELINES[item.pipeline]?.name[currentLang] || item.pipeline;
   modalModelVal.textContent = item.model;
   modalTaskIdVal.textContent = item.taskId;
   modalPromptText.textContent = item.prompt;
@@ -762,7 +1005,7 @@ function showMediaModal(item) {
     const a = document.createElement("a");
     a.href = item.mediaUrl;
     a.target = "_blank";
-    a.download = `${item.type}-${item.taskId}`;
+    a.download = `${item.pipeline}-${item.taskId}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -770,10 +1013,10 @@ function showMediaModal(item) {
   
   // Re-use Settings
   modalUsePromptBtn.onclick = () => {
-    switchTab(item.type);
+    pipelineSelect.value = item.pipeline;
+    handlePipelineChange();
     promptInput.value = item.prompt;
     modelSelect.value = item.model;
-    handleModelChange();
     closeModal();
   };
   
