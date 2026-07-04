@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kie AI Creative Studio - Image & Video Generator</title>
-  <!-- Google Fonts Outfit & Inter -->
+  <title>Kie AI Creative Studio</title>
+  <!-- Google Fonts Inter & Fira Code for Figma/Claude style -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Style Sheet -->
@@ -15,214 +15,239 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Header -->
-    <header class="main-header">
-      <div class="logo-area">
-        <div class="logo-icon"><i data-lucide="sparkles"></i></div>
-        <div>
-          <h1>Kie AI Creative Studio</h1>
-          <p class="subtitle">Next-Gen Multi-Modal AI Generator</p>
+    <!-- Top Navigation Bar (Figma style) -->
+    <header class="figma-navbar">
+      <div class="nav-left">
+        <div class="logo-icon"><i data-lucide="layers"></i></div>
+        <div class="nav-brand">
+          <span class="brand-title" data-i18n="title">Kie AI Creative Studio</span>
+          <span class="brand-ver" data-i18n="subtitle">Professional Image & Video Workspace</span>
         </div>
       </div>
       
-      <div class="header-actions">
-        <!-- Balance Indicator -->
-        <div class="credit-card" id="credit-container">
-          <div class="credit-icon"><i data-lucide="wallet"></i></div>
-          <div class="credit-details">
-            <span class="credit-label">Remaining Balance</span>
-            <span class="credit-value" id="credit-value">--.--</span>
-          </div>
-          <button class="refresh-btn" id="refresh-credits" title="Refresh Balance">
+      <div class="nav-right">
+        <!-- Balance Info -->
+        <div class="navbar-credit">
+          <span class="credit-lbl" data-i18n="balance">Balance</span>
+          <span class="credit-num" id="credit-value">--.--</span>
+          <button class="icon-action-btn" id="refresh-credits" title="Refresh Balance">
             <i data-lucide="refresh-cw" id="refresh-icon"></i>
           </button>
         </div>
+        
+        <!-- Divider -->
+        <div class="nav-divider"></div>
+        
+        <!-- Language Switcher -->
+        <button class="lang-toggle-btn" id="lang-toggle">
+          <i data-lucide="globe"></i>
+          <span id="lang-text">中文</span>
+        </button>
       </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-grid">
-      <!-- Left Column: Controls -->
-      <section class="control-section glass-panel">
-        <h2 class="section-title"><i data-lucide="sliders"></i> Studio Controls</h2>
-        
-        <!-- Tab Selectors -->
-        <div class="tabs-container">
-          <button class="tab-btn active" id="tab-image" data-type="image">
-            <i data-lucide="image"></i> Image Generation
+    <!-- Main Workspace Layout -->
+    <main class="workspace-layout">
+      
+      <!-- Left Panel: Sidebar Controls (Figma Properties Panel) -->
+      <aside class="sidebar-panel">
+        <!-- Tab Bar -->
+        <div class="sidebar-tabs">
+          <button class="sidebar-tab active" id="tab-image" data-type="image" data-i18n="tabImage">
+            Image Generation
           </button>
-          <button class="tab-btn" id="tab-video" data-type="video">
-            <i data-lucide="video"></i> Video Generation
+          <button class="sidebar-tab" id="tab-video" data-type="video" data-i18n="tabVideo">
+            Video Generation
           </button>
         </div>
 
-        <form id="generator-form">
+        <form id="generator-form" class="sidebar-content">
           <!-- Model Selection -->
-          <div class="form-group">
-            <label for="model-select">AI Model</label>
-            <div class="select-wrapper">
+          <div class="sidebar-group">
+            <label class="group-label" data-i18n="modelLabel">Model</label>
+            <div class="select-container">
               <select id="model-select" name="model" required>
-                <!-- Prepopulated via JS depending on current active tab -->
+                <!-- JS populated -->
               </select>
             </div>
-            <p class="field-desc" id="model-desc">Select the AI engine for your task.</p>
+            <p class="group-desc" id="model-desc" data-i18n="modelDesc">Select the AI engine for your task.</p>
           </div>
 
-          <!-- Prompt Input -->
-          <div class="form-group">
-            <label for="prompt-input">Prompt Description</label>
-            <textarea id="prompt-input" name="prompt" rows="4" placeholder="Describe what you want to create in vivid detail..." required></textarea>
-            <div class="prompt-suggestions-wrapper">
-              <span class="suggest-label">Try:</span>
-              <div class="suggestions-chips" id="suggestions-container">
+          <!-- Prompt Area -->
+          <div class="sidebar-group">
+            <label class="group-label" data-i18n="promptLabel">Prompt Description</label>
+            <textarea id="prompt-input" name="prompt" rows="5" placeholder="Describe what you want to create in vivid detail..." data-i18n-placeholder="promptPlaceholder" required></textarea>
+            
+            <div class="suggestions-section">
+              <span class="suggest-lbl" data-i18n="tryLabel">Try:</span>
+              <div class="suggestions-grid" id="suggestions-container">
                 <!-- Dynamically populated -->
               </div>
             </div>
           </div>
 
-          <!-- Aspect Ratio Selection -->
-          <div class="form-group">
-            <label>Aspect Ratio</label>
-            <div class="radio-tiles">
-              <label class="radio-tile">
+          <!-- Aspect Ratio (Figma Layout Options) -->
+          <div class="sidebar-group">
+            <label class="group-label" data-i18n="aspectRatioLabel">Aspect Ratio</label>
+            <div class="ratio-selectors">
+              <label class="ratio-option">
                 <input type="radio" name="aspectRatio" value="16:9" checked>
-                <div class="tile-content">
-                  <div class="ratio-box landscape"></div>
-                  <span>16:9 Widescreen</span>
+                <div class="ratio-box-wrapper">
+                  <div class="box-shape r-16-9"></div>
+                  <span data-i18n="aspectRatio169">16:9 Landscape</span>
                 </div>
               </label>
-              <label class="radio-tile">
+              <label class="ratio-option">
                 <input type="radio" name="aspectRatio" value="9:16">
-                <div class="tile-content">
-                  <div class="ratio-box portrait"></div>
-                  <span>9:16 Vertical</span>
+                <div class="ratio-box-wrapper">
+                  <div class="box-shape r-9-16"></div>
+                  <span data-i18n="aspectRatio916">9:16 Vertical</span>
                 </div>
               </label>
-              <label class="radio-tile">
+              <label class="ratio-option">
                 <input type="radio" name="aspectRatio" value="1:1">
-                <div class="tile-content">
-                  <div class="ratio-box square"></div>
-                  <span>1:1 Square</span>
+                <div class="ratio-box-wrapper">
+                  <div class="box-shape r-1-1"></div>
+                  <span data-i18n="aspectRatio11">1:1 Square</span>
                 </div>
               </label>
             </div>
           </div>
 
-          <!-- Image-to-Video / Source Image (Dynamic field, only shown for video I2V or custom image inputs) -->
-          <div class="form-group hidden" id="source-image-group">
-            <label for="image-url-input">Source Image URL (Optional)</label>
-            <input type="url" id="image-url-input" name="imageUrl" placeholder="https://example.com/source-image.jpg">
-            <p class="field-desc">Provide an image URL for Image-to-Video models.</p>
+          <!-- Image-to-Video URL input (Hidden initially) -->
+          <div class="sidebar-group hidden" id="source-image-group">
+            <label class="group-label" data-i18n="sourceImageLabel">Source Image URL (Optional)</label>
+            <input type="url" id="image-url-input" name="imageUrl" placeholder="https://example.com/image.jpg">
+            <p class="group-desc" data-i18n="sourceImageDesc">Provide an image URL for Image-to-Video models.</p>
           </div>
 
-          <!-- Advanced Parameters (Toggleable) -->
-          <div class="advanced-toggle" id="advanced-toggle-btn">
-            <span>Advanced Settings</span>
-            <i data-lucide="chevron-down" id="advanced-chevron"></i>
-          </div>
-
-          <div class="advanced-params hidden" id="advanced-params-panel">
-            <div class="form-grid">
-              <!-- Duration (for video) -->
-              <div class="form-group" id="param-duration-group">
-                <label for="duration-select">Duration (Seconds)</label>
-                <div class="select-wrapper">
+          <!-- Advanced Settings Panel -->
+          <div class="sidebar-accordion">
+            <div class="accordion-header" id="advanced-toggle-btn">
+              <span data-i18n="advancedSettings">Advanced Settings</span>
+              <i data-lucide="chevron-down" id="advanced-chevron"></i>
+            </div>
+            
+            <div class="accordion-content hidden" id="advanced-params-panel">
+              <!-- Duration Selector (for video) -->
+              <div class="sidebar-group" id="param-duration-group">
+                <label class="group-label" data-i18n="durationLabel">Duration</label>
+                <div class="select-container">
                   <select id="duration-select" name="duration">
-                    <option value="5" selected>5 Seconds</option>
-                    <option value="10">10 Seconds</option>
+                    <option value="5" data-i18n="duration5" selected>5 Seconds</option>
+                    <option value="10" data-i18n="duration10">10 Seconds</option>
                   </select>
                 </div>
               </div>
-              <!-- Resolution/Quality -->
-              <div class="form-group">
-                <label for="quality-select">Quality/Resolution</label>
-                <div class="select-wrapper">
+              
+              <!-- Quality Resolution -->
+              <div class="sidebar-group">
+                <label class="group-label" data-i18n="qualityLabel">Quality / Resolution</label>
+                <div class="select-container">
                   <select id="quality-select" name="quality">
-                    <option value="720p" selected>720p HD</option>
-                    <option value="1080p">1080p Full HD</option>
+                    <option value="720p" data-i18n="quality720" selected>720p HD</option>
+                    <option value="1080p" data-i18n="quality1080">1080p Full HD</option>
                   </select>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Submit Button -->
-          <button type="submit" class="generate-btn" id="generate-submit">
-            <span class="btn-text">Generate Masterpiece</span>
-            <div class="spinner hidden" id="btn-spinner"></div>
+          <!-- Action Button -->
+          <button type="submit" class="action-submit-btn" id="generate-submit">
+            <span class="btn-lbl" data-i18n="generateBtn">Generate Media</span>
+            <div class="btn-loader hidden" id="btn-spinner"></div>
           </button>
         </form>
-      </section>
+      </aside>
 
-      <!-- Right Column: Workplace & Gallery -->
-      <section class="workplace-section">
-        <!-- Active Tasks Panel -->
-        <div class="tasks-panel glass-panel" id="active-tasks-container">
-          <h2 class="section-title"><i data-lucide="loader"></i> Active Generations</h2>
-          <div class="task-list" id="active-tasks-list">
+      <!-- Center & Right Panel: Editor Canvas and Library -->
+      <section class="editor-canvas">
+        
+        <!-- Top Half: Active Generations Queue -->
+        <div class="canvas-section" id="active-tasks-container">
+          <div class="canvas-section-header">
+            <h3 class="canvas-section-title"><i data-lucide="cpu"></i> <span data-i18n="activeGenerations">Active Generations</span></h3>
+          </div>
+          
+          <div class="active-tasks-grid" id="active-tasks-list">
             <div class="empty-state">
               <i data-lucide="info"></i>
-              <p>No active generations. Submit a prompt to start!</p>
+              <p data-i18n="noActiveTasks">No active generations. Submit a prompt to start!</p>
             </div>
           </div>
         </div>
 
-        <!-- Gallery Panel -->
-        <div class="gallery-panel glass-panel">
-          <div class="gallery-header">
-            <h2 class="section-title"><i data-lucide="gallery-thumbnails"></i> Creative Gallery</h2>
+        <!-- Bottom Half: Media Gallery -->
+        <div class="canvas-section flex-grow">
+          <div class="canvas-section-header">
+            <h3 class="canvas-section-title"><i data-lucide="folder-open"></i> <span data-i18n="creativeGallery">Creative Gallery</span></h3>
+            
             <div class="gallery-filters">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="images">Images</button>
-              <button class="filter-btn" data-filter="videos">Videos</button>
+              <button class="filter-tab active" data-filter="all" data-i18n="filterAll">All</button>
+              <button class="filter-tab" data-filter="images" data-i18n="filterImages">Images</button>
+              <button class="filter-tab" data-filter="videos" data-i18n="filterVideos">Videos</button>
             </div>
           </div>
           
-          <div class="gallery-grid" id="gallery-grid">
-            <!-- Empty state loaded initially, populated via JavaScript -->
+          <div class="gallery-layout-grid" id="gallery-grid">
             <div class="empty-state">
               <i data-lucide="image-off"></i>
-              <p>Your generated masterpieces will appear here.</p>
+              <p data-i18n="noMasterpieces">Your generated masterpieces will appear here.</p>
             </div>
           </div>
         </div>
+
       </section>
     </main>
   </div>
 
-  <!-- Media Preview Modal -->
-  <div class="modal hidden" id="media-modal">
-    <div class="modal-backdrop" id="modal-close-backdrop"></div>
-    <div class="modal-content glass-panel">
-      <button class="modal-close-btn" id="modal-close-btn"><i data-lucide="x"></i></button>
-      <div class="modal-media-wrapper" id="modal-media-container">
-        <!-- Rendered media goes here -->
-      </div>
-      <div class="modal-info-panel">
-        <h3 class="modal-title" id="modal-title">Masterpiece Preview</h3>
-        <div class="metadata-grid">
-          <div class="meta-item">
-            <span class="meta-label">Model:</span>
-            <span class="meta-val" id="modal-model-val">--</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Task ID:</span>
-            <span class="meta-val" id="modal-task-id-val">--</span>
-          </div>
+  <!-- Fullscreen Lightbox Modal (Figma Layer style) -->
+  <div class="lightbox-modal hidden" id="media-modal">
+    <div class="lightbox-backdrop" id="modal-close-backdrop"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close-btn" id="modal-close-btn"><i data-lucide="x"></i></button>
+      
+      <div class="lightbox-body">
+        <div class="lightbox-viewport" id="modal-media-container">
+          <!-- Loaded media -->
         </div>
-        <div class="prompt-display">
-          <span class="meta-label">Prompt:</span>
-          <p id="modal-prompt-text"></p>
-        </div>
-        <div class="modal-actions">
-          <button class="action-btn primary" id="modal-download-btn"><i data-lucide="download"></i> Download Media</button>
-          <button class="action-btn secondary" id="modal-use-prompt-btn"><i data-lucide="copy"></i> Use Settings</button>
+        
+        <div class="lightbox-sidebar">
+          <h4 class="sidebar-meta-title" data-i18n="modalTitle">Masterpiece Preview</h4>
+          
+          <div class="meta-section">
+            <div class="meta-row">
+              <span class="meta-row-label" data-i18n="modelLabel">Model</span>
+              <span class="meta-row-val" id="modal-model-val">--</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-row-label">Task ID</span>
+              <span class="meta-row-val code-font" id="modal-task-id-val">--</span>
+            </div>
+          </div>
+          
+          <div class="prompt-section">
+            <span class="meta-row-label" data-i18n="promptLabel">Prompt Description</span>
+            <div class="prompt-box">
+              <p id="modal-prompt-text">Prompt text goes here...</p>
+            </div>
+          </div>
+          
+          <div class="lightbox-actions">
+            <button class="lightbox-btn primary" id="modal-download-btn">
+              <i data-lucide="download"></i> <span data-i18n="downloadBtn">Download Media</span>
+            </button>
+            <button class="lightbox-btn secondary" id="modal-use-prompt-btn">
+              <i data-lucide="sliders"></i> <span data-i18n="useSettingsBtn">Use Settings</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- JS Logic -->
+  <!-- JavaScript Entry Point -->
   <script src="app.js"></script>
 </body>
 </html>
