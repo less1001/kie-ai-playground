@@ -1,1030 +1,781 @@
-// Predefined Digital Human Avatars (Unsplash Professional Headshots)
-const PRESETS_AVATARS = [
-  {
-    id: "xiaomi",
-    name: { en: "Xiaomi (Beauty)", zh: "小米 (美妆服饰)" },
-    thumb: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=60",
-    full: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    id: "xiaomei",
-    name: { en: "Xiaomei (Lifestyle)", zh: "小美 (生活百货)" },
-    thumb: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=60",
-    full: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    id: "daqiang",
-    name: { en: "Daqiang (Tech)", zh: "大强 (数码科技)" },
-    thumb: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=60",
-    full: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    id: "lisa",
-    name: { en: "Lisa (English)", zh: "丽萨 (外贸英文)" },
-    thumb: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=60",
-    full: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80"
-  }
-];
+/* ═══════════════════════════════════════════════════════════
+   OpenMontage Studio — Application Logic
+   Step-by-step wizard flow inspired by HeyGen / Synthesia
+   ═══════════════════════════════════════════════════════════ */
 
-// E-commerce & Explainer Script Templates
-const SCRIPT_TEMPLATES = {
-  "animated-explainer": [
-    {
-      id: "exp-tech",
-      label: { en: "AI Explainer", zh: "AI科普解说" },
-      text: {
-        en: "Explain how neural networks learn in 60 seconds, using analog analogies like training a dog.",
-        zh: "用60秒通俗解释神经网络是如何学习的，使用像驯狗一样的生活化类比。"
-      }
-    },
-    {
-      id: "exp-finance",
-      label: { en: "Bitcoin Explained", zh: "比特币科普" },
-      text: {
-        en: "Explain the concept of blockchain ledger and bitcoin mining in simple terms for beginners.",
-        zh: "为初学者通俗讲解区块链账本与比特币挖矿的概念。"
-      }
-    }
-  ],
-  "avatar-spokesperson": [
-    {
-      id: "sales-new",
-      label: { en: "New Release", zh: "新品首发" },
-      text: {
-        en: "Look at this brand new tech gadget in my hand! Today's launch gets an instant $50 off and a free 1-year warranty. Click below to buy now!",
-        zh: "大家看我手上这款最新上市的科技好物！今天首发直降300元，限时赠送一年质保，赶快点击下方链接购买吧！"
-      }
-    },
-    {
-      id: "sales-flash",
-      label: { en: "Flash Sale", zh: "限量秒杀" },
-      text: {
-        en: "Counting down the last 5 minutes! Lowest price online, limited to 50 orders, once gone it returns to full price! Don't wait, act now!",
-        zh: "倒计时最后五分钟！全网最低价，限量五十单，抢完立马恢复原价！犹豫一秒就没有了，大家手速一定要快！"
-      }
-    }
-  ],
-  "documentary-montage": [
-    {
-      id: "doc-city",
-      label: { en: "City at 4 AM", zh: "清晨四点的城市" },
-      text: {
-        en: "A dreamlike montage about coming home in the rain at 4 AM, using real stock footage, elegiac tone.",
-        zh: "一个关于凌晨四点雨中归家的梦幻蒙太奇，仅使用真实纪录档案片段，需要一种挽歌般的基调。"
-      }
-    }
-  ]
-};
-
-// OpenMontage Pipelines Config
+// ── Pipeline Definitions ──
 const PIPELINES = {
-  "animated-explainer": {
-    name: { en: "Animated Explainer", zh: "动画解说" },
-    desc: {
-      en: "Multi-stage pipeline: writes educational script, generates visuals, synthesizes voice, and renders in Remotion.",
-      zh: "多阶段流水线：撰写科普脚本、生成对应图像视觉、合成旁白配音并使用 Remotion 动画渲染。"
-    },
-    panels: ["text-prompts"],
-    engines: "Imagen4 + Google TTS + Remotion"
-  },
-  "animation": {
-    name: { en: "Flat Motion Animation", zh: "扁平动态图形" },
-    desc: {
-      en: "Typography and GSAP-driven motion graphics for SaaS product introductions.",
-      zh: "以文字排版和 GSAP 动效驱动的动态图形视频，最适合 SaaS 产品发布介绍。"
-    },
-    panels: ["text-prompts"],
-    engines: "GSAP + HyperFrames"
-  },
   "avatar-spokesperson": {
-    name: { en: "Avatar Spokesperson", zh: "数字人带货" },
-    desc: {
-      en: "Generates realistic, expressive talking head video from portrait image and text sales script.",
-      zh: "结合主播肖像照片与文本，生成逼真、极富销售表现力的 AI 数字人带货视频。"
-    },
-    panels: ["avatar-settings", "text-prompts"],
-    engines: "OmniHuman 1.5 + Volcengine Lip-Sync"
+    name: { en: "AI Spokesperson", zh: "AI 数字人带货" },
+    desc: { en: "Generate a realistic talking-head video from a portrait and sales script. Perfect for e-commerce and product demos.", zh: "输入主播肖像和带货文案，自动生成逼真的 AI 数字人带货视频。" },
+    icon: "user-circle",
+    engines: ["OmniHuman 1.5", "Lip-Sync"],
+    tag: { en: "Most Popular", zh: "最热门", type: "hot" },
+    sections: ["avatar", "script", "voice"],
+    featured: true,
+    model: "omnihuman-v1.5"
+  },
+  "animated-explainer": {
+    name: { en: "Animated Explainer", zh: "动画解说视频" },
+    desc: { en: "Auto-generate educational explainer videos with AI voiceover, images, and Remotion animation rendering.", zh: "自动生成教育科普视频：AI 撰写脚本、生成配图、合成配音并渲染为动画。" },
+    icon: "presentation",
+    engines: ["Imagen4", "Google TTS", "Remotion"],
+    tag: { en: "Popular", zh: "热门", type: "hot" },
+    sections: ["script"],
+    featured: true,
+    model: "imagen4"
   },
   "cinematic": {
-    name: { en: "Cinematic Trailer", zh: "电影级预告片" },
-    desc: {
-      en: "Generates cinematic storyboard frames and triggers high-fidelity text-to-video engines.",
-      zh: "生成高水平电影分镜，并调用 Kling/Veo 视频模型制作电影画质的预告视频。"
-    },
-    panels: ["text-prompts"],
-    engines: "Kling v3.0 / Google Veo 3.1"
+    name: { en: "Cinematic Trailer", zh: "电影预告片" },
+    desc: { en: "Create stunning cinematic storyboards and render high-fidelity video with Kling or Veo engines.", zh: "自动生成电影级分镜脚本，调用 Kling/Veo 引擎渲染高画质预告片。" },
+    icon: "clapperboard",
+    engines: ["Kling v3", "Veo 3.1"],
+    tag: { en: "New", zh: "新功能", type: "new" },
+    sections: ["script"],
+    featured: true,
+    model: "kling-v3"
+  },
+  "talking-head": {
+    name: { en: "Lip-Sync Video", zh: "口型同步视频" },
+    desc: { en: "Perfectly synchronize mouth movements in an existing presenter video with a new audio track.", zh: "将已有的主播视频口型与新音频精准同步对齐，实现完美口型匹配。" },
+    icon: "mic-vocal",
+    engines: ["Volcengine Lip-Sync"],
+    tag: null,
+    sections: ["media"],
+    featured: false,
+    model: "volcengine/video-to-video-lip-sync"
+  },
+  "localization-dub": {
+    name: { en: "Video Dubbing", zh: "视频翻译配音" },
+    desc: { en: "Translate speech, clone voice in target language, and burn in multilingual subtitles.", zh: "翻译视频语音，克隆音色生成目标语种配音，自动烧录双语字幕。" },
+    icon: "languages",
+    engines: ["WhisperX", "GPT", "ElevenLabs"],
+    tag: null,
+    sections: ["media-dub"],
+    featured: false,
+    model: "volcengine/video-to-video-lip-sync"
   },
   "documentary-montage": {
     name: { en: "Documentary Montage", zh: "纪录片蒙太奇" },
-    desc: {
-      en: "CLIP-indexed retrieval from open databases (NASA, Wikimedia) to compile historical tone-poems.",
-      zh: "从开源数据库（NASA、维基共享、Pexels）中根据提示词语义检索真实的纪录片空镜头并拼接剪辑。"
-    },
-    panels: ["text-prompts"],
-    engines: "Archive.org + Wikimedia + FFmpeg"
+    desc: { en: "CLIP-indexed retrieval from open databases to compile archival tone-poems and montages.", zh: "从开源数据库语义检索真实档案素材并自动拼接剪辑为纪录片。" },
+    icon: "film",
+    engines: ["Archive.org", "Wikimedia", "FFmpeg"],
+    tag: null,
+    sections: ["script"],
+    featured: false,
+    model: "grok-imagine"
   },
   "clip-factory": {
-    name: { en: "Clip Factory", zh: "长视频剪切切片" },
-    desc: {
-      en: "Splits a long video into short, viral social media clips automatically.",
-      zh: "自动将长视频进行精彩场景切片，提取出适合社交媒体分发的短视频片段。"
-    },
-    panels: ["media-sources"],
-    engines: "WhisperX + SceneDetect + FFmpeg"
+    name: { en: "Clip Factory", zh: "长视频智能切片" },
+    desc: { en: "Automatically split long videos into viral short clips for social media distribution.", zh: "将长视频自动切片，提取精彩画面生成适合社交媒体的短视频。" },
+    icon: "scissors",
+    engines: ["WhisperX", "SceneDetect", "FFmpeg"],
+    tag: null,
+    sections: ["media"],
+    featured: false,
+    model: "kling-v3"
+  },
+  "animation": {
+    name: { en: "Motion Graphics", zh: "动态图形视频" },
+    desc: { en: "Generate typography-driven GSAP motion graphics for SaaS and product launches.", zh: "生成以文字排版驱动的动态图形视频，适合 SaaS 产品发布。" },
+    icon: "sparkles",
+    engines: ["GSAP", "HyperFrames"],
+    tag: null,
+    sections: ["script"],
+    featured: false,
+    model: "ideogram-v3"
   },
   "screen-demo": {
-    name: { en: "Screen Demo", zh: "产品录屏演示" },
-    desc: {
-      en: "Polishes raw computer screen recordings with dynamic zoom, layouts, and voice guidance.",
-      zh: "对原始电脑录屏添加平滑的缩放、排版边框、鼠标轨迹高亮及旁白配音。"
-    },
-    panels: ["media-sources"],
-    engines: "FFmpeg + Remotion Layouts"
+    name: { en: "Screen Demo", zh: "录屏演示增强" },
+    desc: { en: "Polish raw screen recordings with dynamic zoom, cursor highlights, and AI voiceover.", zh: "为原始录屏添加平滑缩放、鼠标高亮、边框排版及 AI 配音讲解。" },
+    icon: "monitor",
+    engines: ["FFmpeg", "Remotion"],
+    tag: null,
+    sections: ["media"],
+    featured: false,
+    model: "kling-v3"
   },
   "hybrid": {
     name: { en: "Hybrid Video", zh: "混合合成视频" },
-    desc: {
-      en: "Fuses live-action recordings with AI overlays and graphics enhancements.",
-      zh: "将实拍录像与 AI 辅助图像视觉、特效进行图层融合与画中画合成。"
-    },
-    panels: ["media-sources"],
-    engines: "Remotion Compositor + FFmpeg"
-  },
-  "localization-dub": {
-    name: { en: "Localization & Dub", zh: "视频本地化配音" },
-    desc: {
-      en: "Translates speech, clones voiceover in target language, and burns-in subtitles.",
-      zh: "翻译原视频语音，以相同的音色克隆合成目标语种配音，并自动烧录中英字幕。"
-    },
-    panels: ["media-sources"],
-    engines: "WhisperX + GPT Translate + ElevenLabs"
+    desc: { en: "Fuse live-action footage with AI-generated overlays and graphics enhancements.", zh: "将实拍录像与 AI 视觉特效进行图层融合与画中画合成。" },
+    icon: "layers",
+    engines: ["Remotion", "FFmpeg"],
+    tag: null,
+    sections: ["media"],
+    featured: false,
+    model: "kling-v3"
   },
   "podcast-repurpose": {
-    name: { en: "Podcast Repurpose", zh: "播客音频转视频" },
-    desc: {
-      en: "Transforms raw audio podcasts into short video formats with waveforms and dynamic subtitles.",
-      zh: "为原始播客音频添加音频波形图、动态头像、产品贴图和逐词滚动字幕。"
-    },
-    panels: ["media-sources"],
-    engines: "WhisperX + Waveform Render + Remotion"
-  },
-  "talking-head": {
-    name: { en: "Talking Head", zh: "口播口型同步" },
-    desc: {
-      en: "Perfectly aligns custom host video mouth movements with a new voiceover track.",
-      zh: "将已有的主播面部视频口型与全新的音频文件重新同步对齐。"
-    },
-    panels: ["media-sources"],
-    engines: "Volcengine Lip-Sync"
+    name: { en: "Podcast to Video", zh: "播客转视频" },
+    desc: { en: "Transform audio podcasts into short video formats with waveforms and dynamic subtitles.", zh: "为播客音频添加波形图、动态字幕和头像动画，转换为短视频。" },
+    icon: "podcast",
+    engines: ["WhisperX", "Waveform", "Remotion"],
+    tag: null,
+    sections: ["media"],
+    featured: false,
+    model: "kling-v3"
   }
 };
 
-// Bilingual Dictionaries
-const TRANSLATIONS = {
+// ── Avatar Presets ──
+const AVATARS = [
+  { id: "xiaomi", name: { en: "Sophie", zh: "小米" }, role: { en: "Beauty & Fashion", zh: "美妆服饰" }, thumb: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80", full: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80" },
+  { id: "xiaomei", name: { en: "Emma", zh: "小美" }, role: { en: "Lifestyle", zh: "生活百货" }, thumb: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80", full: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80" },
+  { id: "daqiang", name: { en: "James", zh: "大强" }, role: { en: "Tech & Digital", zh: "数码科技" }, thumb: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80", full: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80" },
+  { id: "lisa", name: { en: "Lisa", zh: "丽萨" }, role: { en: "English Sales", zh: "外贸英文" }, thumb: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&auto=format&fit=crop&q=80", full: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop&q=80" }
+];
+
+// ── Voice Presets ──
+const VOICES = [
+  { id: "female-sales", name: { en: "Sales Queen", zh: "带货女王" }, desc: { en: "High energy, enthusiastic", zh: "高能量激情风格" }, emoji: "👩‍💼" },
+  { id: "female-sweet", name: { en: "Sweet & Warm", zh: "亲和甜美" }, desc: { en: "Friendly, approachable", zh: "友好温暖型" }, emoji: "💁‍♀️" },
+  { id: "male-pro", name: { en: "Professional", zh: "专业男声" }, desc: { en: "Calm, authoritative", zh: "沉稳权威型" }, emoji: "👨‍💻" },
+  { id: "en-female", name: { en: "English Female", zh: "英文女声" }, desc: { en: "Clear, international", zh: "国际化英语发音" }, emoji: "🌍" }
+];
+
+// ── Script Templates ──
+const TEMPLATES = {
+  "avatar-spokesperson": [
+    { label: { en: "🔥 New Launch", zh: "🔥 新品首发" }, text: { en: "Look at this brand new tech gadget! Today's launch exclusive — $50 off instantly plus a free 1-year warranty. Click below to grab yours before they're gone!", zh: "家人们看我手上这款最新上市的科技好物！今天首发专享直降300元，限时赠送一年质保！赶快点击下方链接购买，手慢无！" } },
+    { label: { en: "⚡ Flash Sale", zh: "⚡ 限量秒杀" }, text: { en: "Last 5 minutes! This is the absolute lowest price online — only 50 units left. Once they're gone, it's back to full price. Don't miss this!", zh: "倒计时最后五分钟！全网最低价限量五十单，抢完立马恢复原价！犹豫一秒就没有了，家人们手速一定要快！" } },
+    { label: { en: "⭐ Best Seller", zh: "⭐ 爆款推荐" }, text: { en: "This product has sold over 100,000 units and has a 98% satisfaction rate. Today we're offering an exclusive bundle deal — buy 2 get 1 free!", zh: "这款产品累计销量突破十万单，好评率高达98%！今天给家人们带来专属组合优惠，买二送一超划算！" } }
+  ],
+  "animated-explainer": [
+    { label: { en: "🧠 AI Explainer", zh: "🧠 AI科普" }, text: { en: "Explain how neural networks learn in 60 seconds, using everyday analogies like training a puppy.", zh: "用60秒通俗解释神经网络是如何学习的，使用像训练小狗一样的生活化类比。" } },
+    { label: { en: "₿ Bitcoin 101", zh: "₿ 比特币入门" }, text: { en: "Explain blockchain and bitcoin mining in simple terms for complete beginners.", zh: "为完全零基础的小白通俗讲解区块链账本与比特币挖矿的原理。" } }
+  ],
+  "cinematic": [
+    { label: { en: "🎬 Sci-Fi Trailer", zh: "🎬 科幻预告" }, text: { en: "A dystopian future where AI has taken control. The last human programmer must hack back into the system. Neon-lit cyberpunk cityscape.", zh: "一个AI统治的反乌托邦未来，最后一位人类程序员必须入侵回系统。霓虹闪烁的赛博朋克城市景观。" } }
+  ],
+  "documentary-montage": [
+    { label: { en: "🌃 City at Dawn", zh: "🌃 城市黎明" }, text: { en: "A dreamlike montage of cities waking up at 4 AM — empty streets, first lights, bakeries opening. Elegiac, contemplative tone.", zh: "凌晨四点城市苏醒的梦幻蒙太奇——空旷街道、第一缕光线、面包房开门。挽歌般的冥想基调。" } }
+  ]
+};
+
+// ── i18n ──
+const I18N = {
   en: {
-    title: "OpenMontage Web Console",
-    subtitle: "Industrial Agentic Video Production Console",
-    balance: "Balance",
-    controlPanelHeader: "Production Panel",
-    pipelineLabel: "Production Pipeline",
-    groupGenerated: "AI Generated & Explainers",
-    groupMaterial: "Source Material & Archival",
-    groupRepurpose: "Re-purpose & Localization",
-    pipeExplainer: "Animated Explainer",
-    pipeAnimation: "Flat Motion Animation",
-    pipeAvatar: "Avatar Spokesperson",
-    pipeCinematic: "Cinematic Trailer",
-    pipeDocumentary: "Documentary Montage",
-    pipeClipFactory: "Clip Factory",
-    pipeScreenDemo: "Screen Demo",
-    pipeHybrid: "Hybrid Video",
-    pipeDub: "Localization & Dub",
-    pipePodcast: "Podcast Repurpose",
-    pipeTalkingHead: "Talking Head",
-    promptLabel: "Script / Topic Brief",
-    promptPlaceholder: "Describe the video topic, script or storyboard...",
-    avatarLabel: "Choose Host Avatar",
-    templateLabel: "Template:",
-    voiceLabel: "Voice Tone",
-    voiceFemaleSales: "Sales Female (High Energy)",
-    voiceFemaleSweet: "Sweet Female",
-    voiceMaleProfessional: "Professional Male",
-    voiceEnglishFemale: "English Female",
-    targetAudioLabel: "Target Audio URL",
-    targetAudioDesc: "Provide the voiceover audio track URL to synchronize lips with.",
-    sourceVideoLabel: "Source Avatar Video URL",
-    sourceVideoDesc: "Provide the source video showing the host's face.",
-    targetLangLabel: "Target Dub Language",
-    advancedSettings: "Advanced Configuration",
-    aspectRatioLabel: "Aspect Ratio",
-    aspectRatio916: "9:16 Mobile",
-    aspectRatio169: "16:9 Widescreen",
-    aspectRatio11: "1:1 Square",
-    qualityLabel: "Quality / Resolution",
-    quality720: "720p HD",
-    quality1080: "1080p Full HD",
-    budgetLabel: "Budget Governance",
-    budgetObserve: "Observe Only",
-    budgetWarn: "Warn on Overrun",
-    budgetCap: "Strict Cap ($5.00)",
-    alignAudioLabel: "Forced Audio Lip-Sync Alignment",
-    generateBtn: "Start Production Pipeline",
-    activeGenerations: "Active Pipelines",
-    noActiveTasks: "No active pipelines running. Submit a task to begin.",
-    creativeGallery: "Project Outputs",
-    filterAll: "All Outputs",
-    filterImages: "Images",
-    filterVideos: "Videos",
-    noMasterpieces: "Your completed projects will appear here.",
-    modalTitle: "Project Production Log",
-    downloadBtn: "Download Video",
-    useSettingsBtn: "Re-run Pipeline",
-    tryLabel: "Try:",
-    statusPending: "Pending",
-    statusProcessing: "Processing",
-    statusSuccess: "Success",
-    statusFailed: "Failed",
-    compilationPipeline: "OpenMontage Stage Director",
-    stepResearch: "Research",
-    stepScript: "Script",
-    stepStoryboard: "Storyboard",
-    stepAssets: "Asset Gen",
-    stepEdit: "Timeline",
-    stepRender: "Rendering",
-    stepReview: "Quality Gate"
+    navCreate: "Create", navProjects: "My Projects",
+    step1: "Choose Template", step2: "Configure", step3: "Preview & Generate",
+    chooseTemplateTitle: "What would you like to create?",
+    chooseTemplateSub: "Select a production pipeline to get started",
+    backBtn: "Back", newVideoBtn: "Create New Video",
+    selectAvatar: "Select Presenter", customAvatarPlaceholder: "Or paste a custom portrait image URL...",
+    scriptTitle: "Script & Content", scriptPlaceholder: "Write your script, topic description, or paste a URL...",
+    mediaTitle: "Source Media", videoUrlLabel: "Video URL", audioUrlLabel: "Audio Track URL (Optional)", dubLangLabel: "Target Language",
+    voiceTitle: "Voice & Tone",
+    settingsTitle: "Output Settings", ratioLabel: "Ratio", qualityLabel: "Quality",
+    previewTitle: "Live Preview", previewNoAvatar: "Select an avatar to preview", previewEta: "~2-5 min",
+    generateBtn: "Generate Video", downloadBtn: "Download", createAnother: "Create Another",
+    generatingTitle: "Creating your video...", generatingDesc: "Our AI pipeline is working its magic",
+    stageResearch: "Research", stageScript: "Script", stageStoryboard: "Storyboard", stageAssets: "Assets", stageRender: "Render", stageReview: "QA",
+    myProjectsTitle: "My Projects", myProjectsSub: "All your generated videos in one place",
+    noProjects: "No projects yet", noProjectsDesc: "Create your first AI video to see it here", createFirst: "Create Video",
+    modalEngine: "Engine", modalDate: "Date", modalScript: "Script", rerunBtn: "Re-run"
   },
   zh: {
-    title: "OpenMontage Web 控制台",
-    subtitle: "工业级代理化视频制作系统",
-    balance: "账户余额",
-    controlPanelHeader: "生产配置控制台",
-    pipelineLabel: "视频生产流水线",
-    groupGenerated: "AI 创意生成与解说",
-    groupMaterial: "素材检索与后期加工",
-    groupRepurpose: "视频重制与本地化",
-    pipeExplainer: "动画解说 (Animated Explainer)",
-    pipeAnimation: "扁平动态图形 (Animation)",
-    pipeAvatar: "数字人带货 (Spokesperson)",
-    pipeCinematic: "电影预告片 (Cinematic)",
-    pipeDocumentary: "纪录片蒙太奇 (Montage)",
-    pipeClipFactory: "长视频切片 (Clip Factory)",
-    pipeScreenDemo: "产品录屏演示 (Screen Demo)",
-    pipeHybrid: "混合合成视频 (Hybrid)",
-    pipeDub: "视频配音本地化 (Dubbing)",
-    pipePodcast: "播客重制 (Podcast)",
-    pipeTalkingHead: "口播口型同步 (Talking Head)",
-    promptLabel: "带货脚本 / 主题大纲",
-    promptPlaceholder: "在此输入您的带货文案、解说大纲或画面分镜脚本...",
-    avatarLabel: "选择带货主播人像",
-    templateLabel: "话术模板:",
-    voiceLabel: "主播配音音色",
-    voiceFemaleSales: "带货女声 (高能量/激情)",
-    voiceFemaleSweet: "亲和甜美型女声",
-    voiceMaleProfessional: "专业男声 (沉稳/科技感)",
-    voiceEnglishFemale: "外贸英语女声",
-    targetAudioLabel: "配音音频 URL (目标音频)",
-    targetAudioDesc: "提供您需要同步的主播配音音频 URL 链接。",
-    sourceVideoLabel: "主播原始视频 URL (源视频)",
-    sourceVideoDesc: "提供需要修改口型的原始主播面部视频 URL 链接。",
-    targetLangLabel: "目标翻译语种",
-    advancedSettings: "生产安全与通用设定",
-    aspectRatioLabel: "画面比例",
-    aspectRatio916: "9:16 手机短视频",
-    aspectRatio169: "16:9 电脑宽屏",
-    aspectRatio11: "1:1 正方形",
-    qualityLabel: "清晰度 / 分辨率",
-    quality720: "720p 高清",
-    quality1080: "1080p 超清",
-    budgetLabel: "预算防超限治理",
-    budgetObserve: "仅跟踪记录",
-    budgetWarn: "超出时预警",
-    budgetCap: "硬性封顶 ($5.00)",
-    alignAudioLabel: "强制进行人声口型对齐",
-    generateBtn: "启动视频生产流水线",
-    activeGenerations: "正在运行的流水线",
-    noActiveTasks: "暂无运行中的流水线。在左侧配置并提交以开始！",
-    creativeGallery: "项目渲染成果",
-    filterAll: "全部渲染产出",
-    filterImages: "图片",
-    filterVideos: "视频",
-    noMasterpieces: "您完成的项目视频将显示在这里。",
-    modalTitle: "项目生产审计日志",
-    downloadBtn: "下载视频成果",
-    useSettingsBtn: "复制参数重跑",
-    tryLabel: "推荐:",
-    statusPending: "排队中",
-    statusProcessing: "合成中",
-    statusSuccess: "完成",
-    statusFailed: "失败",
-    compilationPipeline: "OpenMontage 阶段导演",
-    stepResearch: "网络研究",
-    stepScript: "剧本编写",
-    stepStoryboard: "分镜场景",
-    stepAssets: "资产生成",
-    stepEdit: "时间线剪辑",
-    stepRender: "合成渲染",
-    stepReview: "质量把关"
+    navCreate: "创建视频", navProjects: "我的项目",
+    step1: "选择模板", step2: "配置参数", step3: "预览并生成",
+    chooseTemplateTitle: "您想创建什么类型的视频？",
+    chooseTemplateSub: "选择一条视频生产流水线以开始",
+    backBtn: "返回", newVideoBtn: "创建新视频",
+    selectAvatar: "选择数字人主播", customAvatarPlaceholder: "或粘贴自定义肖像图片 URL...",
+    scriptTitle: "脚本与内容", scriptPlaceholder: "输入您的带货文案、解说大纲或画面分镜脚本...",
+    mediaTitle: "源素材", videoUrlLabel: "视频 URL", audioUrlLabel: "音频 URL（可选）", dubLangLabel: "目标翻译语言",
+    voiceTitle: "配音音色",
+    settingsTitle: "输出设置", ratioLabel: "画面比例", qualityLabel: "清晰度",
+    previewTitle: "实时预览", previewNoAvatar: "选择主播以预览效果", previewEta: "约2-5分钟",
+    generateBtn: "开始生成视频", downloadBtn: "下载视频", createAnother: "创建新视频",
+    generatingTitle: "正在为您生成视频...", generatingDesc: "AI 流水线正在全力运转中",
+    stageResearch: "研究", stageScript: "脚本", stageStoryboard: "分镜", stageAssets: "资产", stageRender: "渲染", stageReview: "质检",
+    myProjectsTitle: "我的项目", myProjectsSub: "您生成的所有视频都在这里",
+    noProjects: "还没有项目", noProjectsDesc: "创建您的第一个 AI 视频", createFirst: "创建视频",
+    modalEngine: "渲染引擎", modalDate: "创建日期", modalScript: "脚本内容", rerunBtn: "重新运行"
   }
 };
 
-// Application State
-let currentLang = "en"; // 'en' or 'zh'
-let selectedAvatarId = "xiaomi"; // default selected preset avatar
-let activeTasks = [];
-let galleryItems = [];
-let selectedTaskId = null; // tracking which task is active in stage director
+// ── App State ──
+let lang = localStorage.getItem("om_lang") || "en";
+let currentStep = 1;
+let selectedPipeline = null;
+let selectedAvatarId = "xiaomi";
+let selectedVoiceId = "female-sales";
+let selectedRatio = "9:16";
+let gallery = JSON.parse(localStorage.getItem("om_gallery") || "[]");
+let activeGeneration = null; // { taskId, pipeline, model, prompt, elapsed, stageIndex, interval }
 
-// DOM Elements
-const langToggleBtn = document.getElementById("lang-toggle");
-const langText = document.getElementById("lang-text");
-const pipelineSelect = document.getElementById("pipeline-select");
-const modelDesc = document.getElementById("model-desc");
-const promptInput = document.getElementById("prompt-input");
-const suggestionsContainer = document.getElementById("suggestions-container");
-const avatarSelectionGroup = document.getElementById("avatar-selection-group");
-const avatarGridContainer = document.getElementById("avatar-grid-container");
-const customAvatarUrl = document.getElementById("custom-avatar-url");
-const templateChipsContainer = document.getElementById("template-chips-container");
-const generatorForm = document.getElementById("generator-form");
-const generateSubmit = document.getElementById("generate-submit");
-const btnSpinner = document.getElementById("btn-spinner");
-const activeTasksList = document.getElementById("active-tasks-list");
-const galleryGrid = document.getElementById("gallery-grid");
-const creditValue = document.getElementById("credit-value");
-const refreshCredits = document.getElementById("refresh-credits");
-const refreshIcon = document.getElementById("refresh-icon");
-
-// Advanced settings elements
-const advancedToggleBtn = document.getElementById("advanced-toggle-btn");
-const advancedChevron = document.getElementById("advanced-chevron");
-const advancedParamsPanel = document.getElementById("advanced-params-panel");
-
-// Dynamic panels
-const panelTextPrompts = document.getElementById("panel-text-prompts");
-const panelAvatarSettings = document.getElementById("panel-avatar-settings");
-const panelMediaSources = document.getElementById("panel-media-sources");
-const groupTargetAudio = document.getElementById("group-target-audio");
-const groupTargetLang = document.getElementById("group-target-lang");
-
-const audioUrlInput = document.getElementById("audio-url-input");
-const videoUrlInput = document.getElementById("video-url-input");
-const dubLangSelect = document.getElementById("dub-lang-select");
-
-// Modal Elements
-const mediaModal = document.getElementById("media-modal");
-const modalCloseBackdrop = document.getElementById("modal-close-backdrop");
-const modalCloseBtn = document.getElementById("modal-close-btn");
-const modalMediaContainer = document.getElementById("modal-media-container");
-const modalPipelineVal = document.getElementById("modal-pipeline-val");
-const modalModelVal = document.getElementById("modal-model-val");
-const modalTaskIdVal = document.getElementById("modal-task-id-val");
-const modalPromptText = document.getElementById("modal-prompt-text");
-const modalDownloadBtn = document.getElementById("modal-download-btn");
-const modalUsePromptBtn = document.getElementById("modal-use-prompt-btn");
-
-// Initialize Application
-window.addEventListener("DOMContentLoaded", () => {
-  // Load preferred language
-  const savedLang = localStorage.getItem("kie_ai_lang");
-  if (savedLang === "en" || savedLang === "zh") {
-    currentLang = savedLang;
-  }
-  
-  // Translate UI
-  updateLanguageUI();
-  
-  // Render Preset Avatars
-  renderPresetAvatars();
-  
-  // Load gallery
-  loadGallery();
-  
-  // Fetch credits balance
+// ── DOM Ready ──
+document.addEventListener("DOMContentLoaded", () => {
+  applyI18n();
+  renderTemplateGrid();
   fetchCredits();
-  
-  // Initial pipeline form render
-  handlePipelineChange();
-  
-  // Initialize Lucide Icons
+  renderProjects();
   lucide.createIcons();
-  
-  // Event Listeners
-  langToggleBtn.addEventListener("click", toggleLanguage);
-  pipelineSelect.addEventListener("change", handlePipelineChange);
-  generatorForm.addEventListener("submit", handleFormSubmit);
-  refreshCredits.addEventListener("click", fetchCredits);
-  customAvatarUrl.addEventListener("input", handleCustomAvatarInput);
-  
-  // Advanced Toggle
-  advancedToggleBtn.addEventListener("click", () => {
-    const isHidden = advancedParamsPanel.classList.toggle("hidden");
-    advancedToggleBtn.classList.toggle("open", !isHidden);
-    advancedChevron.setAttribute("data-lucide", isHidden ? "chevron-down" : "chevron-up");
+
+  // Nav tabs
+  document.querySelectorAll(".nav-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.getElementById(`view-${tab.dataset.view}`).classList.add("active");
+    });
+  });
+
+  // Language toggle
+  document.getElementById("lang-toggle").addEventListener("click", () => {
+    lang = lang === "en" ? "zh" : "en";
+    localStorage.setItem("om_lang", lang);
+    applyI18n();
+    renderTemplateGrid();
+    if (selectedPipeline) renderStep2();
+    renderProjects();
     lucide.createIcons();
   });
-  
-  // Gallery filters
-  document.querySelectorAll(".filter-tab").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      document.querySelectorAll(".filter-tab").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      renderGallery(btn.dataset.filter);
+
+  // Back buttons
+  document.getElementById("back-to-step1").addEventListener("click", () => goToStep(1));
+  document.getElementById("back-to-step2").addEventListener("click", () => goToStep(1));
+
+  // Generate
+  document.getElementById("generate-btn").addEventListener("click", handleGenerate);
+
+  // Credits
+  document.getElementById("refresh-credits").addEventListener("click", fetchCredits);
+
+  // Script char count
+  document.getElementById("script-input").addEventListener("input", (e) => {
+    document.getElementById("char-count").textContent = `${e.target.value.length} / 5000`;
+    updatePreviewScript();
+  });
+
+  // Ratio pills
+  document.querySelectorAll(".ratio-pill").forEach(pill => {
+    pill.addEventListener("click", () => {
+      document.querySelectorAll(".ratio-pill").forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      selectedRatio = pill.dataset.ratio;
+      document.getElementById("preview-ratio").textContent = selectedRatio;
     });
   });
 
-  // Modal close handlers
-  modalCloseBtn.addEventListener("click", closeModal);
-  modalCloseBackdrop.addEventListener("click", closeModal);
+  // Modal
+  document.getElementById("modal-close").addEventListener("click", closeModal);
+  document.getElementById("modal-backdrop").addEventListener("click", closeModal);
+
+  // Result buttons
+  document.getElementById("result-new").addEventListener("click", () => goToStep(1));
+
+  // Create first button
+  document.getElementById("create-first-btn").addEventListener("click", () => {
+    document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+    document.querySelector('[data-view="create"]').classList.add("active");
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById("view-create").classList.add("active");
+    goToStep(1);
+  });
 });
 
-// Switch Pipeline - Show / Hide Dynamic Panels
-function handlePipelineChange() {
-  const pipeKey = pipelineSelect.value;
-  const config = PIPELINES[pipeKey];
-  
-  if (!config) return;
-  
-  // Update description
-  modelDesc.textContent = config.desc[currentLang];
-  
-  // Hide all dynamic panels
-  panelTextPrompts.classList.add("hidden");
-  panelAvatarSettings.classList.add("hidden");
-  panelMediaSources.classList.add("hidden");
-  
-  // Show required panels
-  config.panels.forEach(p => {
-    if (p === "text-prompts") panelTextPrompts.classList.remove("hidden");
-    if (p === "avatar-settings") panelAvatarSettings.classList.remove("hidden");
-    if (p === "media-sources") panelMediaSources.classList.remove("hidden");
-  });
-  
-  // Sub-controls configuration depending on specific pipelines
-  if (pipeKey === "localization-dub") {
-    groupTargetAudio.classList.add("hidden");
-    groupTargetLang.classList.remove("hidden");
-  } else if (pipeKey === "talking-head") {
-    groupTargetAudio.classList.remove("hidden");
-    groupTargetLang.classList.add("hidden");
-  } else {
-    groupTargetAudio.classList.remove("hidden");
-    groupTargetLang.classList.remove("hidden");
-  }
-  
-  // Render templates
-  renderScriptTemplates(pipeKey);
-}
-
-// Render predefined avatars
-function renderPresetAvatars() {
-  avatarGridContainer.innerHTML = "";
-  PRESETS_AVATARS.forEach(avatar => {
-    const card = document.createElement("div");
-    card.className = `avatar-card ${avatar.id === selectedAvatarId ? 'active' : ''}`;
-    card.dataset.id = avatar.id;
-    card.title = avatar.name[currentLang];
-    
-    card.innerHTML = `
-      <img src="${avatar.thumb}" alt="${avatar.name[currentLang]}" class="avatar-thumbnail">
-    `;
-    
-    card.addEventListener("click", () => selectAvatar(avatar.id));
-    avatarGridContainer.appendChild(card);
-  });
-}
-
-// Select preset avatar
-function selectAvatar(avatarId) {
-  selectedAvatarId = avatarId;
-  customAvatarUrl.value = "";
-  
-  document.querySelectorAll(".avatar-card").forEach(card => {
-    card.classList.toggle("active", card.dataset.id === avatarId);
-  });
-}
-
-// Handle custom avatar url pasting
-function handleCustomAvatarInput() {
-  if (customAvatarUrl.value.trim() !== "") {
-    selectedAvatarId = null;
-    document.querySelectorAll(".avatar-card").forEach(card => {
-      card.classList.remove("active");
-    });
-  }
-}
-
-// Render script templates chips based on active pipeline
-function renderScriptTemplates(pipeline) {
-  templateChipsContainer.innerHTML = "";
-  
-  // Get script templates list or fall back to explainer
-  const templates = SCRIPT_TEMPLATES[pipeline] || SCRIPT_TEMPLATES["animated-explainer"];
-  
-  templates.forEach(tmpl => {
-    const chip = document.createElement("div");
-    chip.className = "template-chip";
-    chip.textContent = tmpl.label[currentLang];
-    
-    chip.addEventListener("click", () => {
-      promptInput.value = tmpl.text[currentLang];
-    });
-    
-    templateChipsContainer.appendChild(chip);
-  });
-}
-
-// Toggle language
-function toggleLanguage() {
-  currentLang = currentLang === "en" ? "zh" : "en";
-  localStorage.setItem("kie_ai_lang", currentLang);
-  
-  updateLanguageUI();
-  renderPresetAvatars();
-  handlePipelineChange();
-  renderActiveTasks();
-  renderGallery();
-  updateStageDirectorUI(); // Refresh pipeline stepper headers
-}
-
-// Translate UI elements
-function updateLanguageUI() {
-  const dictionary = TRANSLATIONS[currentLang];
-  langText.textContent = currentLang === "en" ? "中文" : "English";
-  
+// ── i18n Apply ──
+function applyI18n() {
+  const dict = I18N[lang];
+  document.getElementById("lang-text").textContent = lang === "en" ? "中文" : "English";
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
-    if (dictionary[key]) {
-      el.textContent = dictionary[key];
-    }
+    if (dict[key]) el.textContent = dict[key];
   });
-  
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
-    if (dictionary[key]) {
-      el.setAttribute("placeholder", dictionary[key]);
-    }
+    if (dict[key]) el.placeholder = dict[key];
   });
 }
 
-// Fetch Account Balance
-async function fetchCredits() {
-  refreshIcon.classList.add("spin");
-  try {
-    const res = await fetch("/api/credit");
-    const data = await res.json();
-    if (data.code === 200) {
-      creditValue.textContent = typeof data.data === "number" ? data.data.toFixed(2) : data.data;
-    } else {
-      creditValue.textContent = "Error";
+// ── Step Navigation ──
+function goToStep(step) {
+  currentStep = step;
+  document.querySelectorAll(".wizard-step").forEach(s => s.classList.remove("active"));
+  document.getElementById(`wizard-step-${step}`).classList.add("active");
+
+  // Update step indicators
+  document.querySelectorAll(".step-indicator").forEach(si => {
+    const s = parseInt(si.dataset.step);
+    si.classList.remove("active", "completed");
+    if (s === step) si.classList.add("active");
+    else if (s < step) si.classList.add("completed");
+  });
+
+  document.querySelectorAll(".step-line").forEach((line, i) => {
+    line.classList.toggle("completed", i + 1 < step);
+  });
+
+  lucide.createIcons();
+}
+
+// ── Step 1: Render Template Cards ──
+function renderTemplateGrid() {
+  const grid = document.getElementById("template-grid");
+  grid.innerHTML = "";
+
+  // Show featured first
+  const sorted = Object.entries(PIPELINES).sort((a, b) => (b[1].featured ? 1 : 0) - (a[1].featured ? 1 : 0));
+
+  sorted.forEach(([key, pipe]) => {
+    const card = document.createElement("div");
+    card.className = `template-card ${pipe.featured ? "featured" : ""}`;
+    card.addEventListener("click", () => selectPipeline(key));
+
+    const tagHtml = pipe.tag ? `<div class="card-tag ${pipe.tag.type}">${pipe.tag[lang]}</div>` : "";
+    const enginesHtml = pipe.engines.map(e => `<span class="engine-tag">${e}</span>`).join("");
+
+    card.innerHTML = `
+      <div class="card-visual">
+        <div class="card-visual-bg" style="background: radial-gradient(circle at 50% 80%, var(--accent-glow), transparent 70%)"></div>
+        <i data-lucide="${pipe.icon}"></i>
+      </div>
+      <div class="card-body">
+        ${tagHtml}
+        <h3 class="card-title">${pipe.name[lang]}</h3>
+        <p class="card-desc">${pipe.desc[lang]}</p>
+        <div class="card-engines">${enginesHtml}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  lucide.createIcons();
+}
+
+// ── Select Pipeline → Go to Step 2 ──
+function selectPipeline(key) {
+  selectedPipeline = key;
+  goToStep(2);
+  renderStep2();
+}
+
+// ── Step 2: Render Configuration ──
+function renderStep2() {
+  const pipe = PIPELINES[selectedPipeline];
+  if (!pipe) return;
+
+  // Pipeline badge
+  document.getElementById("config-pipeline-name").textContent = pipe.name[lang];
+
+  // Show/hide sections
+  const hasAvatar = pipe.sections.includes("avatar");
+  const hasScript = pipe.sections.includes("script");
+  const hasMedia = pipe.sections.includes("media") || pipe.sections.includes("media-dub");
+  const hasVoice = pipe.sections.includes("voice");
+  const hasDub = pipe.sections.includes("media-dub");
+
+  document.getElementById("section-avatar").style.display = hasAvatar ? "block" : "none";
+  document.getElementById("section-script").style.display = (hasScript || hasAvatar) ? "block" : "none";
+  document.getElementById("section-media").style.display = hasMedia ? "block" : "none";
+  document.getElementById("section-voice").style.display = hasVoice ? "block" : "none";
+  document.getElementById("group-audio-url").style.display = hasDub ? "none" : (hasMedia ? "block" : "none");
+  document.getElementById("group-dub-lang").style.display = hasDub ? "block" : "none";
+
+  // Render avatars
+  if (hasAvatar) renderAvatars();
+
+  // Render voice cards
+  if (hasVoice) renderVoiceCards();
+
+  // Render script templates
+  renderScriptChips();
+
+  // Update preview
+  updatePreviewAvatar();
+  updatePreviewScript();
+  document.getElementById("preview-engine").textContent = pipe.engines[0];
+
+  lucide.createIcons();
+}
+
+// ── Render Avatar Cards ──
+function renderAvatars() {
+  const container = document.getElementById("avatar-showcase");
+  container.innerHTML = "";
+
+  AVATARS.forEach(av => {
+    const card = document.createElement("div");
+    card.className = `avatar-card ${av.id === selectedAvatarId ? "selected" : ""}`;
+    card.innerHTML = `
+      <img src="${av.thumb}" alt="${av.name[lang]}">
+      <div class="avatar-label">${av.name[lang]}<br><small style="opacity:0.6">${av.role[lang]}</small></div>
+      <div class="avatar-check"><i data-lucide="check"></i></div>
+    `;
+    card.addEventListener("click", () => {
+      selectedAvatarId = av.id;
+      document.getElementById("custom-avatar-url").value = "";
+      document.querySelectorAll(".avatar-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      updatePreviewAvatar();
+      lucide.createIcons();
+    });
+    container.appendChild(card);
+  });
+
+  // Custom URL listener
+  document.getElementById("custom-avatar-url").addEventListener("input", (e) => {
+    if (e.target.value.trim()) {
+      selectedAvatarId = null;
+      document.querySelectorAll(".avatar-card").forEach(c => c.classList.remove("selected"));
+      updatePreviewAvatar();
     }
-  } catch (error) {
-    console.error("Error loading credits:", error);
-    creditValue.textContent = "Error";
-  } finally {
-    setTimeout(() => refreshIcon.classList.remove("spin"), 500);
+  });
+
+  lucide.createIcons();
+}
+
+// ── Render Voice Cards ──
+function renderVoiceCards() {
+  const container = document.getElementById("voice-cards");
+  container.innerHTML = "";
+
+  VOICES.forEach(v => {
+    const card = document.createElement("div");
+    card.className = `voice-card ${v.id === selectedVoiceId ? "selected" : ""}`;
+    card.innerHTML = `
+      <div class="voice-avatar">${v.emoji}</div>
+      <div class="voice-info">
+        <div class="voice-name">${v.name[lang]}</div>
+        <div class="voice-desc">${v.desc[lang]}</div>
+      </div>
+    `;
+    card.addEventListener("click", () => {
+      selectedVoiceId = v.id;
+      document.querySelectorAll(".voice-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+    });
+    container.appendChild(card);
+  });
+}
+
+// ── Render Script Template Chips ──
+function renderScriptChips() {
+  const container = document.getElementById("script-chips");
+  container.innerHTML = "";
+
+  const templates = TEMPLATES[selectedPipeline] || TEMPLATES["animated-explainer"] || [];
+  templates.forEach(tmpl => {
+    const chip = document.createElement("button");
+    chip.className = "script-chip";
+    chip.textContent = tmpl.label[lang];
+    chip.addEventListener("click", () => {
+      document.getElementById("script-input").value = tmpl.text[lang];
+      document.getElementById("char-count").textContent = `${tmpl.text[lang].length} / 5000`;
+      updatePreviewScript();
+    });
+    container.appendChild(chip);
+  });
+}
+
+// ── Preview Updates ──
+function updatePreviewAvatar() {
+  const img = document.getElementById("preview-avatar-img");
+  const noAvatar = document.getElementById("preview-no-avatar");
+  const customUrl = document.getElementById("custom-avatar-url").value.trim();
+
+  let url = null;
+  if (customUrl) {
+    url = customUrl;
+  } else if (selectedAvatarId) {
+    const av = AVATARS.find(a => a.id === selectedAvatarId);
+    if (av) url = av.full;
+  }
+
+  if (url) {
+    img.src = url;
+    img.classList.add("visible");
+    noAvatar.style.display = "none";
+  } else {
+    img.classList.remove("visible");
+    noAvatar.style.display = "flex";
   }
 }
 
-// Form Submit - Trigger Task Generation
-async function handleFormSubmit(e) {
-  e.preventDefault();
-  
-  const pipeline = pipelineSelect.value;
-  const prompt = promptInput.value.trim();
-  const aspectRatio = document.querySelector('input[name="aspectRatio"]:checked').value;
-  const quality = document.getElementById("quality-select").value;
-  const budgetMode = document.getElementById("budget-select").value;
-  
-  // Validation depending on pipeline requirements
-  let input = { pipeline, aspectRatio, quality, budgetMode };
-  let model_id = "omnihuman-v1.5"; // default fallback for avatar spokesperson
-  
-  if (pipeline === "animated-explainer" || pipeline === "animation" || pipeline === "cinematic" || pipeline === "documentary-montage") {
-    if (!prompt) return;
-    input.prompt = prompt;
-    
-    // Select specific Kie.ai backend engine
-    if (pipeline === "animated-explainer") model_id = "imagen4";
-    if (pipeline === "animation") model_id = "ideogram-v3";
-    if (pipeline === "cinematic") model_id = "kling-v3";
-    if (pipeline === "documentary-montage") model_id = "grok-imagine";
-  } else if (pipeline === "avatar-spokesperson") {
-    if (!prompt) return;
-    input.prompt = prompt;
-    input.voice = document.getElementById("voice-select").value;
-    model_id = "omnihuman-v1.5";
-    
-    if (selectedAvatarId) {
-      const avatar = PRESETS_AVATARS.find(a => a.id === selectedAvatarId);
-      input.avatarUrl = avatar ? avatar.full : "";
-    } else {
-      input.avatarUrl = customAvatarUrl.value.trim();
-    }
+function updatePreviewScript() {
+  const text = document.getElementById("script-input").value.trim();
+  const overlay = document.getElementById("preview-script-overlay");
+  const textEl = document.getElementById("preview-script-text");
+
+  if (text) {
+    textEl.textContent = text;
+    overlay.style.display = "block";
   } else {
-    // Media Source pipelines
-    const videoUrl = videoUrlInput.value.trim();
-    const audioUrl = audioUrlInput.value.trim();
-    const dubLang = dubLangSelect.value;
-    
-    if (!videoUrl) return;
-    input.videoUrl = videoUrl;
-    
-    if (pipeline === "localization-dub") {
-      input.dubLang = dubLang;
-      model_id = "volcengine/video-to-video-lip-sync"; // uses Volcengine translation/lip-sync
-    } else if (pipeline === "talking-head") {
-      input.audioUrl = audioUrl;
-      model_id = "volcengine/video-to-video-lip-sync";
+    overlay.style.display = "none";
+  }
+}
+
+// ── Generate Video ──
+async function handleGenerate() {
+  const pipe = PIPELINES[selectedPipeline];
+  if (!pipe) return;
+
+  const script = document.getElementById("script-input").value.trim();
+  const videoUrl = document.getElementById("video-url-input").value.trim();
+  const audioUrl = document.getElementById("audio-url-input").value.trim();
+  const dubLang = document.getElementById("dub-lang-select").value;
+  const quality = document.getElementById("quality-select").value;
+
+  // Build input
+  let input = { pipeline: selectedPipeline, aspectRatio: selectedRatio, quality };
+
+  if (pipe.sections.includes("script") || pipe.sections.includes("avatar")) {
+    if (!script) { alert(lang === "en" ? "Please enter a script." : "请输入脚本内容。"); return; }
+    input.prompt = script;
+  }
+
+  if (pipe.sections.includes("avatar")) {
+    input.voice = selectedVoiceId;
+    if (selectedAvatarId) {
+      const av = AVATARS.find(a => a.id === selectedAvatarId);
+      input.avatarUrl = av ? av.full : "";
     } else {
-      model_id = "kling-v3";
+      input.avatarUrl = document.getElementById("custom-avatar-url").value.trim();
     }
   }
-  
+
+  if (pipe.sections.includes("media") || pipe.sections.includes("media-dub")) {
+    if (!videoUrl) { alert(lang === "en" ? "Please provide a source video URL." : "请提供源视频 URL。"); return; }
+    input.video_url = videoUrl;
+    if (pipe.sections.includes("media-dub")) {
+      input.dubLang = dubLang;
+    } else {
+      input.audio_url = audioUrl;
+    }
+  }
+
   // Disable button
-  generateSubmit.disabled = true;
-  btnSpinner.classList.remove("hidden");
-  
+  const btn = document.getElementById("generate-btn");
+  const loader = document.getElementById("btn-loader");
+  btn.disabled = true;
+  loader.classList.remove("hidden");
+
   try {
     const res = await fetch("/api/create-task", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: model_id, input })
+      body: JSON.stringify({ model: pipe.model, input })
     });
-    
     const result = await res.json();
-    
+
     if (result.code === 200 && result.data && result.data.taskId) {
-      // Clear inputs
-      promptInput.value = "";
-      customAvatarUrl.value = "";
-      videoUrlInput.value = "";
-      audioUrlInput.value = "";
-      
-      const taskId = result.data.taskId;
-      addTaskToQueue(taskId, pipeline, model_id, prompt || `Pipeline run: ${pipeline}`);
+      startGeneration(result.data.taskId, selectedPipeline, pipe.model, script || `Pipeline: ${pipe.name[lang]}`);
     } else {
-      alert(currentLang === "en" 
-        ? `Generation Failed: ${result.msg || "Server returned error status"}`
-        : `生成失败：${result.msg || "服务器返回了错误状态"}`
-      );
+      alert(lang === "en" ? `Error: ${result.msg || "Unknown"}` : `错误：${result.msg || "未知错误"}`);
     }
-  } catch (error) {
-    console.error("Error creating generation task:", error);
-    alert(currentLang === "en" ? "Connection Error: Failed to start task." : "连接错误：任务启动失败。");
+  } catch (err) {
+    console.error(err);
+    alert(lang === "en" ? "Connection error" : "连接错误");
   } finally {
-    generateSubmit.disabled = false;
-    btnSpinner.classList.add("hidden");
+    btn.disabled = false;
+    loader.classList.add("hidden");
   }
 }
 
-// Add task to tracking queue
-function addTaskToQueue(taskId, pipeline, model, prompt) {
-  const task = {
-    taskId,
-    pipeline,
-    model,
-    prompt,
-    status: "pending",
-    elapsed: 0,
-    stage: "research", // Active OpenMontage compilation step
-    intervalId: null
+// ── Generation Tracking ──
+function startGeneration(taskId, pipeline, model, prompt) {
+  goToStep(3);
+
+  // Reset UI
+  document.getElementById("gen-progress").classList.remove("hidden");
+  document.getElementById("gen-result").classList.add("hidden");
+
+  const stages = ["research", "script", "storyboard", "assets", "render", "review"];
+  let stageIndex = 0;
+  let elapsed = 0;
+
+  document.getElementById("gen-task-id").textContent = `ID: ${taskId}`;
+  updateStageUI(stages, stageIndex);
+
+  activeGeneration = {
+    taskId, pipeline, model, prompt,
+    interval: setInterval(async () => {
+      elapsed += 2;
+      document.getElementById("gen-elapsed").textContent = formatTime(elapsed);
+
+      // Advance stages
+      if (elapsed > 4 && stageIndex === 0) { stageIndex = 1; updateStageUI(stages, stageIndex); }
+      if (elapsed > 8 && stageIndex === 1) { stageIndex = 2; updateStageUI(stages, stageIndex); }
+      if (elapsed > 14 && stageIndex === 2) { stageIndex = 3; updateStageUI(stages, stageIndex); }
+      if (elapsed > 22 && stageIndex === 3) { stageIndex = 4; updateStageUI(stages, stageIndex); }
+      if (elapsed > 30 && stageIndex === 4) { stageIndex = 5; updateStageUI(stages, stageIndex); }
+
+      // Poll
+      try {
+        const res = await fetch(`/api/record-info?taskId=${taskId}`);
+        const result = await res.json();
+        if (result.code === 200 && result.data) {
+          const d = result.data;
+          const status = d.status || d.state;
+          if (status === "success" || status === "completed" || d.videoUrl || d.imageUrl) {
+            clearInterval(activeGeneration.interval);
+            const mediaUrl = d.videoUrl || d.imageUrl || (d.output ? d.output[0] : null);
+            generationComplete(mediaUrl);
+          } else if (status === "failed" || status === "error") {
+            clearInterval(activeGeneration.interval);
+            alert(lang === "en" ? "Generation failed." : "生成失败。");
+            goToStep(1);
+          }
+        }
+      } catch (e) { console.error(e); }
+    }, 2000)
   };
-  
-  activeTasks.push(task);
-  selectedTaskId = taskId; // auto-focus stepper on newest task
-  renderActiveTasks();
-  updateStageDirectorUI();
-  
-  // Start Polling & stage simulation
-  task.intervalId = setInterval(() => {
-    task.elapsed += 2;
-    
-    // Simulate pipeline stages progression based on elapsed seconds
-    if (task.elapsed > 4 && task.stage === "research") task.stage = "script";
-    else if (task.elapsed > 8 && task.stage === "script") task.stage = "storyboard";
-    else if (task.elapsed > 12 && task.stage === "storyboard") task.stage = "assets";
-    else if (task.elapsed > 18 && task.stage === "assets") task.stage = "edit";
-    else if (task.elapsed > 24 && task.stage === "edit") task.stage = "render";
-    else if (task.elapsed > 30 && task.stage === "render") task.stage = "review";
-    
-    pollTaskStatus(task);
-  }, 2000);
 }
 
-// Poll status of a specific task
-async function pollTaskStatus(task) {
-  try {
-    const res = await fetch(`/api/record-info?taskId=${task.taskId}`);
-    const result = await res.json();
-    
-    if (result.code === 200 && result.data) {
-      const taskData = result.data;
-      const remoteStatus = taskData.status || taskData.state;
-      
-      if (remoteStatus === "success" || remoteStatus === "completed" || taskData.videoUrl || taskData.imageUrl) {
-        clearInterval(task.intervalId);
-        task.status = "success";
-        task.stage = "success";
-        
-        const mediaUrl = taskData.videoUrl || taskData.imageUrl || (taskData.output ? taskData.output[0] : null);
-        
-        if (mediaUrl) {
-          saveToGallery(task.taskId, task.pipeline, task.model, task.prompt, mediaUrl);
-        }
-        
-        removeTaskFromQueue(task.taskId);
-        fetchCredits();
-      } else if (remoteStatus === "failed" || remoteStatus === "error") {
-        clearInterval(task.intervalId);
-        task.status = "failed";
-        alert(currentLang === "en" ? `Pipeline task ${task.taskId} failed.` : `流水线任务 ${task.taskId} 失败。`);
-        setTimeout(() => removeTaskFromQueue(task.taskId), 5000);
-      } else if (remoteStatus === "processing" || remoteStatus === "running") {
-        task.status = "processing";
-        renderActiveTasks();
-        if (selectedTaskId === task.taskId) {
-          updateStageDirectorUI();
-        }
-      } else {
-        task.status = "pending";
-        renderActiveTasks();
-      }
-    }
-  } catch (error) {
-    console.error(`Error polling task ${task.taskId}:`, error);
-  }
-}
+function updateStageUI(stages, index) {
+  const fill = document.getElementById("stage-fill");
+  fill.style.width = `${((index + 1) / stages.length) * 100}%`;
 
-function removeTaskFromQueue(taskId) {
-  activeTasks = activeTasks.filter(t => t.taskId !== taskId);
-  if (selectedTaskId === taskId) {
-    selectedTaskId = activeTasks.length > 0 ? activeTasks[0].taskId : null;
-  }
-  renderActiveTasks();
-  updateStageDirectorUI();
-}
-
-// Render active queue list
-function renderActiveTasks() {
-  const listContainer = document.getElementById("active-tasks-list");
-  
-  if (activeTasks.length === 0) {
-    const placeholderText = TRANSLATIONS[currentLang].noActiveTasks;
-    listContainer.innerHTML = `
-      <div class="empty-state">
-        <i data-lucide="info"></i>
-        <p>${placeholderText}</p>
-      </div>
-    `;
-    lucide.createIcons();
-    return;
-  }
-  
-  listContainer.innerHTML = "";
-  
-  activeTasks.forEach(task => {
-    const card = document.createElement("div");
-    // If selected/active, add highlighted style
-    const isSelectedClass = task.taskId === selectedTaskId ? "border-focus" : "";
-    card.className = `task-card ${isSelectedClass}`;
-    card.style.cursor = "pointer";
-    
-    // Add click to focus Stage Director stepper
-    card.addEventListener("click", () => {
-      selectedTaskId = task.taskId;
-      document.querySelectorAll(".task-card").forEach(c => c.classList.remove("border-focus"));
-      card.classList.add("border-focus");
-      updateStageDirectorUI();
-    });
-    
-    const badgeKey = task.status === "pending" ? "statusPending" : (task.status === "processing" ? "statusProcessing" : (task.status === "success" ? "statusSuccess" : "statusFailed"));
-    const badgeText = TRANSLATIONS[currentLang][badgeKey];
-    
-    // Capitalize pipeline friendly name
-    const pipelineFriendlyName = PIPELINES[task.pipeline]?.name[currentLang] || task.pipeline;
-    
-    card.innerHTML = `
-      <div class="task-info">
-        <span class="task-model">${pipelineFriendlyName} • <span class="group-desc">${task.model}</span></span>
-        <span class="task-prompt-preview" title="${task.prompt}">${task.prompt}</span>
-        <span class="task-meta">ID: ${task.taskId} • Elapsed: ${task.elapsed}s</span>
-      </div>
-      <div class="task-status-area">
-        <div class="status-badge ${task.status}">
-          <i data-lucide="${task.status === 'processing' ? 'loader' : 'clock'}"></i>
-          <span>${badgeText}</span>
-        </div>
-      </div>
-    `;
-    listContainer.appendChild(card);
-  });
-  
-  lucide.createIcons();
-}
-
-// Update the visual OpenMontage Stage Director Stepper Nodes
-function updateStageDirectorUI() {
-  const steps = ["research", "script", "storyboard", "assets", "edit", "render", "review"];
-  
-  // If no task selected, grey out all stepper nodes
-  if (!selectedTaskId) {
-    steps.forEach(step => {
-      const el = document.getElementById(`step-${step}`);
-      if (el) el.className = "step-node";
-    });
-    // Grey out lines
-    document.querySelectorAll(".step-line").forEach(line => line.className = "step-line");
-    return;
-  }
-  
-  const task = activeTasks.find(t => t.taskId === selectedTaskId);
-  if (!task) return;
-  
-  const activeIndex = steps.indexOf(task.stage);
-  
-  steps.forEach((step, idx) => {
-    const el = document.getElementById(`step-${step}`);
+  stages.forEach((s, i) => {
+    const el = document.getElementById(`stage-${s}`);
     if (!el) return;
-    
-    if (idx < activeIndex) {
-      el.className = "step-node completed";
-    } else if (idx === activeIndex) {
-      el.className = "step-node active";
-    } else {
-      el.className = "step-node";
-    }
-  });
-  
-  // Update step connection lines
-  const lines = document.querySelectorAll(".step-line");
-  lines.forEach((line, idx) => {
-    if (idx < activeIndex) {
-      line.className = "step-line completed";
-    } else {
-      line.className = "step-line";
-    }
+    el.classList.remove("active", "completed");
+    if (i < index) el.classList.add("completed");
+    else if (i === index) el.classList.add("active");
   });
 }
 
-// Gallery Management (persisted in localStorage)
-function saveToGallery(taskId, pipeline, model, prompt, mediaUrl) {
+function generationComplete(mediaUrl) {
+  // Save to gallery
+  const gen = activeGeneration;
   const item = {
-    taskId,
-    pipeline,
-    model,
-    type: "video", // OpenMontage outputs compiled e-commerce videos
-    prompt,
-    mediaUrl,
+    taskId: gen.taskId,
+    pipeline: gen.pipeline,
+    model: gen.model,
+    prompt: gen.prompt,
+    mediaUrl: mediaUrl || "",
     timestamp: Date.now()
   };
-  
-  galleryItems.unshift(item);
-  localStorage.setItem("kie_ai_gallery", JSON.stringify(galleryItems));
-  renderGallery();
-  renderPipelineFilters();
-}
+  gallery.unshift(item);
+  localStorage.setItem("om_gallery", JSON.stringify(gallery));
 
-function loadGallery() {
-  const saved = localStorage.getItem("kie_ai_gallery");
-  if (saved) {
-    try {
-      galleryItems = JSON.parse(saved);
-    } catch (e) {
-      galleryItems = [];
-    }
+  // Show result
+  document.getElementById("gen-progress").classList.add("hidden");
+  document.getElementById("gen-result").classList.remove("hidden");
+
+  if (mediaUrl) {
+    const video = document.getElementById("result-video");
+    video.src = mediaUrl;
+    video.load();
+
+    document.getElementById("result-download").onclick = () => {
+      const a = document.createElement("a");
+      a.href = mediaUrl;
+      a.download = `${gen.pipeline}-${gen.taskId}`;
+      a.target = "_blank";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    };
   }
-  renderGallery();
-  renderPipelineFilters();
+
+  fetchCredits();
+  renderProjects();
 }
 
-// Render dynamic tabs matching generated pipeline outputs
-function renderPipelineFilters() {
-  const container = document.getElementById("gallery-pipeline-filters");
-  const activeFilter = document.querySelector(".filter-tab.active")?.dataset.filter || "all";
-  
-  container.innerHTML = `<button class="filter-tab ${activeFilter === 'all' ? 'active' : ''}" data-filter="all" data-i18n="filterAll">${TRANSLATIONS[currentLang].filterAll}</button>`;
-  
-  // Find all unique pipelines in generated list
-  const uniquePipelines = [...new Set(galleryItems.map(item => item.pipeline))];
-  
-  uniquePipelines.forEach(pipe => {
-    const config = PIPELINES[pipe];
-    if (config) {
-      const button = document.createElement("button");
-      button.className = `filter-tab ${activeFilter === pipe ? 'active' : ''}`;
-      button.dataset.filter = pipe;
-      button.textContent = config.name[currentLang];
-      
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".filter-tab").forEach(b => b.classList.remove("active"));
-        button.classList.add("active");
-        renderGallery(pipe);
-      });
-      container.appendChild(button);
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, "0")}`;
+}
+
+// ── Credits ──
+async function fetchCredits() {
+  try {
+    const res = await fetch("/api/credit");
+    const data = await res.json();
+    if (data.code === 200) {
+      document.getElementById("credit-value").textContent = typeof data.data === "number" ? data.data.toFixed(2) : data.data;
     }
-  });
+  } catch (e) {
+    document.getElementById("credit-value").textContent = "Error";
+  }
 }
 
-function renderGallery(filter = "all") {
-  galleryGrid.innerHTML = "";
-  
-  const filtered = galleryItems.filter(item => {
-    if (filter === "all") return true;
-    return item.pipeline === filter;
-  });
-  
-  if (filtered.length === 0) {
-    const placeholderText = TRANSLATIONS[currentLang].noMasterpieces;
-    galleryGrid.innerHTML = `
-      <div class="empty-state">
-        <i data-lucide="image-off"></i>
-        <p>${placeholderText}</p>
-      </div>
-    `;
-    lucide.createIcons();
+// ── Projects Gallery ──
+function renderProjects() {
+  const grid = document.getElementById("projects-grid");
+  const empty = document.getElementById("empty-projects");
+
+  if (gallery.length === 0) {
+    empty.style.display = "flex";
+    // Remove any cards
+    grid.querySelectorAll(".project-card").forEach(c => c.remove());
     return;
   }
-  
-  filtered.forEach(item => {
+
+  empty.style.display = "none";
+  // Clear previous cards only
+  grid.querySelectorAll(".project-card").forEach(c => c.remove());
+
+  gallery.forEach(item => {
+    const pipe = PIPELINES[item.pipeline];
     const card = document.createElement("div");
-    card.className = "gallery-card";
-    
-    // Add video indicator badge
-    const badgeText = PIPELINES[item.pipeline]?.name[currentLang] || item.pipeline;
+    card.className = "project-card";
+
+    const date = new Date(item.timestamp);
+    const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+
     card.innerHTML = `
-      <div class="card-badge video">
-        <i data-lucide="video"></i>
-        <span>${badgeText}</span>
+      <div class="project-thumb">
+        ${item.mediaUrl ? `<video src="${item.mediaUrl}" muted loop playsinline preload="metadata"></video>` : ""}
+        <div class="play-overlay"><div class="play-overlay-circle"><i data-lucide="play"></i></div></div>
+        <div class="project-badge">${pipe ? pipe.name[lang] : item.pipeline}</div>
+      </div>
+      <div class="project-info">
+        <div class="project-title">${item.prompt}</div>
+        <div class="project-date">${dateStr} · ${item.model}</div>
       </div>
     `;
-    
-    const video = document.createElement("video");
-    video.src = item.mediaUrl;
-    video.className = "card-media";
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    card.addEventListener("mouseenter", () => video.play().catch(() => {}));
-    card.addEventListener("mouseleave", () => video.pause());
-    card.appendChild(video);
-    
-    const overlay = document.createElement("div");
-    overlay.className = "card-overlay";
-    overlay.innerHTML = `
-      <div class="card-info">
-        <span class="card-prompt">${item.prompt}</span>
-        <span class="card-model">${item.model}</span>
-      </div>
-    `;
-    card.appendChild(overlay);
-    
-    card.addEventListener("click", () => showMediaModal(item));
-    galleryGrid.appendChild(card);
+
+    // Hover play
+    const video = card.querySelector("video");
+    if (video) {
+      card.addEventListener("mouseenter", () => video.play().catch(() => {}));
+      card.addEventListener("mouseleave", () => { video.pause(); video.currentTime = 0; });
+    }
+
+    card.addEventListener("click", () => openModal(item));
+    grid.appendChild(card);
   });
-  
+
   lucide.createIcons();
 }
 
-// Fullscreen Lightbox Modal Preview
-function showMediaModal(item) {
-  modalMediaContainer.innerHTML = "";
-  
-  const video = document.createElement("video");
-  video.src = item.mediaUrl;
-  video.controls = true;
-  video.autoplay = true;
-  modalMediaContainer.appendChild(video);
-  
-  modalPipelineVal.textContent = PIPELINES[item.pipeline]?.name[currentLang] || item.pipeline;
-  modalModelVal.textContent = item.model;
-  modalTaskIdVal.textContent = item.taskId;
-  modalPromptText.textContent = item.prompt;
-  
-  // Download Action
-  modalDownloadBtn.onclick = () => {
-    const a = document.createElement("a");
-    a.href = item.mediaUrl;
-    a.target = "_blank";
-    a.download = `${item.pipeline}-${item.taskId}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+// ── Modal ──
+function openModal(item) {
+  const pipe = PIPELINES[item.pipeline];
+  document.getElementById("modal-video").src = item.mediaUrl || "";
+  document.getElementById("modal-pipeline-name").textContent = pipe ? pipe.name[lang] : item.pipeline;
+  document.getElementById("modal-engine").textContent = pipe ? pipe.engines.join(", ") : item.model;
+  document.getElementById("modal-task-id").textContent = item.taskId;
+  document.getElementById("modal-date").textContent = new Date(item.timestamp).toLocaleString();
+  document.getElementById("modal-script").textContent = item.prompt;
+
+  document.getElementById("modal-download").onclick = () => {
+    if (item.mediaUrl) {
+      const a = document.createElement("a");
+      a.href = item.mediaUrl; a.download = `${item.pipeline}-${item.taskId}`; a.target = "_blank";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
   };
-  
-  // Re-use Settings
-  modalUsePromptBtn.onclick = () => {
-    pipelineSelect.value = item.pipeline;
-    handlePipelineChange();
-    promptInput.value = item.prompt;
-    modelSelect.value = item.model;
+
+  document.getElementById("modal-rerun").onclick = () => {
     closeModal();
+    selectPipeline(item.pipeline);
+    setTimeout(() => {
+      document.getElementById("script-input").value = item.prompt;
+      document.getElementById("char-count").textContent = `${item.prompt.length} / 5000`;
+      updatePreviewScript();
+    }, 100);
   };
-  
-  mediaModal.classList.remove("hidden");
+
+  document.getElementById("modal-overlay").classList.remove("hidden");
   lucide.createIcons();
 }
 
 function closeModal() {
-  mediaModal.classList.add("hidden");
-  modalMediaContainer.innerHTML = ""; // Stop playing videos
+  document.getElementById("modal-overlay").classList.add("hidden");
+  document.getElementById("modal-video").pause();
+  document.getElementById("modal-video").src = "";
 }

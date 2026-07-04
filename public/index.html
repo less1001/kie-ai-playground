@@ -3,353 +3,317 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenMontage Web Workspace</title>
-  <!-- Google Fonts Inter & Fira Code -->
+  <title>OpenMontage Studio — AI Video Production</title>
+  <meta name="description" content="Create stunning AI-powered videos with digital human presenters, cinematic trailers, animated explainers, and more.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  <!-- Lucide Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Style Sheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app-container">
-    <!-- Top Navigation Bar -->
-    <header class="figma-navbar">
-      <div class="nav-left">
-        <div class="logo-icon"><i data-lucide="play-square"></i></div>
-        <div class="nav-brand">
-          <span class="brand-title" data-i18n="title">OpenMontage Web Console</span>
-          <span class="brand-ver" data-i18n="subtitle">Industrial Agentic Video Production Console</span>
+  <!-- ═══════════════════════ TOP NAV BAR ═══════════════════════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#brandGrad)"/>
+            <path d="M8 12L11 15L16 9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs><linearGradient id="brandGrad" x1="2" y1="2" x2="22" y2="22"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+          </svg>
+        </div>
+        <span class="brand-name">OpenMontage</span>
+        <span class="brand-tag">Studio</span>
+      </div>
+    </div>
+
+    <nav class="topbar-center">
+      <button class="nav-tab active" data-view="create"><i data-lucide="plus-circle"></i> <span data-i18n="navCreate">Create</span></button>
+      <button class="nav-tab" data-view="projects"><i data-lucide="folder-open"></i> <span data-i18n="navProjects">My Projects</span></button>
+    </nav>
+
+    <div class="topbar-right">
+      <div class="credit-pill">
+        <i data-lucide="coins"></i>
+        <span id="credit-value">--</span>
+        <button class="icon-btn" id="refresh-credits" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+      </div>
+      <button class="lang-btn" id="lang-toggle"><i data-lucide="globe"></i> <span id="lang-text">中文</span></button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ MAIN CONTENT ═══════════════════════ -->
+  <main class="main-content">
+
+    <!-- ─── VIEW: CREATE ─── -->
+    <div class="view active" id="view-create">
+
+      <!-- Step Indicator Bar -->
+      <div class="step-bar">
+        <div class="step-indicator active" data-step="1">
+          <div class="step-dot">1</div>
+          <span data-i18n="step1">Choose Template</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="2">
+          <div class="step-dot">2</div>
+          <span data-i18n="step2">Configure</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="3">
+          <div class="step-dot">3</div>
+          <span data-i18n="step3">Preview & Generate</span>
         </div>
       </div>
-      
-      <div class="nav-right">
-        <!-- Balance Info -->
-        <div class="navbar-credit">
-          <span class="credit-lbl" data-i18n="balance">Balance</span>
-          <span class="credit-num" id="credit-value">--.--</span>
-          <button class="icon-action-btn" id="refresh-credits" title="Refresh Balance">
-            <i data-lucide="refresh-cw" id="refresh-icon"></i>
-          </button>
-        </div>
-        
-        <!-- Divider -->
-        <div class="nav-divider"></div>
-        
-        <!-- Language Switcher -->
-        <button class="lang-toggle-btn" id="lang-toggle">
-          <i data-lucide="globe"></i>
-          <span id="lang-text">中文</span>
-        </button>
-      </div>
-    </header>
 
-    <!-- Main Workspace Layout -->
-    <main class="workspace-layout">
-      
-      <!-- Left Panel: Sidebar Controls (Figma Properties Panel) -->
-      <aside class="sidebar-panel">
-        <div class="sidebar-header">
-          <i data-lucide="sliders"></i>
-          <span data-i18n="controlPanelHeader">Production Panel</span>
+      <!-- ════════ STEP 1: Choose Template ════════ -->
+      <section class="wizard-step active" id="wizard-step-1">
+        <div class="step-header">
+          <h2 data-i18n="chooseTemplateTitle">What would you like to create?</h2>
+          <p class="step-subtitle" data-i18n="chooseTemplateSub">Select a production pipeline to get started</p>
         </div>
 
-        <form id="generator-form" class="sidebar-content">
-          <!-- Pipeline Selection -->
-          <div class="sidebar-group">
-            <label class="group-label" data-i18n="pipelineLabel">Production Pipeline</label>
-            <div class="select-container">
-              <select id="pipeline-select" name="pipeline" required>
-                <!-- Grouped Option List -->
-                <optgroup label="AI Generated & Explainers" data-i18n-label="groupGenerated">
-                  <option value="animated-explainer" selected data-i18n="pipeExplainer">Animated Explainer</option>
-                  <option value="animation" data-i18n="pipeAnimation">Flat Motion Animation</option>
-                  <option value="avatar-spokesperson" data-i18n="pipeAvatar">Avatar Spokesperson</option>
-                  <option value="cinematic" data-i18n="pipeCinematic">Cinematic Trailer</option>
-                </optgroup>
-                <optgroup label="Source Material & Archival" data-i18n-label="groupMaterial">
-                  <option value="documentary-montage" data-i18n="pipeDocumentary">Documentary Montage</option>
-                  <option value="clip-factory" data-i18n="pipeClipFactory">Clip Factory</option>
-                  <option value="screen-demo" data-i18n="pipeScreenDemo">Screen Demo</option>
-                  <option value="hybrid" data-i18n="pipeHybrid">Hybrid Video</option>
-                </optgroup>
-                <optgroup label="Re-purpose & Localization" data-i18n-label="groupRepurpose">
-                  <option value="localization-dub" data-i18n="pipeDub">Localization & Dub</option>
-                  <option value="podcast-repurpose" data-i18n="pipePodcast">Podcast Repurpose</option>
-                  <option value="talking-head" data-i18n="pipeTalkingHead">口播 Talking Head</option>
-                </optgroup>
-              </select>
-            </div>
-            <p class="group-desc" id="pipeline-desc">Select the workflow blueprint for production.</p>
-          </div>
-
-          <!-- Dynamic Panel A: Text Prompts / Topics (Explainer, Animation, Cinematic) -->
-          <div class="dynamic-group-panel" id="panel-text-prompts">
-            <div class="sidebar-group">
-              <label class="group-label" data-i18n="promptLabel">Script / Topic Brief</label>
-              <textarea id="prompt-input" name="prompt" rows="4" placeholder="Describe the video topic, script or storyboard..." required></textarea>
-              <div class="suggestions-section">
-                <span class="suggest-lbl" data-i18n="tryLabel">Try:</span>
-                <div class="suggestions-grid" id="suggestions-container">
-                  <!-- JS populated -->
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Dynamic Panel B: Avatar Settings (Spokesperson, Talking Head) -->
-          <div class="dynamic-group-panel hidden" id="panel-avatar-settings">
-            <div class="sidebar-group">
-              <label class="group-label" data-i18n="avatarLabel">Presenter Avatar</label>
-              <div class="avatar-grid" id="avatar-grid-container">
-                <!-- JS presets -->
-              </div>
-              <input type="url" id="custom-avatar-url" name="customAvatarUrl" placeholder="Or custom portrait image URL...">
-            </div>
-            
-            <div class="sidebar-group">
-              <label class="group-label" data-i18n="voiceLabel">Voice Tone</label>
-              <div class="select-container">
-                <select id="voice-select" name="voice">
-                  <option value="female-sales" data-i18n="voiceFemaleSales" selected>Sales Female (High Energy)</option>
-                  <option value="female-sweet" data-i18n="voiceFemaleSweet">Sweet Female</option>
-                  <option value="male-professional" data-i18n="voiceMaleProfessional">Professional Male</option>
-                  <option value="english-female" data-i18n="voiceEnglishFemale">English Female</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Dynamic Panel C: Media Sources (Clip Factory, Screen Demo, Hybrid, Dub, Podcast) -->
-          <div class="dynamic-group-panel hidden" id="panel-media-sources">
-            <div class="sidebar-group">
-              <label class="group-label" data-i18n="sourceVideoLabel">Source Video URL</label>
-              <input type="url" id="video-url-input" name="videoUrl" placeholder="https://example.com/source.mp4">
-            </div>
-            
-            <div class="sidebar-group" id="group-target-audio">
-              <label class="group-label" data-i18n="targetAudioLabel">Target Audio URL (Optional)</label>
-              <input type="url" id="audio-url-input" name="audioUrl" placeholder="https://example.com/audio.mp3">
-            </div>
-            
-            <div class="sidebar-group" id="group-target-lang">
-              <label class="group-label" data-i18n="targetLangLabel">Target Dub Language</label>
-              <div class="select-container">
-                <select id="dub-lang-select" name="dubLang">
-                  <option value="zh">Chinese (中文)</option>
-                  <option value="en">English (英文)</option>
-                  <option value="es">Spanish (西班牙语)</option>
-                  <option value="ja">Japanese (日语)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Common Parameters Section (Accordion style) -->
-          <div class="sidebar-accordion">
-            <div class="accordion-header" id="advanced-toggle-btn">
-              <span data-i18n="advancedSettings">Advanced Configuration</span>
-              <i data-lucide="chevron-down" id="advanced-chevron"></i>
-            </div>
-            
-            <div class="accordion-content hidden" id="advanced-params-panel">
-              <!-- Aspect Ratio -->
-              <div class="sidebar-group">
-                <label class="group-label" data-i18n="aspectRatioLabel">Aspect Ratio</label>
-                <div class="ratio-selectors">
-                  <label class="ratio-option">
-                    <input type="radio" name="aspectRatio" value="16:9" checked>
-                    <div class="ratio-box-wrapper">
-                      <div class="box-shape r-16-9"></div>
-                      <span data-i18n="aspectRatio169">16:9 Widescreen</span>
-                    </div>
-                  </label>
-                  <label class="ratio-option">
-                    <input type="radio" name="aspectRatio" value="9:16">
-                    <div class="ratio-box-wrapper">
-                      <div class="box-shape r-9-16"></div>
-                      <span data-i18n="aspectRatio916">9:16 Portrait</span>
-                    </div>
-                  </label>
-                  <label class="ratio-option">
-                    <input type="radio" name="aspectRatio" value="1:1">
-                    <div class="ratio-box-wrapper">
-                      <div class="box-shape r-1-1"></div>
-                      <span data-i18n="aspectRatio11">1:1 Square</span>
-                    </div>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Quality -->
-              <div class="sidebar-group">
-                <label class="group-label" data-i18n="qualityLabel">Quality / Resolution</label>
-                <div class="select-container">
-                  <select id="quality-select" name="quality">
-                    <option value="720p" data-i18n="quality720" selected>720p HD</option>
-                    <option value="1080p" data-i18n="quality1080">1080p Full HD</option>
-                  </select>
-                </div>
-              </div>
-              
-              <!-- Budget control cap -->
-              <div class="sidebar-group">
-                <label class="group-label" data-i18n="budgetLabel">Budget Governance</label>
-                <div class="select-container">
-                  <select id="budget-select" name="budgetMode">
-                    <option value="observe" data-i18n="budgetObserve" selected>Observe Only</option>
-                    <option value="warn" data-i18n="budgetWarn">Warn on Overrun</option>
-                    <option value="cap" data-i18n="budgetCap">Strict Cap ($5.00)</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Generate Action Button -->
-          <button type="submit" class="action-submit-btn" id="generate-submit">
-            <span class="btn-lbl" data-i18n="generateBtn">Start Production Pipeline</span>
-            <div class="btn-loader hidden" id="btn-spinner"></div>
-          </button>
-        </form>
-      </aside>
-
-      <!-- Center & Right Panel: Workspace Canvas -->
-      <section class="editor-canvas">
-        
-        <!-- Pipeline Flow Stepper (Visualizes current compiling stage) -->
-        <div class="canvas-section" id="pipeline-stepper-container">
-          <div class="canvas-section-header">
-            <h3 class="canvas-section-title"><i data-lucide="git-branch"></i> <span data-i18n="compilationPipeline">OpenMontage Stage Director</span></h3>
-          </div>
-          
-          <div class="pipeline-stepper">
-            <div class="step-node" id="step-research">
-              <div class="step-circle">1</div>
-              <span class="step-name" data-i18n="stepResearch">Research</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-node" id="step-script">
-              <div class="step-circle">2</div>
-              <span class="step-name" data-i18n="stepScript">Script</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-node" id="step-storyboard">
-              <div class="step-circle">3</div>
-              <span class="step-name" data-i18n="stepStoryboard">Storyboard</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-node" id="step-assets">
-              <div class="step-circle">4</div>
-              <span class="step-name" data-i18n="stepAssets">Asset Gen</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-node" id="step-edit">
-              <div class="step-circle">5</div>
-              <span class="step-name" data-i18n="stepEdit">Timeline</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-node" id="step-render">
-              <div class="step-circle">6</div>
-              <span class="step-name" data-i18n="stepRender">Rendering</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-node" id="step-review">
-              <div class="step-circle">7</div>
-              <span class="step-name" data-i18n="stepReview">Quality Gate</span>
-            </div>
-          </div>
+        <div class="template-grid" id="template-grid">
+          <!-- JS rendered pipeline cards -->
         </div>
-
-        <!-- Middle Half: Active Generations Queue -->
-        <div class="canvas-section" id="active-tasks-container">
-          <div class="canvas-section-header">
-            <h3 class="canvas-section-title"><i data-lucide="cpu"></i> <span data-i18n="activeGenerations">Active Pipelines</span></h3>
-          </div>
-          
-          <div class="active-tasks-grid" id="active-tasks-list">
-            <div class="empty-state">
-              <i data-lucide="info"></i>
-              <p data-i18n="noActiveTasks">No active pipelines running. Submit a task to begin.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Half: Media Gallery -->
-        <div class="canvas-section flex-grow">
-          <div class="canvas-section-header">
-            <h3 class="canvas-section-title"><i data-lucide="folder-open"></i> <span data-i18n="creativeGallery">Project Outputs</span></h3>
-            
-            <div class="gallery-filters" id="gallery-pipeline-filters">
-              <button class="filter-tab active" data-filter="all" data-i18n="filterAll">All Outputs</button>
-              <!-- JS Populated pipeline types -->
-            </div>
-          </div>
-          
-          <div class="gallery-layout-grid" id="gallery-grid">
-            <div class="empty-state">
-              <i data-lucide="image-off"></i>
-              <p data-i18n="noMasterpieces">Your completed projects will appear here.</p>
-            </div>
-          </div>
-        </div>
-
       </section>
-    </main>
-  </div>
 
-  <!-- Fullscreen Lightbox Preview Modal -->
-  <div class="lightbox-modal hidden" id="media-modal">
-    <div class="lightbox-backdrop" id="modal-close-backdrop"></div>
-    <div class="lightbox-content">
-      <button class="lightbox-close-btn" id="modal-close-btn"><i data-lucide="x"></i></button>
-      
-      <div class="lightbox-body">
-        <div class="lightbox-viewport" id="modal-media-container">
-          <!-- Loaded video/image -->
+      <!-- ════════ STEP 2: Configure ════════ -->
+      <section class="wizard-step" id="wizard-step-2">
+        <button class="back-btn" id="back-to-step1"><i data-lucide="arrow-left"></i> <span data-i18n="backBtn">Back</span></button>
+
+        <div class="config-layout">
+          <!-- Left: Configuration Panel -->
+          <div class="config-panel">
+            <div class="config-header">
+              <div class="config-pipeline-badge" id="config-pipeline-badge">
+                <i data-lucide="video"></i>
+                <span id="config-pipeline-name">Pipeline</span>
+              </div>
+            </div>
+
+            <!-- Avatar Section (for avatar/talking-head pipelines) -->
+            <div class="config-section" id="section-avatar" style="display:none">
+              <h3 class="section-title"><i data-lucide="user-circle"></i> <span data-i18n="selectAvatar">Select Presenter</span></h3>
+              <div class="avatar-showcase" id="avatar-showcase">
+                <!-- JS rendered avatar cards -->
+              </div>
+              <div class="custom-avatar-row">
+                <i data-lucide="link"></i>
+                <input type="url" id="custom-avatar-url" data-i18n-placeholder="customAvatarPlaceholder" placeholder="Or paste a custom portrait image URL...">
+              </div>
+            </div>
+
+            <!-- Script / Prompt Section -->
+            <div class="config-section" id="section-script">
+              <h3 class="section-title"><i data-lucide="file-text"></i> <span data-i18n="scriptTitle">Script & Content</span></h3>
+
+              <!-- Quick template chips -->
+              <div class="template-chips" id="script-chips">
+                <!-- JS rendered -->
+              </div>
+
+              <div class="script-editor">
+                <textarea id="script-input" rows="6" data-i18n-placeholder="scriptPlaceholder" placeholder="Write your script, topic description, or paste a URL..."></textarea>
+                <div class="script-toolbar">
+                  <span class="char-count" id="char-count">0 / 5000</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Media Source Section (for clip-factory, dub, talking-head etc.) -->
+            <div class="config-section" id="section-media" style="display:none">
+              <h3 class="section-title"><i data-lucide="film"></i> <span data-i18n="mediaTitle">Source Media</span></h3>
+              <div class="input-group">
+                <label data-i18n="videoUrlLabel">Video URL</label>
+                <input type="url" id="video-url-input" placeholder="https://example.com/source-video.mp4">
+              </div>
+              <div class="input-group" id="group-audio-url">
+                <label data-i18n="audioUrlLabel">Audio Track URL (Optional)</label>
+                <input type="url" id="audio-url-input" placeholder="https://example.com/voiceover.mp3">
+              </div>
+              <div class="input-group" id="group-dub-lang" style="display:none">
+                <label data-i18n="dubLangLabel">Target Language</label>
+                <select id="dub-lang-select">
+                  <option value="zh">中文 Chinese</option>
+                  <option value="en">English</option>
+                  <option value="ja">日本語 Japanese</option>
+                  <option value="ko">한국어 Korean</option>
+                  <option value="es">Español Spanish</option>
+                  <option value="fr">Français French</option>
+                  <option value="de">Deutsch German</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Voice Section -->
+            <div class="config-section" id="section-voice" style="display:none">
+              <h3 class="section-title"><i data-lucide="mic"></i> <span data-i18n="voiceTitle">Voice & Audio</span></h3>
+              <div class="voice-cards" id="voice-cards">
+                <!-- JS rendered -->
+              </div>
+            </div>
+
+            <!-- Settings Row -->
+            <div class="config-section">
+              <h3 class="section-title"><i data-lucide="settings"></i> <span data-i18n="settingsTitle">Output Settings</span></h3>
+              <div class="settings-row">
+                <div class="setting-item">
+                  <label data-i18n="ratioLabel">Ratio</label>
+                  <div class="ratio-pills">
+                    <button class="ratio-pill" data-ratio="16:9"><span class="ratio-icon r169"></span>16:9</button>
+                    <button class="ratio-pill active" data-ratio="9:16"><span class="ratio-icon r916"></span>9:16</button>
+                    <button class="ratio-pill" data-ratio="1:1"><span class="ratio-icon r11"></span>1:1</button>
+                  </div>
+                </div>
+                <div class="setting-item">
+                  <label data-i18n="qualityLabel">Quality</label>
+                  <select id="quality-select">
+                    <option value="720p">720p</option>
+                    <option value="1080p" selected>1080p</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Live Preview Panel -->
+          <div class="preview-panel">
+            <div class="preview-header">
+              <h3><i data-lucide="monitor-play"></i> <span data-i18n="previewTitle">Live Preview</span></h3>
+            </div>
+            <div class="preview-viewport" id="preview-viewport">
+              <div class="preview-avatar-container" id="preview-avatar-container">
+                <img id="preview-avatar-img" src="" alt="Avatar Preview">
+                <div class="preview-no-avatar" id="preview-no-avatar">
+                  <i data-lucide="user-circle"></i>
+                  <span data-i18n="previewNoAvatar">Select an avatar to preview</span>
+                </div>
+              </div>
+              <div class="preview-script-overlay" id="preview-script-overlay">
+                <p id="preview-script-text"></p>
+              </div>
+            </div>
+            <div class="preview-meta">
+              <div class="meta-chip"><i data-lucide="ratio"></i> <span id="preview-ratio">9:16</span></div>
+              <div class="meta-chip"><i data-lucide="sparkles"></i> <span id="preview-engine">--</span></div>
+              <div class="meta-chip"><i data-lucide="timer"></i> <span data-i18n="previewEta">~2-5 min</span></div>
+            </div>
+            <button class="generate-btn" id="generate-btn">
+              <i data-lucide="wand-2"></i>
+              <span data-i18n="generateBtn">Generate Video</span>
+              <div class="btn-loader hidden" id="btn-loader"></div>
+            </button>
+          </div>
         </div>
-        
-        <div class="lightbox-sidebar">
-          <h4 class="sidebar-meta-title" data-i18n="modalTitle">Project Production Log</h4>
-          
-          <div class="meta-section">
-            <div class="meta-row">
-              <span class="meta-row-label" data-i18n="pipelineLabel">Pipeline</span>
-              <span class="meta-row-val" id="modal-pipeline-val">--</span>
+      </section>
+
+      <!-- ════════ STEP 3: Generating / Result ════════ -->
+      <section class="wizard-step" id="wizard-step-3">
+        <button class="back-btn" id="back-to-step2"><i data-lucide="arrow-left"></i> <span data-i18n="newVideoBtn">Create New Video</span></button>
+
+        <div class="generation-center">
+          <!-- Generating State -->
+          <div class="gen-progress" id="gen-progress">
+            <div class="gen-animation">
+              <div class="gen-ring"></div>
+              <div class="gen-ring ring2"></div>
+              <div class="gen-ring ring3"></div>
+              <i data-lucide="cpu" class="gen-icon"></i>
             </div>
-            <div class="meta-row">
-              <span class="meta-row-label" data-i18n="modelLabel">Core Engines</span>
-              <span class="meta-row-val" id="modal-model-val">--</span>
+            <h2 data-i18n="generatingTitle">Creating your video...</h2>
+            <p class="gen-status" id="gen-status-text" data-i18n="generatingDesc">Our AI pipeline is working its magic</p>
+
+            <!-- Pipeline Stage Progress -->
+            <div class="stage-progress">
+              <div class="stage-track">
+                <div class="stage-fill" id="stage-fill"></div>
+              </div>
+              <div class="stage-labels">
+                <span class="stage-label" id="stage-research" data-i18n="stageResearch">Research</span>
+                <span class="stage-label" id="stage-script" data-i18n="stageScript">Script</span>
+                <span class="stage-label" id="stage-storyboard" data-i18n="stageStoryboard">Storyboard</span>
+                <span class="stage-label" id="stage-assets" data-i18n="stageAssets">Assets</span>
+                <span class="stage-label" id="stage-render" data-i18n="stageRender">Render</span>
+                <span class="stage-label" id="stage-review" data-i18n="stageReview">QA</span>
+              </div>
             </div>
-            <div class="meta-row">
-              <span class="meta-row-label">Task ID</span>
-              <span class="meta-row-val code-font" id="modal-task-id-val">--</span>
+
+            <div class="gen-meta">
+              <span class="gen-elapsed" id="gen-elapsed">0:00</span>
+              <span class="gen-task-id" id="gen-task-id"></span>
             </div>
           </div>
-          
-          <div class="prompt-section">
-            <span class="meta-row-label" data-i18n="promptLabel">Script / Storyboard</span>
-            <div class="prompt-box">
-              <p id="modal-prompt-text">Script contents...</p>
+
+          <!-- Result State (shown when done) -->
+          <div class="gen-result hidden" id="gen-result">
+            <div class="result-player">
+              <video id="result-video" controls></video>
+            </div>
+            <div class="result-actions">
+              <button class="result-btn primary" id="result-download"><i data-lucide="download"></i> <span data-i18n="downloadBtn">Download</span></button>
+              <button class="result-btn" id="result-new"><i data-lucide="plus"></i> <span data-i18n="createAnother">Create Another</span></button>
             </div>
           </div>
-          
-          <div class="lightbox-actions">
-            <button class="lightbox-btn primary" id="modal-download-btn">
-              <i data-lucide="download"></i> <span data-i18n="downloadBtn">Download Video</span>
-            </button>
-            <button class="lightbox-btn secondary" id="modal-use-prompt-btn">
-              <i data-lucide="sliders"></i> <span data-i18n="useSettingsBtn">Re-run Pipeline</span>
-            </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ─── VIEW: MY PROJECTS ─── -->
+    <div class="view" id="view-projects">
+      <div class="projects-header">
+        <h2 data-i18n="myProjectsTitle">My Projects</h2>
+        <p class="step-subtitle" data-i18n="myProjectsSub">All your generated videos in one place</p>
+      </div>
+      <div class="projects-grid" id="projects-grid">
+        <div class="empty-projects" id="empty-projects">
+          <i data-lucide="video-off"></i>
+          <h3 data-i18n="noProjects">No projects yet</h3>
+          <p data-i18n="noProjectsDesc">Create your first AI video to see it here</p>
+          <button class="create-first-btn" id="create-first-btn"><i data-lucide="plus"></i> <span data-i18n="createFirst">Create Video</span></button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════════════ LIGHTBOX MODAL ═══════════════════════ -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close"><i data-lucide="x"></i></button>
+      <div class="modal-body">
+        <div class="modal-player">
+          <video id="modal-video" controls autoplay></video>
+        </div>
+        <div class="modal-meta-panel">
+          <h3 id="modal-pipeline-name">Pipeline</h3>
+          <div class="modal-meta-row">
+            <span class="meta-label" data-i18n="modalEngine">Engine</span>
+            <span class="meta-val" id="modal-engine">--</span>
+          </div>
+          <div class="modal-meta-row">
+            <span class="meta-label">Task ID</span>
+            <span class="meta-val mono" id="modal-task-id">--</span>
+          </div>
+          <div class="modal-meta-row">
+            <span class="meta-label" data-i18n="modalDate">Date</span>
+            <span class="meta-val" id="modal-date">--</span>
+          </div>
+          <div class="modal-script-box">
+            <span class="meta-label" data-i18n="modalScript">Script</span>
+            <p id="modal-script">--</p>
+          </div>
+          <div class="modal-actions">
+            <button class="result-btn primary" id="modal-download"><i data-lucide="download"></i> <span data-i18n="downloadBtn">Download</span></button>
+            <button class="result-btn" id="modal-rerun"><i data-lucide="repeat"></i> <span data-i18n="rerunBtn">Re-run</span></button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript Entry Point -->
   <script src="app.js"></script>
 </body>
 </html>
