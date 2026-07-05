@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Coins,
@@ -26,9 +26,9 @@ import {
   Languages,
   Scissors,
   Sparkles,
-  Monitor,
-  Layers,
-  Podcast
+  Terminal,
+  ShieldCheck,
+  Sliders
 } from 'lucide-react';
 
 // ── Pipeline Definitions ──
@@ -44,7 +44,6 @@ interface PipelineDef {
   icon: React.ReactNode;
   engines: string[];
   tag: { en: string; zh: string; type: string } | null;
-  sections: string[];
   featured: boolean;
   model: string;
   models: ModelDef[];
@@ -57,13 +56,11 @@ const PIPELINES: Record<string, PipelineDef> = {
     icon: <UserCircle />,
     engines: ["OmniHuman 1.5", "Lip-Sync"],
     tag: { en: "Most Popular", zh: "最热门", type: "hot" },
-    sections: ["avatar", "script", "voice"],
     featured: true,
     model: "omnihuman-v1.5",
     models: [
       { id: "omnihuman-v1.5", name: "OmniHuman v1.5", desc: { en: "Realistic expressions and natural gestures (Recommended)", zh: "超逼真面部表情与动作（推荐）" } },
-      { id: "seedance-v2.0", name: "Seedance v2.0", desc: { en: "Consistent body rendering and high frame rate", zh: "高保真身体姿态与高帧率" } },
-      { id: "volcengine/video-to-video-lip-sync", name: "Volcengine Lip-Sync", desc: { en: "Speedy mouth-movement synthesis from video+audio", zh: "超快速口型动作匹配合成" } }
+      { id: "seedance-v2.0", name: "Seedance v2.0", desc: { en: "Consistent body rendering and high frame rate", zh: "高保真身体姿态与高帧率" } }
     ]
   },
   "animated-explainer": {
@@ -72,7 +69,6 @@ const PIPELINES: Record<string, PipelineDef> = {
     icon: <Presentation />,
     engines: ["Imagen4", "Google TTS", "Remotion"],
     tag: { en: "Popular", zh: "热门", type: "hot" },
-    sections: ["script"],
     featured: true,
     model: "imagen4",
     models: [
@@ -86,13 +82,11 @@ const PIPELINES: Record<string, PipelineDef> = {
     icon: <Clapperboard />,
     engines: ["Kling v3", "Veo 3.1"],
     tag: { en: "New", zh: "新功能", type: "new" },
-    sections: ["script"],
     featured: true,
     model: "kling-v3",
     models: [
       { id: "kling-v3", name: "Kling v3.0", desc: { en: "Highly dynamic action sequences (Recommended)", zh: "高动态动作镜头与光影效果（推荐）" } },
-      { id: "veo-3.1", name: "Google Veo 3.1", desc: { en: "Cinematic depth, realistic lighting, and composition", zh: "电影级构图与景深深度" } },
-      { id: "wan-v2.7", name: "Alibaba Wan 2.7", desc: { en: "Excellent visual layout and prompt adherence", zh: "阿里开源模型，文字排版遵从度好" } }
+      { id: "veo-3.1", name: "Google Veo 3.1", desc: { en: "Cinematic depth, realistic lighting, and composition", zh: "电影级构图与景深深度" } }
     ]
   },
   "talking-head": {
@@ -101,7 +95,6 @@ const PIPELINES: Record<string, PipelineDef> = {
     icon: <Mic />,
     engines: ["Volcengine Lip-Sync"],
     tag: null,
-    sections: ["media"],
     featured: false,
     model: "volcengine/video-to-video-lip-sync",
     models: [
@@ -114,7 +107,6 @@ const PIPELINES: Record<string, PipelineDef> = {
     icon: <Languages />,
     engines: ["WhisperX", "GPT", "ElevenLabs"],
     tag: null,
-    sections: ["media-dub"],
     featured: false,
     model: "volcengine/video-to-video-lip-sync",
     models: [
@@ -127,7 +119,6 @@ const PIPELINES: Record<string, PipelineDef> = {
     icon: <Film />,
     engines: ["Archive.org", "Wikimedia", "FFmpeg"],
     tag: null,
-    sections: ["script"],
     featured: false,
     model: "grok-imagine",
     models: [
@@ -140,63 +131,10 @@ const PIPELINES: Record<string, PipelineDef> = {
     icon: <Scissors />,
     engines: ["WhisperX", "SceneDetect", "FFmpeg"],
     tag: null,
-    sections: ["media"],
     featured: false,
     model: "kling-v3",
     models: [
       { id: "kling-v3", name: "Kling v3.0", desc: { en: "Intelligent cutting based on visual rhythm", zh: "基于画面节奏的智能镜头裁切" } }
-    ]
-  },
-  "animation": {
-    name: { en: "Motion Graphics", zh: "动态图形视频" },
-    desc: { en: "Generate typography-driven GSAP motion graphics for SaaS and product launches.", zh: "生成以文字排版驱动的动态图形视频，适合 SaaS 产品发布。" },
-    icon: <Sparkles />,
-    engines: ["GSAP", "HyperFrames"],
-    tag: null,
-    sections: ["script"],
-    featured: false,
-    model: "ideogram-v3",
-    models: [
-      { id: "ideogram-v3", name: "Ideogram v3.0", desc: { en: "Typography design and flat motion layouts", zh: "排版文字与平面扁平化图形设计" } }
-    ]
-  },
-  "screen-demo": {
-    name: { en: "Screen Demo", zh: "录屏演示增强" },
-    desc: { en: "Polish raw screen recordings with dynamic zoom, cursor highlights, and AI voiceover.", zh: "为原始录屏添加平滑缩放、鼠标高亮、边框排版及 AI 配音讲解。" },
-    icon: <Monitor />,
-    engines: ["FFmpeg", "Remotion"],
-    tag: null,
-    sections: ["media"],
-    featured: false,
-    model: "kling-v3",
-    models: [
-      { id: "kling-v3", name: "Kling v3.0", desc: { en: "Screen details enhancement", zh: "增强画面细节并生成画外讲解" } }
-    ]
-  },
-  "hybrid": {
-    name: { en: "Hybrid Video", zh: "混合合成视频" },
-    desc: { en: "Fuse live-action footage with AI-generated overlays and graphics enhancements.", zh: "将实拍录像与 AI 视觉特效进行图层融合与画中画合成。" },
-    icon: <Layers />,
-    engines: ["Remotion", "FFmpeg"],
-    tag: null,
-    sections: ["media"],
-    featured: false,
-    model: "kling-v3",
-    models: [
-      { id: "kling-v3", name: "Kling v3.0", desc: { en: "High fidelity layer blending", zh: "高质量多图层智能画中画融合" } }
-    ]
-  },
-  "podcast-repurpose": {
-    name: { en: "Podcast to Video", zh: "播客转视频" },
-    desc: { en: "Transform audio podcasts into short video formats with waveforms and dynamic subtitles.", zh: "为播客音频添加波形图、动态字幕和头像动画，转换为短视频。" },
-    icon: <Podcast />,
-    engines: ["WhisperX", "Waveform", "Remotion"],
-    tag: null,
-    sections: ["media"],
-    featured: false,
-    model: "kling-v3",
-    models: [
-      { id: "kling-v3", name: "Kling v3.0", desc: { en: "Generates high quality video elements for audio podcast", zh: "基于音频波形生成高质量视频辅助画面" } }
     ]
   }
 };
@@ -228,8 +166,7 @@ interface VoiceDef {
 const VOICES: VoiceDef[] = [
   { id: "female-sales", name: { en: "Sales Queen", zh: "带货女王" }, desc: { en: "High energy, enthusiastic", zh: "高能量激情风格" }, emoji: "👩‍💼" },
   { id: "female-sweet", name: { en: "Sweet & Warm", zh: "亲和甜美" }, desc: { en: "Friendly, approachable", zh: "友好温暖型" }, emoji: "💁‍♀️" },
-  { id: "male-pro", name: { en: "Professional", zh: "专业男声" }, desc: { en: "Calm, authoritative", zh: "沉稳权威型" }, emoji: "👨‍💻" },
-  { id: "en-female", name: { en: "English Female", zh: "英文女声" }, desc: { en: "Clear, international", zh: "国际化英语发音" }, emoji: "🌍" }
+  { id: "male-pro", name: { en: "Professional", zh: "专业男声" }, desc: { en: "Calm, authoritative", zh: "沉稳权威型" }, emoji: "👨‍💻" }
 ];
 
 // ── Script Templates ──
@@ -241,20 +178,23 @@ interface TemplateDef {
 const TEMPLATES: Record<string, TemplateDef[]> = {
   "avatar-spokesperson": [
     { label: { en: "🔥 New Launch", zh: "🔥 新品首发" }, text: { en: "Look at this brand new tech gadget! Today's launch exclusive — $50 off instantly plus a free 1-year warranty. Click below to grab yours before they're gone!", zh: "家人们看我手上这款最新上市的科技好物！今天首发专享直降300元，限时赠送一年质保！赶快点击下方链接购买，手慢无！" } },
-    { label: { en: "⚡ Flash Sale", zh: "⚡ 限量秒杀" }, text: { en: "Last 5 minutes! This is the absolute lowest price online — only 50 units left. Once they're gone, it's back to full price. Don't miss this!", zh: "倒计时最后五分钟！全网最低价限量五十单，抢完立马恢复原价！犹豫一秒就没有了，家人们手速一定要快！" } },
-    { label: { en: "⭐ Best Seller", zh: "⭐ 爆款推荐" }, text: { en: "This product has sold over 100,000 units and has a 98% satisfaction rate. Today we're offering an exclusive bundle deal — buy 2 get 1 free!", zh: "这款产品累计销量突破十万单，好评率高达98%！今天给家人们带来专属组合优惠，买二送一超划算！" } }
+    { label: { en: "⚡ Flash Sale", zh: "⚡ 限量秒杀" }, text: { en: "Last 5 minutes! This is the absolute lowest price online — only 50 units left. Once they're gone, it's back to full price. Don't miss this!", zh: "倒计时最后五分钟！全网最低价限量五十单，抢完立马恢复原价！犹豫一秒就没有了，家人们手速一定要快！" } }
   ],
   "animated-explainer": [
     { label: { en: "🧠 AI Explainer", zh: "🧠 AI科普" }, text: { en: "Explain how neural networks learn in 60 seconds, using everyday analogies like training a puppy.", zh: "用60秒通俗解释神经网络是如何学习的，使用像训练小狗一样的生活化类比。" } },
     { label: { en: "₿ Bitcoin 101", zh: "₿ 比特币入门" }, text: { en: "Explain blockchain and bitcoin mining in simple terms for complete beginners.", zh: "为完全零基础的小白通俗讲解区块链账本与比特币挖矿的原理。" } }
   ],
   "cinematic": [
-    { label: { en: "🎬 Sci-Fi Trailer", zh: "🎬 科幻预告" }, text: { en: "A dystopian future where AI has taken control. The last human programmer must hack back into the system. Neon-lit cyberpunk cityscape.", zh: "一个AI统治的反乌托邦未来，最后一位人类程序员必须入侵回系统。霓虹闪烁的赛博朋克城市景观。" } }
-  ],
-  "documentary-montage": [
-    { label: { en: "🌃 City at Dawn", zh: "🌃 城市黎明" }, text: { en: "A dreamlike montage of cities waking up at 4 AM — empty streets, first lights, bakeries opening. Elegiac, contemplative tone.", zh: "凌晨四点城市苏醒的梦幻蒙太奇——空旷街道、第一缕光线、面包房开门。挽歌般的冥想基调。" } }
+    { label: { en: "🎬 Sci-Fi Trailer", zh: "🎬 科幻预告" }, text: { en: "A dystopian future where AI has taken control. Neon-lit cyberpunk cityscape. The last human programmer must hack the master control unit.", zh: "一个AI统治的反乌托邦未来。霓虹闪烁的赛博朋克城市。最后一位人类程序员必须入侵中央控制台。" } }
   ]
 };
+
+// ── Playbooks (Orchestrator Art Styles) ──
+const PLAYBOOKS = [
+  { id: "clean-professional", name: "Clean Professional (专业商务)", desc: "Simple lower-thirds, steady transitions, high text legibility." },
+  { id: "flat-motion-graphics", name: "Flat Motion Graphics (扁平动效)", desc: "Bounce physics, kinetic text highlight, colorful vector frames." },
+  { id: "minimalist-diagram", name: "Minimalist Diagram (极简图表)", desc: "Dark blueprints, outline icons, smooth mathematical grids." }
+];
 
 // ── App Translations ──
 const I18N = {
@@ -268,7 +208,7 @@ const I18N = {
     voiceTitle: "Voice & Audio",
     settingsTitle: "Output Settings", ratioLabel: "Ratio", qualityLabel: "Quality",
     previewTitle: "Visual Canvas", previewNoAvatar: "No reference image selected", previewEta: "~2-5 min",
-    generateBtn: "Generate Video", downloadBtn: "Download Video", createAnother: "Create Another",
+    generateBtn: "Run EP Pipeline", downloadBtn: "Download Video", createAnother: "Create Another",
     generatingTitle: "Generating...", generatingDesc: "The AI pipeline is running",
     stageResearch: "Research", stageScript: "Script", stageStoryboard: "Storyboard", stageAssets: "Assets", stageRender: "Render", stageReview: "QA",
     myProjectsTitle: "My Creations", myProjectsSub: "All your generated media assets in one place",
@@ -276,7 +216,44 @@ const I18N = {
     modalEngine: "Engine", modalDate: "Date", modalScript: "Script", rerunBtn: "Re-run Settings",
     uploadingStatus: "Uploading...",
     activeCreationBadge: "Reference Image",
-    sidebarToolsHeader: "AI Tools Gallery"
+    sidebarToolsHeader: "AI Tools Gallery",
+    
+    // Orchestrator Specifics
+    epSettingsTitle: "EP Orchestration Config",
+    policyLabel: "Checkpoint Policy",
+    policyGuided: "Guided (Manual Review)",
+    policyAuto: "Autopilot (Fully Automatic)",
+    budgetLabel: "Budget Cap (USD)",
+    playbookLabel: "Select Playbook Style",
+    checkpointPrompt: "CHECKPOINT REVIEW REQUIRED",
+    checkpointScriptLabel: "Review & Edit Script Draft:",
+    approveContinue: "Approve & Continue",
+    sendBack: "Send Back for Re-draft",
+    consoleTitle: "EP Live Orchestration Console",
+    activeNodeBrief: "Briefing",
+    activeNodeScript: "Scripting",
+    activeNodeScene: "Scene Planning",
+    activeNodeAssets: "Assets Gen",
+    activeNodeEdit: "Edit Prep",
+    activeNodeRender: "Rendering",
+    
+    // Pipeline specific labels
+    refVideoLabel: "Reference Video Input (URL/File)",
+    refVideoHelp: "Optional video to extract pacing, script structure, and dynamic timing.",
+    explainerStyleLabel: "Illustration Art Style",
+    voiceAccentLabel: "Voiceover Accent",
+    cinematicCameraLabel: "Camera Motion Control",
+    cinematicSFXLabel: "Atmospheric SFX Level",
+    cinematicBGMLabel: "BGM Soundtrack Theme",
+    lipsyncAlignLabel: "Mouth Sync Mode",
+    dubSourceLang: "Source Language",
+    dubTargetLang: "Target Language",
+    dubCloneVoice: "Clone Speaker Voice",
+    montageKeywords: "Montage Keywords / Context",
+    montageDatabase: "Archival Libraries",
+    montageMusicMood: "Montage BGM Mood",
+    clipDurationLabel: "Target Slice Length",
+    clipFocusLabel: "Clips Highlight Focus"
   },
   zh: {
     navCreate: "AI 创作", navProjects: "我的作品",
@@ -288,7 +265,7 @@ const I18N = {
     voiceTitle: "配音音色",
     settingsTitle: "输出设置", ratioLabel: "画面比例", qualityLabel: "清晰度",
     previewTitle: "视觉画布 (Canvas)", previewNoAvatar: "未选择参考图", previewEta: "约2-5分钟",
-    generateBtn: "开始生成视频", downloadBtn: "下载视频", createAnother: "重新生成",
+    generateBtn: "运行智能导演流水线", downloadBtn: "下载视频", createAnother: "重新生成",
     generatingTitle: "视频正在生成中...", generatingDesc: "AI 引擎正在全力运转中",
     stageResearch: "研究", stageScript: "脚本", stageStoryboard: "分镜", stageAssets: "资产", stageRender: "渲染", stageReview: "质检",
     myProjectsTitle: "我的作品库", myProjectsSub: "您所有生成的 AI 作品都在这里",
@@ -296,7 +273,44 @@ const I18N = {
     modalEngine: "渲染引擎", modalDate: "创作日期", modalScript: "提示词脚本", rerunBtn: "复用参数",
     uploadingStatus: "上传中...",
     activeCreationBadge: "参考图",
-    sidebarToolsHeader: "AI 工具箱"
+    sidebarToolsHeader: "AI 工具箱",
+
+    // Orchestrator Specifics
+    epSettingsTitle: "导演制片人配置 (Orchestration)",
+    policyLabel: "审核策略 (Checkpoint Policy)",
+    policyGuided: "Guided (人工节点审核)",
+    policyAuto: "Autopilot (全自动生成)",
+    budgetLabel: "最大预算上限 (美元)",
+    playbookLabel: "排版与视觉编排剧本 (Playbook)",
+    checkpointPrompt: "智能导演节点待审核",
+    checkpointScriptLabel: "请评审并直接修改文案剧本：",
+    approveContinue: "批准并进到下一步",
+    sendBack: "退回并重新起草",
+    consoleTitle: "智能导演（Executive Producer）控制台",
+    activeNodeBrief: "立项 Brief",
+    activeNodeScript: "文案 Script",
+    activeNodeScene: "分镜 Scene",
+    activeNodeAssets: "素材 Assets",
+    activeNodeEdit: "剪辑 Edit",
+    activeNodeRender: "合成 Render",
+
+    // Pipeline specific labels
+    refVideoLabel: "参考借鉴视频 (URL或本地文件)",
+    refVideoHelp: "提供参考视频，AI 智能体将拆解其文案结构、分镜节奏并应用到新视频中。",
+    explainerStyleLabel: "科普图文画面风格",
+    voiceAccentLabel: "配音朗读口音",
+    cinematicCameraLabel: "电影镜头运动控制",
+    cinematicSFXLabel: "氛围音效强弱",
+    cinematicBGMLabel: "背景音乐感情基调",
+    lipsyncAlignLabel: "口型对齐精细度",
+    dubSourceLang: "原始视频语种",
+    dubTargetLang: "翻译目标语种",
+    dubCloneVoice: "克隆主讲人原声音色",
+    montageKeywords: "检索素材关键字",
+    montageDatabase: "归档历史数据库",
+    montageMusicMood: "音乐背景基调",
+    clipDurationLabel: "切片单段目标长度",
+    clipFocusLabel: "精彩镜头提取权重"
   }
 };
 
@@ -309,6 +323,13 @@ interface GalleryItem {
   timestamp: number;
 }
 
+interface LogEntry {
+  time: string;
+  director: string;
+  text: string;
+  type?: 'info' | 'warning' | 'normal';
+}
+
 export default function App() {
   const [lang, setLang] = useState<"en" | "zh">(() => {
     return (localStorage.getItem("om_lang") as "en" | "zh") || "en";
@@ -317,19 +338,48 @@ export default function App() {
   const [currentView, setCurrentView] = useState<"create" | "projects">("create");
   const [selectedPipeline, setSelectedPipeline] = useState<string>("avatar-spokesperson");
 
-  // Global Reference Image State
+  // ── Global Customization parameters per pipeline ──
+  const [selectedPlaybook, setSelectedPlaybook] = useState<string>("clean-professional");
+  const [checkpointPolicy, setCheckpointPolicy] = useState<"guided" | "autopilot">("guided");
+  const [budgetCap, setBudgetCap] = useState<number>(2.00);
+
+  // Spokesperson configs
   const [globalReferenceImage, setGlobalReferenceImage] = useState<string>(
     "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80"
   );
   const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>("xiaomi");
   const [customAvatarUrl, setCustomAvatarUrl] = useState<string>("");
-
-  // Other form parameters
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>("female-sales");
   const [script, setScript] = useState<string>("");
-  const [videoUrl, setVideoUrl] = useState<string>("");
-  const [audioUrl, setAudioUrl] = useState<string>("");
-  const [dubLang, setDubLang] = useState<string>("zh");
+
+  // Explainer configs
+  const [explainerRefVideo, setExplainerRefVideo] = useState<string>("");
+  const [explainerStyle, setExplainerStyle] = useState<string>("flat-vector");
+  const [explainerAccent, setExplainerAccent] = useState<string>("us-en");
+
+  // Cinematic configs
+  const [cinematicCamera, setCinematicCamera] = useState<number>(2); // 1-Static, 2-Pan, 3-Zoom, 4-Orbit
+  const [cinematicSFX, setCinematicSFX] = useState<number>(3); // 1-5
+  const [cinematicBGM, setCinematicBGM] = useState<string>("epic");
+
+  // Lip Sync / Dub / Clip / Screen configs
+  const [sourceVideoUrl, setSourceVideoUrl] = useState<string>("");
+  const [sourceAudioUrl, setSourceAudioUrl] = useState<string>("");
+  const [lipsyncAlign, setLipsyncAlign] = useState<string>("standard");
+  const [dubSource, setDubSource] = useState<string>("en");
+  const [dubTarget, setDubTarget] = useState<string>("zh");
+  const [dubClone, setDubClone] = useState<boolean>(true);
+
+  // Documentary configs
+  const [montageKeywords, setMontageKeywords] = useState<string>("");
+  const [montageArchives, setMontageArchives] = useState<string[]>(["nasa", "archive"]);
+  const [montageBGM, setMontageBGM] = useState<string>("melancholy");
+
+  // Clip Factory configs
+  const [clipDuration, setClipDuration] = useState<number>(30);
+  const [clipFocus, setClipFocus] = useState<string>("speech");
+
+  // Quality & Ratio
   const [ratio, setRatio] = useState<string>("9:16");
   const [quality, setQuality] = useState<string>("1080p");
   const [selectedModelId, setSelectedModelId] = useState<string>("omnihuman-v1.5");
@@ -337,15 +387,19 @@ export default function App() {
   // Uploading state
   const [uploading, setUploading] = useState<boolean>(false);
 
-  // Active generating task (handles preview state inside canvas panel)
+  // ── Agentic Workflow Execution Simulation States ──
   const [activeTask, setActiveTask] = useState<{
     taskId: string;
     pipeline: string;
     model: string;
     prompt: string;
-    elapsed: number;
-    stageIndex: number;
+    step: 'brief' | 'scripting' | 'scene_plan' | 'assets' | 'edit' | 'rendering' | 'checkpoint' | 'completed';
+    checkpointStage?: 'script' | 'scene';
   } | null>(null);
+
+  const [consoleLogs, setConsoleLogs] = useState<LogEntry[]>([]);
+  const [checkpointDraft, setCheckpointDraft] = useState<string>("");
+  const [latestMediaResult, setLatestMediaResult] = useState<string | null>(null);
 
   // Local creations gallery
   const [gallery, setGallery] = useState<GalleryItem[]>(() => {
@@ -355,12 +409,9 @@ export default function App() {
   // Modal project details
   const [selectedProject, setSelectedProject] = useState<GalleryItem | null>(null);
 
-  // Result display state in Preview Panel
-  const [latestMediaResult, setLatestMediaResult] = useState<string | null>(null);
-
   const t = I18N[lang];
 
-  // TanStack Query for credits balance polling
+  // TanStack Query for credits
   const { data: credits, refetch: refetchCredits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
@@ -374,80 +425,7 @@ export default function App() {
     refetchInterval: 30000
   });
 
-  const activeTaskRef = useRef<typeof activeTask>(null);
-  activeTaskRef.current = activeTask;
-
-  useEffect(() => {
-    if (!activeTask) return;
-
-    const interval = setInterval(async () => {
-      const current = activeTaskRef.current;
-      if (!current) {
-        clearInterval(interval);
-        return;
-      }
-
-      const nextElapsed = current.elapsed + 2;
-      let nextStageIndex = current.stageIndex;
-
-      if (nextElapsed > 4 && nextStageIndex === 0) nextStageIndex = 1;
-      else if (nextElapsed > 8 && nextStageIndex === 1) nextStageIndex = 2;
-      else if (nextElapsed > 14 && nextStageIndex === 2) nextStageIndex = 3;
-      else if (nextElapsed > 22 && nextStageIndex === 3) nextStageIndex = 4;
-      else if (nextElapsed > 30 && nextStageIndex === 4) nextStageIndex = 5;
-
-      setActiveTask({
-        ...current,
-        elapsed: nextElapsed,
-        stageIndex: nextStageIndex
-      });
-
-      // Poll status
-      try {
-        const res = await fetch(`/api/record-info?taskId=${current.taskId}`);
-        const result = await res.json();
-        if (result.code === 200 && result.data) {
-          const d = result.data;
-          const status = d.status || d.state;
-
-          if (status === "success" || status === "completed" || d.videoUrl || d.imageUrl) {
-            clearInterval(interval);
-            const mediaUrl = d.videoUrl || d.imageUrl || (d.output ? d.output[0] : null) || "";
-
-            // Add to gallery
-            const newItem: GalleryItem = {
-              taskId: current.taskId,
-              pipeline: current.pipeline,
-              model: current.model,
-              prompt: current.prompt,
-              mediaUrl,
-              timestamp: Date.now()
-            };
-
-            const updatedGallery = [newItem, ...gallery];
-            setGallery(updatedGallery);
-            localStorage.setItem("om_gallery", JSON.stringify(updatedGallery));
-
-            // Load result directly inside the preview panel
-            setLatestMediaResult(mediaUrl);
-            setActiveTask(null);
-
-            refetchCredits();
-          } else if (status === "failed" || status === "error") {
-            clearInterval(interval);
-            alert(lang === "en" ? "Generation failed." : "生成失败。");
-            setActiveTask(null);
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [activeTask, gallery, lang, refetchCredits]);
-
-  // Set initial model options when selected pipeline changes
+  // Reset or initialize fields when pipeline changes
   useEffect(() => {
     if (selectedPipeline) {
       const pipe = PIPELINES[selectedPipeline];
@@ -456,15 +434,28 @@ export default function App() {
       } else {
         setSelectedModelId("");
       }
-      // Reset latest media result when switching tools so we return to preview mode
+      // Pick template script if any
+      const tmpl = TEMPLATES[selectedPipeline];
+      if (tmpl && tmpl.length > 0) {
+        setScript(tmpl[0].text[lang]);
+      } else {
+        setScript("");
+      }
+      // Reset result
       setLatestMediaResult(null);
     }
-  }, [selectedPipeline]);
+  }, [selectedPipeline, lang]);
 
   const toggleLanguage = () => {
     const nextLang = lang === "en" ? "zh" : "en";
     setLang(nextLang);
     localStorage.setItem("om_lang", nextLang);
+  };
+
+  // Safe append to logs terminal
+  const addLog = (director: string, text: string, type: 'info' | 'warning' | 'normal' = 'normal') => {
+    const time = new Date().toLocaleTimeString();
+    setConsoleLogs((prev) => [...prev, { time, director, text, type }]);
   };
 
   // Image Upload handler
@@ -473,7 +464,6 @@ export default function App() {
     if (!file) return;
 
     setUploading(true);
-
     const formData = new FormData();
     formData.append("file", file);
 
@@ -487,8 +477,8 @@ export default function App() {
       if (res.ok && result.code === 200 && result.url) {
         setCustomAvatarUrl(result.url);
         setGlobalReferenceImage(result.url);
-        setSelectedAvatarId(null); // Clear selected preset
-        setLatestMediaResult(null); // Clear generated preview result to show reference image
+        setSelectedAvatarId(null);
+        setLatestMediaResult(null);
       } else {
         alert(lang === "en" ? `Upload failed: ${result.error || "Unknown"}` : `上传失败: ${result.error || "未知原因"}`);
       }
@@ -501,94 +491,234 @@ export default function App() {
     }
   };
 
-  // Generate Task Submit
+  // Run Pipeline — Triggers the Agent Orchestrator Simulation
   const handleGenerate = async () => {
     if (!selectedPipeline) return;
     const pipe = PIPELINES[selectedPipeline];
     if (!pipe) return;
 
-    let input: Record<string, any> = {
+    let payloadPrompt = "";
+    let payloadInput: Record<string, any> = {
       pipeline: selectedPipeline,
+      playbook: selectedPlaybook,
       aspectRatio: ratio,
-      quality
+      quality,
+      budgetCap
     };
 
-    if (pipe.sections.includes("script") || pipe.sections.includes("avatar")) {
+    // Construct custom parameters based on selected pipeline
+    if (selectedPipeline === "avatar-spokesperson") {
       if (!script.trim()) {
-        alert(lang === "en" ? "Please enter a script." : "请输入脚本内容。");
+        alert(lang === "en" ? "Please enter a sales script." : "请输入口播文案脚本。");
         return;
       }
-      input.prompt = script.trim();
-    }
-
-    // Always include the reference image if it exists in state
-    if (globalReferenceImage) {
-      input.avatarUrl = globalReferenceImage;
-    }
-
-    if (pipe.sections.includes("voice")) {
-      input.voice = selectedVoiceId;
-    }
-
-    if (pipe.sections.includes("media") || pipe.sections.includes("media-dub")) {
-      if (!videoUrl.trim()) {
-        alert(lang === "en" ? "Please provide a source video URL." : "请提供源视频 URL。");
+      payloadPrompt = script.trim();
+      payloadInput.avatarUrl = globalReferenceImage;
+      payloadInput.voice = selectedVoiceId;
+    } else if (selectedPipeline === "animated-explainer") {
+      if (!script.trim()) {
+        alert(lang === "en" ? "Please enter explanation topic." : "请输入科普说明大纲。");
         return;
       }
-      input.video_url = videoUrl.trim();
-      if (pipe.sections.includes("media-dub")) {
-        input.dubLang = dubLang;
-      } else {
-        input.audio_url = audioUrl.trim();
+      payloadPrompt = script.trim();
+      payloadInput.refVideo = explainerRefVideo.trim();
+      payloadInput.artStyle = explainerStyle;
+      payloadInput.accent = explainerAccent;
+    } else if (selectedPipeline === "cinematic") {
+      if (!script.trim()) {
+        alert(lang === "en" ? "Please enter storyboard prompt." : "请输入分镜大纲/视频描述。");
+        return;
       }
+      payloadPrompt = script.trim();
+      payloadInput.camera = cinematicCamera;
+      payloadInput.sfx = cinematicSFX;
+      payloadInput.bgm = cinematicBGM;
+    } else if (selectedPipeline === "talking-head") {
+      if (!sourceVideoUrl.trim() || !sourceAudioUrl.trim()) {
+        alert(lang === "en" ? "Please provide both Video and Audio source URLs." : "请提供对齐视频与音频的源 URL。");
+        return;
+      }
+      payloadPrompt = `Sync: ${sourceVideoUrl} + ${sourceAudioUrl}`;
+      payloadInput.video_url = sourceVideoUrl.trim();
+      payloadInput.audio_url = sourceAudioUrl.trim();
+      payloadInput.alignMode = lipsyncAlign;
+    } else if (selectedPipeline === "localization-dub") {
+      if (!sourceVideoUrl.trim()) {
+        alert(lang === "en" ? "Please provide source video URL." : "请提供源视频 URL。");
+        return;
+      }
+      payloadPrompt = `Dub: ${sourceVideoUrl} from ${dubSource} to ${dubTarget}`;
+      payloadInput.video_url = sourceVideoUrl.trim();
+      payloadInput.sourceLang = dubSource;
+      payloadInput.targetLang = dubTarget;
+      payloadInput.cloneVoice = dubClone;
+    } else if (selectedPipeline === "documentary-montage") {
+      if (!montageKeywords.trim()) {
+        alert(lang === "en" ? "Please enter query keywords." : "请输入检索素材的关键字。");
+        return;
+      }
+      payloadPrompt = montageKeywords.trim();
+      payloadInput.archives = montageArchives;
+      payloadInput.bgm = montageBGM;
+    } else if (selectedPipeline === "clip-factory") {
+      if (!sourceVideoUrl.trim()) {
+        alert(lang === "en" ? "Please provide source video URL." : "请提供长视频源 URL。");
+        return;
+      }
+      payloadPrompt = `Cuts: ${sourceVideoUrl} (${clipDuration}s)`;
+      payloadInput.video_url = sourceVideoUrl.trim();
+      payloadInput.duration = clipDuration;
+      payloadInput.focus = clipFocus;
     }
 
-    const modelToUse = selectedModelId || pipe.model;
-
-    // Reset latest media preview before starting new task
     setLatestMediaResult(null);
+    setConsoleLogs([]);
 
-    // Trigger api
+    // 1. Initialise the creation task on Cloudflare proxy
     try {
+      addLog("EP-Orchestrator", `Initializing pipeline: ${pipe.name[lang]}...`, "info");
+      
       const res = await fetch("/api/create-task", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: modelToUse, input })
+        body: JSON.stringify({ model: selectedModelId || pipe.model, input: payloadInput })
       });
       const result = await res.json();
 
       if (result.code === 200 && result.data && result.data.taskId) {
-        // Start Step 3 progress
+        const tId = result.data.taskId;
+
+        // 2. Start simulation logs
         setActiveTask({
-          taskId: result.data.taskId,
+          taskId: tId,
           pipeline: selectedPipeline,
-          model: modelToUse,
-          prompt: script || `Pipeline: ${pipe.name[lang]}`,
-          elapsed: 0,
-          stageIndex: 0
+          model: selectedModelId || pipe.model,
+          prompt: payloadPrompt,
+          step: "brief"
         });
+
+        // Log sequence starting
+        setTimeout(() => {
+          addLog("EP-Orchestrator", `Loaded playbook: [${selectedPlaybook}]`, "info");
+          addLog("Idea-Director", `Analyzing proposal idea. Allocating budget: $${budgetCap.toFixed(2)} USD...`);
+        }, 1000);
+
+        setTimeout(() => {
+          addLog("Idea-Director", `Drafting proposal brief. Visual schema matched to ratio: ${ratio}.`, "info");
+          addLog("Script-Director", `Generating dialogue script sequence matching target rhythm...`);
+        }, 3000);
+
+        // Stage transition to Scripting
+        setTimeout(() => {
+          const draftText = lang === "en"
+            ? `[Scene 1] Narration: Welcome to this segment! Let us explore the core values. (Visual: Zoom in on main subject)\n[Scene 2] Narration: Notice how this aligns with modern design standards. (Visual: Text transition flat motion)`
+            : `[场景 1] 旁白：欢迎来到本次视频！接下来让我们共同探讨其中的核心秘密。(画面: 镜头推进对焦主讲人)\n[场景 2] 旁白：注意到这些参数是如何完美对齐的吗？(画面: 动态排版文本缩放弹出)`;
+
+          setCheckpointDraft(draftText);
+          
+          if (checkpointPolicy === "guided") {
+            // Pause at Guided Checkpoint
+            setActiveTask(prev => prev ? { ...prev, step: "checkpoint", checkpointStage: "script" } : null);
+            addLog("Script-Director", `Draft written. Paused for human approval check.`, "warning");
+          } else {
+            // Autopilot passes directly
+            addLog("Script-Director", `Approved draft via Autopilot.`, "info");
+            proceedToAssets(tId, payloadPrompt, selectedModelId || pipe.model);
+          }
+        }, 6000);
+
       } else {
         alert(lang === "en" ? `Error: ${result.msg || "Unknown"}` : `错误: ${result.msg || "未知错误"}`);
       }
     } catch (err) {
       console.error(err);
-      alert(lang === "en" ? "Connection error" : "连接服务器错误");
+      addLog("EP-Orchestrator", "Connection error failed to contact API", "warning");
     }
   };
 
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec.toString().padStart(2, "0")}`;
+  // Guided Checkpoint Approved
+  const handleApproveCheckpoint = () => {
+    if (!activeTask) return;
+    addLog("EP-Orchestrator", `Human approved checkpoint draft! Script customized and locked.`, "info");
+    
+    // Transition past checkpoint
+    proceedToAssets(activeTask.taskId, activeTask.prompt, activeTask.model);
   };
 
-  // Re-run project in Workspace
+  // Post Checkpoint progress
+  const proceedToAssets = (tId: string, payloadPrompt: string, modelId: string) => {
+    setActiveTask(prev => prev ? { ...prev, step: "assets" } : null);
+    addLog("Scene-Director", `Synthesizing storyboard blueprints...`);
+    addLog("Asset-Director", `Triggering cloud media asset generators...`);
+    
+    setTimeout(() => {
+      addLog("Asset-Director", `Assets fully generated and compiled in local asset_manifest.`, "info");
+      addLog("Edit-Director", `Calculating scene transitions. Preparing rendering commands...`);
+    }, 2000);
+
+    setTimeout(() => {
+      setActiveTask(prev => prev ? { ...prev, step: "rendering" } : null);
+      addLog("Compose-Director", `Rendering canvas timeline using Remotion composer...`);
+      addLog("Compose-Director", `Progress: 12% ... 48% ... 85% ... 100%`, "info");
+    }, 4500);
+
+    // Poll status from server to retrieve the actual Kie video url
+    setTimeout(() => {
+      startPoller(tId, payloadPrompt, modelId);
+    }, 6000);
+  };
+
+  const startPoller = (tId: string, promptText: string, modelId: string) => {
+    const poller = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/record-info?taskId=${tId}`);
+        const result = await res.json();
+        
+        if (result.code === 200 && result.data) {
+          const d = result.data;
+          const status = d.status || d.state;
+
+          if (status === "success" || status === "completed" || d.videoUrl || d.imageUrl) {
+            clearInterval(poller);
+            const mediaUrl = d.videoUrl || d.imageUrl || (d.output ? d.output[0] : null) || "";
+
+            addLog("Publish-Director", `Orchestration complete! Video successfully rendered and quality checked.`, "info");
+
+            const newItem: GalleryItem = {
+              taskId: tId,
+              pipeline: selectedPipeline,
+              model: modelId,
+              prompt: promptText,
+              mediaUrl,
+              timestamp: Date.now()
+            };
+
+            const updatedGallery = [newItem, ...gallery];
+            setGallery(updatedGallery);
+            localStorage.setItem("om_gallery", JSON.stringify(updatedGallery));
+
+            setLatestMediaResult(mediaUrl);
+            setActiveTask(null);
+            refetchCredits();
+          } else if (status === "failed" || status === "error") {
+            clearInterval(poller);
+            addLog("EP-Orchestrator", `Execution aborted. Cloud engine returned error.`, "warning");
+            alert(lang === "en" ? "Generation failed." : "生成失败。");
+            setActiveTask(null);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }, 3000);
+  };
+
+  // Re-run project
   const handleRerunProject = (item: GalleryItem) => {
     setSelectedProject(null);
     setCurrentView("create");
     setSelectedPipeline(item.pipeline);
     setScript(item.prompt);
-    // Bind model
     setSelectedModelId(item.model);
   };
 
@@ -692,110 +822,270 @@ export default function App() {
               </p>
             </div>
 
-            {/* Reference Image / Avatar Selection */}
-            <div className="config-section">
-              <h3 className="section-title">
-                <UserCircle /> <span>{t.selectAvatar}</span>
-              </h3>
-              <div className="avatar-showcase">
-                {AVATARS.map((av) => (
-                  <div
-                    key={av.id}
-                    className={`avatar-card ${av.id === selectedAvatarId ? "selected" : ""}`}
-                    onClick={() => {
-                      setSelectedAvatarId(av.id);
-                      setGlobalReferenceImage(av.full);
-                      setCustomAvatarUrl(""); // clear custom
-                      setLatestMediaResult(null); // Return to preview reference image
-                    }}
-                  >
-                    <img src={av.thumb} alt={av.name[lang]} />
-                    <div className="avatar-label">
-                      {av.name[lang]}<br />
-                      <small style={{ opacity: 0.6 }}>{av.role[lang]}</small>
-                    </div>
-                    <div className="avatar-check">
-                      <Plus style={{ transform: "rotate(45deg)", color: "#fff" }} />
-                    </div>
+            {/* ════ PIPELINE SPECIFIC CUSTOM INPUTS ════ */}
+
+            {/* A. AI Spokesperson Panel */}
+            {selectedPipeline === "avatar-spokesperson" && (
+              <>
+                <div className="config-section animate-fade-in">
+                  <h3 className="section-title">
+                    <UserCircle /> <span>{t.selectAvatar}</span>
+                  </h3>
+                  <div className="avatar-showcase">
+                    {AVATARS.map((av) => (
+                      <div
+                        key={av.id}
+                        className={`avatar-card ${av.id === selectedAvatarId ? "selected" : ""}`}
+                        onClick={() => {
+                          setSelectedAvatarId(av.id);
+                          setGlobalReferenceImage(av.full);
+                          setCustomAvatarUrl("");
+                          setLatestMediaResult(null);
+                        }}
+                      >
+                        <img src={av.thumb} alt={av.name[lang]} />
+                        <div className="avatar-label">
+                          {av.name[lang]}<br />
+                          <small style={{ opacity: 0.6 }}>{av.role[lang]}</small>
+                        </div>
+                        <div className="avatar-check">
+                          <Plus style={{ transform: "rotate(45deg)", color: "#fff" }} />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-              {/* Upload local image securely & bind to KV */}
-              <div className="custom-avatar-row">
-                <LinkIcon />
-                <input
-                  type="url"
-                  placeholder={t.customAvatarPlaceholder}
-                  value={customAvatarUrl}
-                  onChange={(e) => {
-                    setCustomAvatarUrl(e.target.value);
-                    setGlobalReferenceImage(e.target.value);
-                    if (e.target.value.trim()) {
-                      setSelectedAvatarId(null);
-                      setLatestMediaResult(null);
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="custom-avatar-upload-row" style={{ marginTop: "10px", display: "flex", gap: "10px", alignItems: "center" }}>
-                <label className="upload-btn" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", padding: "8px", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}>
-                  <UploadCloud style={{ width: "14px", height: "14px", color: "var(--accent)" }} />
-                  <span>{t.uploadLocalImage}</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    onChange={handleFileUpload}
-                    disabled={uploading}
-                  />
-                </label>
-                {uploading && (
-                  <div className="upload-status" style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
-                    <div className="btn-loader" style={{ width: "12px", height: "12px", borderWidth: "1.5px" }} />
-                    <span>{t.uploadingStatus}</span>
+                  <div className="custom-avatar-row">
+                    <LinkIcon />
+                    <input
+                      type="url"
+                      placeholder={t.customAvatarPlaceholder}
+                      value={customAvatarUrl}
+                      onChange={(e) => {
+                        setCustomAvatarUrl(e.target.value);
+                        setGlobalReferenceImage(e.target.value);
+                        if (e.target.value.trim()) {
+                          setSelectedAvatarId(null);
+                          setLatestMediaResult(null);
+                        }
+                      }}
+                    />
                   </div>
-                )}
-              </div>
-            </div>
 
-            {/* Script / Prompt Section */}
-            {(PIPELINES[selectedPipeline]?.sections.includes("script") ||
-              PIPELINES[selectedPipeline]?.sections.includes("avatar")) && (
-              <div className="config-section">
-                <h3 className="section-title">
-                  <FileText /> <span>{t.scriptTitle}</span>
-                </h3>
-                <div className="template-chips">
-                  {(TEMPLATES[selectedPipeline] || TEMPLATES["animated-explainer"] || []).map((tmpl, idx) => (
-                    <button
-                      key={idx}
-                      className="script-chip"
-                      onClick={() => setScript(tmpl.text[lang])}
-                    >
-                      {tmpl.label[lang]}
-                    </button>
-                  ))}
-                </div>
-                <div className="script-editor">
-                  <textarea
-                    value={script}
-                    rows={4}
-                    placeholder={t.scriptPlaceholder}
-                    onChange={(e) => setScript(e.target.value)}
-                  />
-                  <div className="script-toolbar">
-                    <span className="char-count">{script.length} / 5000</span>
+                  <div className="custom-avatar-upload-row" style={{ marginTop: "10px", display: "flex", gap: "10px", alignItems: "center" }}>
+                    <label className="upload-btn" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", padding: "8px", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}>
+                      <UploadCloud style={{ width: "14px", height: "14px", color: "var(--accent)" }} />
+                      <span>{t.uploadLocalImage}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleFileUpload}
+                        disabled={uploading}
+                      />
+                    </label>
+                    {uploading && (
+                      <div className="upload-status" style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
+                        <div className="btn-loader" style={{ width: "12px", height: "12px", borderWidth: "1.5px" }} />
+                        <span>{t.uploadingStatus}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <FileText /> <span>{t.scriptTitle}</span>
+                  </h3>
+                  <div className="template-chips">
+                    {TEMPLATES["avatar-spokesperson"].map((tmpl, idx) => (
+                      <button key={idx} className="script-chip" onClick={() => setScript(tmpl.text[lang])}>
+                        {tmpl.label[lang]}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="script-editor">
+                    <textarea
+                      value={script}
+                      placeholder={t.scriptPlaceholder}
+                      onChange={(e) => setScript(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <Mic /> <span>{t.voiceTitle}</span>
+                  </h3>
+                  <div className="voice-cards">
+                    {VOICES.map((v) => (
+                      <div
+                        key={v.id}
+                        className={`voice-card ${v.id === selectedVoiceId ? "selected" : ""}`}
+                        onClick={() => setSelectedVoiceId(v.id)}
+                      >
+                        <div className="voice-avatar">{v.emoji}</div>
+                        <div className="voice-info">
+                          <div className="voice-name">{v.name[lang]}</div>
+                          <div className="voice-desc">{v.desc[lang]}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
 
-            {/* Media Source Section */}
-            {(PIPELINES[selectedPipeline]?.sections.includes("media") ||
-              PIPELINES[selectedPipeline]?.sections.includes("media-dub")) && (
-              <div className="config-section">
+            {/* B. Animated Explainer Panel */}
+            {selectedPipeline === "animated-explainer" && (
+              <>
+                <div className="config-section animate-fade-in">
+                  <h3 className="section-title">
+                    <Film /> <span>{t.refVideoLabel}</span>
+                  </h3>
+                  <div className="input-group">
+                    <input
+                      type="url"
+                      placeholder="https://example.com/reference-short.mp4"
+                      value={explainerRefVideo}
+                      onChange={(e) => setExplainerRefVideo(e.target.value)}
+                    />
+                  </div>
+                  <p className="model-help-text">{t.refVideoHelp}</p>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <FileText /> <span>{t.scriptTitle}</span>
+                  </h3>
+                  <div className="template-chips">
+                    {TEMPLATES["animated-explainer"].map((tmpl, idx) => (
+                      <button key={idx} className="script-chip" onClick={() => setScript(tmpl.text[lang])}>
+                        {tmpl.label[lang]}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="script-editor">
+                    <textarea
+                      value={script}
+                      placeholder={t.scriptPlaceholder}
+                      onChange={(e) => setScript(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <Sliders /> <span>{t.explainerStyleLabel}</span>
+                  </h3>
+                  <div className="input-group">
+                    <select value={explainerStyle} onChange={(e) => setExplainerStyle(e.target.value)}>
+                      <option value="flat-vector">Flat Vector Motion Graphics (扁平插画)</option>
+                      <option value="cartoon-vector">Classic Cartoon Illustrations (卡通插图)</option>
+                      <option value="outline-diagram">Outline Blueprint Diagrams (白描工程图)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <Mic /> <span>{t.voiceAccentLabel}</span>
+                  </h3>
+                  <div className="input-group">
+                    <select value={explainerAccent} onChange={(e) => setExplainerAccent(e.target.value)}>
+                      <option value="us-en">US English Accent (美式口音)</option>
+                      <option value="gb-en">British English Accent (英式口音)</option>
+                      <option value="zh-cn">Mandarin Standard Chinese (普通话标准)</option>
+                      <option value="zh-canton">Cantonese Chinese (粤语配音)</option>
+                    </select>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* C. Cinematic Trailer Panel */}
+            {selectedPipeline === "cinematic" && (
+              <>
+                <div className="config-section animate-fade-in">
+                  <h3 className="section-title">
+                    <FileText /> <span>{t.scriptTitle}</span>
+                  </h3>
+                  <div className="template-chips">
+                    {TEMPLATES["cinematic"].map((tmpl, idx) => (
+                      <button key={idx} className="script-chip" onClick={() => setScript(tmpl.text[lang])}>
+                        {tmpl.label[lang]}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="script-editor">
+                    <textarea
+                      value={script}
+                      placeholder={t.scriptPlaceholder}
+                      onChange={(e) => setScript(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <Sliders /> <span>{t.cinematicCameraLabel}</span>
+                  </h3>
+                  <div className="slider-group">
+                    <div className="slider-header">
+                      <span>Camera Action</span>
+                      <span className="val">
+                        {cinematicCamera === 1 ? "Static (固定机位)" :
+                         cinematicCamera === 2 ? "Pan / Tilt (摇镜头)" :
+                         cinematicCamera === 3 ? "Zoom In (推镜头)" : "Orbit Zoom (环绕)"}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="4"
+                      value={cinematicCamera}
+                      onChange={(e) => setCinematicCamera(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <Sparkles /> <span>{t.cinematicSFXLabel}</span>
+                  </h3>
+                  <div className="slider-group">
+                    <div className="slider-header">
+                      <span>Intensity Level</span>
+                      <span className="val">{cinematicSFX} / 5</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="5"
+                      value={cinematicSFX}
+                      onChange={(e) => setCinematicSFX(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <Mic /> <span>{t.cinematicBGMLabel}</span>
+                  </h3>
+                  <div className="input-group">
+                    <select value={cinematicBGM} onChange={(e) => setCinematicBGM(e.target.value)}>
+                      <option value="epic">Epic Cinematic Orchestral (史诗交响)</option>
+                      <option value="synthwave">Retro Cyberpunk Synthwave (赛博电子)</option>
+                      <option value="melancholy">Solitary Dark Ambient (暗黑氛围)</option>
+                    </select>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* D. Lip Sync Panel */}
+            {selectedPipeline === "talking-head" && (
+              <div className="config-section animate-fade-in">
                 <h3 className="section-title">
                   <Film /> <span>{t.mediaTitle}</span>
                 </h3>
@@ -803,62 +1093,242 @@ export default function App() {
                   <label>{t.videoUrlLabel}</label>
                   <input
                     type="url"
-                    placeholder="https://example.com/source-video.mp4"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
+                    placeholder="https://example.com/talking-person.mp4"
+                    value={sourceVideoUrl}
+                    onChange={(e) => setSourceVideoUrl(e.target.value)}
                   />
                 </div>
-                {!PIPELINES[selectedPipeline]?.sections.includes("media-dub") && (
-                  <div className="input-group">
-                    <label>{t.audioUrlLabel}</label>
-                    <input
-                      type="url"
-                      placeholder="https://example.com/voiceover.mp3"
-                      value={audioUrl}
-                      onChange={(e) => setAudioUrl(e.target.value)}
-                    />
-                  </div>
-                )}
-                {PIPELINES[selectedPipeline]?.sections.includes("media-dub") && (
-                  <div className="input-group">
-                    <label>{t.dubLangLabel}</label>
-                    <select value={dubLang} onChange={(e) => setDubLang(e.target.value)}>
-                      <option value="zh">中文 Chinese</option>
-                      <option value="en">English</option>
-                      <option value="ja">日本語 Japanese</option>
-                      <option value="ko">한국어 Korean</option>
-                      <option value="es">Español Spanish</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Voice Section */}
-            {PIPELINES[selectedPipeline]?.sections.includes("voice") && (
-              <div className="config-section">
-                <h3 className="section-title">
-                  <Mic /> <span>{t.voiceTitle}</span>
-                </h3>
-                <div className="voice-cards">
-                  {VOICES.map((v) => (
-                    <div
-                      key={v.id}
-                      className={`voice-card ${v.id === selectedVoiceId ? "selected" : ""}`}
-                      onClick={() => setSelectedVoiceId(v.id)}
-                    >
-                      <div className="voice-avatar">{v.emoji}</div>
-                      <div className="voice-info">
-                        <div className="voice-name">{v.name[lang]}</div>
-                        <div className="voice-desc">{v.desc[lang]}</div>
-                      </div>
-                    </div>
-                  ))}
+                <div className="input-group">
+                  <label>{t.audioUrlLabel}</label>
+                  <input
+                    type="url"
+                    placeholder="https://example.com/new-speech-track.mp3"
+                    value={sourceAudioUrl}
+                    onChange={(e) => setSourceAudioUrl(e.target.value)}
+                  />
+                </div>
+                <div className="input-group" style={{ marginTop: "12px" }}>
+                  <label>{t.lipsyncAlignLabel}</label>
+                  <select value={lipsyncAlign} onChange={(e) => setLipsyncAlign(e.target.value)}>
+                    <option value="standard">Standard Lip-Sync (口型匹配精度)</option>
+                    <option value="expressive">High-Fidelity Expressive (高保真表达)</option>
+                  </select>
                 </div>
               </div>
             )}
 
-            {/* Settings Row */}
+            {/* E. Video Dubbing Panel */}
+            {selectedPipeline === "localization-dub" && (
+              <div className="config-section animate-fade-in">
+                <h3 className="section-title">
+                  <Film /> <span>{t.mediaTitle}</span>
+                </h3>
+                <div className="input-group">
+                  <label>{t.videoUrlLabel}</label>
+                  <input
+                    type="url"
+                    placeholder="https://example.com/english-podcast.mp4"
+                    value={sourceVideoUrl}
+                    onChange={(e) => setSourceVideoUrl(e.target.value)}
+                  />
+                </div>
+                <div className="settings-row" style={{ marginTop: "12px" }}>
+                  <div className="setting-item" style={{ flex: 1 }}>
+                    <label>{t.dubSourceLang}</label>
+                    <select value={dubSource} onChange={(e) => setDubSource(e.target.value)}>
+                      <option value="en">English (英语)</option>
+                      <option value="zh">Chinese (中文)</option>
+                      <option value="ja">Japanese (日语)</option>
+                    </select>
+                  </div>
+                  <div className="setting-item" style={{ flex: 1 }}>
+                    <label>{t.dubTargetLang}</label>
+                    <select value={dubTarget} onChange={(e) => setDubTarget(e.target.value)}>
+                      <option value="zh">Chinese (中文)</option>
+                      <option value="en">English (英语)</option>
+                      <option value="ja">Japanese (日语)</option>
+                      <option value="es">Spanish (西班牙语)</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="checkbox-group" style={{ marginTop: "16px" }}>
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={dubClone}
+                      onChange={(e) => setDubClone(e.target.checked)}
+                    />
+                    <span>{t.dubCloneVoice}</span>
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {/* F. Documentary Montage Panel */}
+            {selectedPipeline === "documentary-montage" && (
+              <>
+                <div className="config-section animate-fade-in">
+                  <h3 className="section-title">
+                    <FileText /> <span>{t.montageKeywords}</span>
+                  </h3>
+                  <div className="script-editor">
+                    <textarea
+                      value={montageKeywords}
+                      placeholder="e.g. Apollo 11 Saturn V moon launch, historical footage..."
+                      onChange={(e) => setMontageKeywords(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <FolderOpen /> <span>{t.montageDatabase}</span>
+                  </h3>
+                  <div className="checkbox-group">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={montageArchives.includes("nasa")}
+                        onChange={(e) => {
+                          if (e.target.checked) setMontageArchives([...montageArchives, "nasa"]);
+                          else setMontageArchives(montageArchives.filter(x => x !== "nasa"));
+                        }}
+                      />
+                      <span>NASA Video Archive</span>
+                    </label>
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={montageArchives.includes("archive")}
+                        onChange={(e) => {
+                          if (e.target.checked) setMontageArchives([...montageArchives, "archive"]);
+                          else setMontageArchives(montageArchives.filter(x => x !== "archive"));
+                        }}
+                      />
+                      <span>Internet Archive (Archive.org)</span>
+                    </label>
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={montageArchives.includes("wikimedia")}
+                        onChange={(e) => {
+                          if (e.target.checked) setMontageArchives([...montageArchives, "wikimedia"]);
+                          else setMontageArchives(montageArchives.filter(x => x !== "wikimedia"));
+                        }}
+                      />
+                      <span>Wikimedia Commons</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="config-section">
+                  <h3 className="section-title">
+                    <Mic /> <span>{t.montageMusicMood}</span>
+                  </h3>
+                  <div className="input-group">
+                    <select value={montageBGM} onChange={(e) => setMontageBGM(e.target.value)}>
+                      <option value="melancholy">Elegiac & Contemplative (挽歌与沉思)</option>
+                      <option value="heroic">Historical & Inspiring (波澜壮阔历史感)</option>
+                      <option value="silent">No Background Music (无伴奏纯画外音)</option>
+                    </select>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* G. Clip Factory Panel */}
+            {selectedPipeline === "clip-factory" && (
+              <div className="config-section animate-fade-in">
+                <h3 className="section-title">
+                  <Film /> <span>{t.mediaTitle}</span>
+                </h3>
+                <div className="input-group">
+                  <label>{t.videoUrlLabel}</label>
+                  <input
+                    type="url"
+                    placeholder="https://example.com/long-interview.mp4"
+                    value={sourceVideoUrl}
+                    onChange={(e) => setSourceVideoUrl(e.target.value)}
+                  />
+                </div>
+
+                <div className="settings-row" style={{ marginTop: "12px" }}>
+                  <div className="setting-item" style={{ flex: 1 }}>
+                    <label>{t.clipDurationLabel}</label>
+                    <select value={clipDuration} onChange={(e) => setClipDuration(Number(e.target.value))}>
+                      <option value={15}>15 Seconds</option>
+                      <option value={30}>30 Seconds</option>
+                      <option value={60}>60 Seconds</option>
+                    </select>
+                  </div>
+                  <div className="setting-item" style={{ flex: 1 }}>
+                    <label>{t.clipFocusLabel}</label>
+                    <select value={clipFocus} onChange={(e) => setClipFocus(e.target.value)}>
+                      <option value="speech">Speech Highlights (金句逻辑)</option>
+                      <option value="humor">Humorous/Funny Beats (幽默瞬间)</option>
+                      <option value="visual">High Visual Action (大动态视觉)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+
+
+            {/* ════ EXECUTIVE PRODUCER SETTINGS ════ */}
+            <div className="config-section">
+              <h3 className="section-title">
+                <ShieldCheck /> <span>{t.epSettingsTitle}</span>
+              </h3>
+              
+              <div className="input-group">
+                <label>{t.policyLabel}</label>
+                <select
+                  value={checkpointPolicy}
+                  onChange={(e) => setCheckpointPolicy(e.target.value as "guided" | "autopilot")}
+                >
+                  <option value="guided">{t.policyGuided}</option>
+                  <option value="autopilot">{t.policyAuto}</option>
+                </select>
+              </div>
+
+              <div className="input-group" style={{ marginTop: "10px" }}>
+                <label>{t.playbookLabel}</label>
+                <select
+                  value={selectedPlaybook}
+                  className="playbook-select"
+                  onChange={(e) => setSelectedPlaybook(e.target.value)}
+                >
+                  {PLAYBOOKS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="model-help-text" style={{ fontSize: "0.68rem" }}>
+                  {PLAYBOOKS.find(p => p.id === selectedPlaybook)?.desc}
+                </p>
+              </div>
+
+              <div className="input-group" style={{ marginTop: "10px" }}>
+                <label style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>{t.budgetLabel}</span>
+                  <span style={{ color: "var(--accent-hover)", fontFamily: "var(--font-mono)" }}>
+                    ${budgetCap.toFixed(2)} USD
+                  </span>
+                </label>
+                <select
+                  value={budgetCap}
+                  onChange={(e) => setBudgetCap(Number(e.target.value))}
+                >
+                  <option value={0.50}>$0.50 USD</option>
+                  <option value={1.00}>$1.00 USD</option>
+                  <option value={2.00}>$2.00 USD</option>
+                  <option value={5.00}>$5.00 USD</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Output Settings */}
             <div className="config-section">
               <h3 className="section-title">
                 <Settings /> <span>{t.settingsTitle}</span>
@@ -890,7 +1360,7 @@ export default function App() {
             </div>
           </main>
 
-          {/* 3. Right Panel: Dynamic Live Preview Canvas & Generation Progress */}
+          {/* 3. Right Panel: Dynamic Live Preview Canvas & Console / Checkpoints */}
           <section className="canvas-panel">
             <div className="preview-header">
               <h3>
@@ -898,9 +1368,50 @@ export default function App() {
               </h3>
             </div>
 
-            {/* Content Display: Preview vs Active Generation vs Result Player */}
-            <div className="preview-viewport">
-              {activeTask ? (
+            {/* Visual Canvas Block */}
+            <div className="preview-viewport" style={{ flex: 1, maxHeight: "none", minHeight: "260px" }}>
+              {activeTask && activeTask.step === "checkpoint" ? (
+                /* Interactive Checkpoint Panel */
+                <div className="checkpoint-panel">
+                  <div className="checkpoint-header">
+                    <span className="checkpoint-badge">{t.checkpointPrompt}</span>
+                    <span style={{ fontSize: "0.68rem", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+                      Stage: {activeTask.checkpointStage?.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="checkpoint-editor">
+                    <label>{t.checkpointScriptLabel}</label>
+                    <textarea
+                      value={checkpointDraft}
+                      onChange={(e) => setCheckpointDraft(e.target.value)}
+                    />
+                  </div>
+                  <div className="checkpoint-actions">
+                    <button className="checkpoint-btn approve" onClick={handleApproveCheckpoint}>
+                      <ShieldCheck style={{ width: "14px", height: "14px" }} />
+                      <span>{t.approveContinue}</span>
+                    </button>
+                    <button
+                      className="checkpoint-btn reject"
+                      onClick={() => {
+                        addLog("Script-Director", "Dialogue draft rejected. Generating new draft version...", "warning");
+                        setTimeout(() => {
+                          setCheckpointDraft(
+                            lang === "en"
+                              ? `[Scene 1] Refined: Today we review a revolutionary design. (Visual: Zoom center)\n[Scene 2] Refined: Notice the sleek responsive interface.`
+                              : `[场景 1] 优化：今天我们来探讨一项颠覆性的产品设计。(画面: 聚焦主体)\n[场景 2] 优化：注意到这套极简流线型设计的美感了吗？`
+                          );
+                          addLog("Script-Director", "Dialogue redrafted successfully.", "info");
+                        }, 2000);
+                      }}
+                    >
+                      <Repeat style={{ width: "14px", height: "14px" }} />
+                      <span>{t.sendBack}</span>
+                    </button>
+                  </div>
+                </div>
+              ) : activeTask ? (
+                /* Generating status overlaying canvas */
                 <div className="gen-progress-panel">
                   <div className="gen-animation">
                     <div className="gen-ring" />
@@ -915,38 +1426,13 @@ export default function App() {
                     {t.generatingDesc}
                   </p>
 
-                  <div className="stage-progress">
-                    <div className="stage-track">
-                      <div
-                        className="stage-fill"
-                        style={{ width: `${((activeTask.stageIndex + 1) / 6) * 100}%` }}
-                      />
-                    </div>
-                    <div className="stage-labels">
-                      {["research", "script", "storyboard", "assets", "render", "review"].map((s, idx) => (
-                        <span
-                          key={s}
-                          className={`stage-label ${
-                            idx < activeTask.stageIndex
-                              ? "completed"
-                              : idx === activeTask.stageIndex
-                              ? "active"
-                              : ""
-                          }`}
-                        >
-                          {(I18N[lang] as any)[`stage${s.charAt(0).toUpperCase() + s.slice(1)}`]}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", gap: "10px", fontSize: "0.68rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-                    <span>{formatTime(activeTask.elapsed)}</span>
-                    <span>ID: {activeTask.taskId.substring(0, 8)}...</span>
+                  <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                    <span>Running: {activeTask.step.toUpperCase()}</span>
                   </div>
                 </div>
               ) : latestMediaResult ? (
-                <div className="result-viewport">
+                /* Completed video output */
+                <div className="result-viewport" style={{ width: "100%", padding: "10px" }}>
                   <div className="result-player">
                     <video id="result-video" src={latestMediaResult} controls autoPlay />
                   </div>
@@ -956,7 +1442,7 @@ export default function App() {
                       onClick={() => {
                         const a = document.createElement("a");
                         a.href = latestMediaResult;
-                        a.download = `video-${Date.now()}`;
+                        a.download = `openmontage-video-${Date.now()}`;
                         a.target = "_blank";
                         document.body.appendChild(a);
                         a.click();
@@ -971,8 +1457,9 @@ export default function App() {
                   </div>
                 </div>
               ) : (
+                /* Default reference image / avatar preview */
                 <div className="preview-avatar-container">
-                  {globalReferenceImage ? (
+                  {selectedPipeline === "avatar-spokesperson" && globalReferenceImage ? (
                     <>
                       <img src={globalReferenceImage} alt="Reference Preview" />
                       <div className="project-badge" style={{ top: "10px", left: "10px" }}>
@@ -981,11 +1468,16 @@ export default function App() {
                     </>
                   ) : (
                     <div className="preview-no-avatar">
-                      <UserCircle />
-                      <span>{t.previewNoAvatar}</span>
+                      <Wand2 />
+                      <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>
+                        {PIPELINES[selectedPipeline]?.name[lang]}
+                      </span>
+                      <small style={{ fontSize: "0.7rem", color: "var(--text-muted)", maxWidth: "240px" }}>
+                        {PIPELINES[selectedPipeline]?.desc[lang]}
+                      </small>
                     </div>
                   )}
-                  {script && (
+                  {script && selectedPipeline === "avatar-spokesperson" && (
                     <div className="preview-script-overlay">
                       <p>{script}</p>
                     </div>
@@ -994,17 +1486,58 @@ export default function App() {
               )}
             </div>
 
-            <div className="preview-meta">
-              <div className="meta-chip">
-                <span>{ratio}</span>
-              </div>
-              <div className="meta-chip">
-                <span>
-                  {PIPELINES[selectedPipeline]?.models.find(m => m.id === selectedModelId)?.name || PIPELINES[selectedPipeline]?.engines[0]}
+            {/* Pipeline Flow Node Indicators */}
+            <div className="flow-diagram">
+              <span className={`flow-node ${activeTask?.step === "brief" ? "active" : activeTask ? "completed" : ""}`}>
+                {t.activeNodeBrief}
+              </span>
+              <span className="flow-arrow">→</span>
+              <span className={`flow-node ${activeTask?.step === "scripting" || activeTask?.step === "checkpoint" ? "active" : activeTask && activeTask.step !== "brief" ? "completed" : ""}`}>
+                {t.activeNodeScript}
+              </span>
+              <span className="flow-arrow">→</span>
+              <span className={`flow-node ${activeTask?.step === "scene_plan" ? "active" : activeTask && !["brief", "scripting", "checkpoint"].includes(activeTask.step) ? "completed" : ""}`}>
+                {t.activeNodeScene}
+              </span>
+              <span className="flow-arrow">→</span>
+              <span className={`flow-node ${activeTask?.step === "assets" ? "active" : activeTask && ["edit", "rendering"].includes(activeTask.step) ? "completed" : ""}`}>
+                {t.activeNodeAssets}
+              </span>
+              <span className="flow-arrow">→</span>
+              <span className={`flow-node ${activeTask?.step === "edit" ? "active" : activeTask && ["rendering"].includes(activeTask.step) ? "completed" : ""}`}>
+                {t.activeNodeEdit}
+              </span>
+              <span className="flow-arrow">→</span>
+              <span className={`flow-node ${activeTask?.step === "rendering" ? "active" : ""}`}>
+                {t.activeNodeRender}
+              </span>
+            </div>
+
+            {/* Live Terminal Console logs displaying agentic traces */}
+            <div className="terminal-console">
+              <div className="terminal-header">
+                <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Terminal style={{ width: "12px", height: "12px" }} />
+                  <span>{t.consoleTitle}</span>
+                </span>
+                <span style={{ fontSize: "0.6rem", color: "var(--text-muted)" }}>
+                  EP_MODE: EXECUTIVE
                 </span>
               </div>
-              <div className="meta-chip">
-                <span>{t.previewEta}</span>
+              <div className="terminal-body">
+                {consoleLogs.length === 0 ? (
+                  <div style={{ color: "var(--text-muted)", fontSize: "0.68rem", textAlign: "center", padding: "40px 0" }}>
+                    Console idle. Click Run Pipeline to initiate AI Orchestrator logs.
+                  </div>
+                ) : (
+                  consoleLogs.map((log, idx) => (
+                    <div key={idx} className="log-entry">
+                      <span className="log-time">[{log.time}]</span>
+                      <span className="log-director">&lt;{log.director}&gt;</span>
+                      <span className={`log-text ${log.type || ""}`}>{log.text}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
