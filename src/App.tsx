@@ -47,6 +47,7 @@ interface PipelineDef {
   featured: boolean;
   model: string;
   models: ModelDef[];
+  type: "creative" | "utility";
 }
 
 const PIPELINES: Record<string, PipelineDef> = {
@@ -61,7 +62,8 @@ const PIPELINES: Record<string, PipelineDef> = {
     models: [
       { id: "omnihuman-v1.5", name: "OmniHuman v1.5", desc: { en: "Realistic expressions and natural gestures (Recommended)", zh: "超逼真面部表情与动作（推荐）" } },
       { id: "seedance-v2.0", name: "Seedance v2.0", desc: { en: "Consistent body rendering and high frame rate", zh: "高保真身体姿态与高帧率" } }
-    ]
+    ],
+    type: "creative"
   },
   "animated-explainer": {
     name: { en: "Animated Explainer", zh: "动画解说视频" },
@@ -74,7 +76,8 @@ const PIPELINES: Record<string, PipelineDef> = {
     models: [
       { id: "imagen4", name: "Google Imagen 4", desc: { en: "Educational and illustrative diagrams (Recommended)", zh: "适合学术说明与图形绘制（推荐）" } },
       { id: "flux-schnell", name: "Flux.1 Schnell", desc: { en: "High quality photorealistic illustrations", zh: "高质量写实图像与海报生成" } }
-    ]
+    ],
+    type: "creative"
   },
   "cinematic": {
     name: { en: "Cinematic Trailer", zh: "电影预告片" },
@@ -87,7 +90,8 @@ const PIPELINES: Record<string, PipelineDef> = {
     models: [
       { id: "kling-v3", name: "Kling v3.0", desc: { en: "Highly dynamic action sequences (Recommended)", zh: "高动态动作镜头与光影效果（推荐）" } },
       { id: "veo-3.1", name: "Google Veo 3.1", desc: { en: "Cinematic depth, realistic lighting, and composition", zh: "电影级构图与景深深度" } }
-    ]
+    ],
+    type: "creative"
   },
   "talking-head": {
     name: { en: "Lip-Sync Video", zh: "口型同步视频" },
@@ -99,7 +103,8 @@ const PIPELINES: Record<string, PipelineDef> = {
     model: "volcengine/video-to-video-lip-sync",
     models: [
       { id: "volcengine/video-to-video-lip-sync", name: "Volcengine Lip-Sync", desc: { en: "Speedy mouth-movement synthesis from video+audio", zh: "超快速口型动作匹配合成" } }
-    ]
+    ],
+    type: "utility"
   },
   "localization-dub": {
     name: { en: "Video Dubbing", zh: "视频翻译配音" },
@@ -111,7 +116,8 @@ const PIPELINES: Record<string, PipelineDef> = {
     model: "volcengine/video-to-video-lip-sync",
     models: [
       { id: "volcengine/video-to-video-lip-sync", name: "Volcengine Lip-Sync", desc: { en: "Speedy mouth-movement synthesis from video+audio", zh: "超快速口型动作匹配合成" } }
-    ]
+    ],
+    type: "utility"
   },
   "documentary-montage": {
     name: { en: "Documentary Montage", zh: "纪录片蒙太奇" },
@@ -123,7 +129,8 @@ const PIPELINES: Record<string, PipelineDef> = {
     model: "grok-imagine",
     models: [
       { id: "grok-imagine", name: "Grok Imagine", desc: { en: "Creative montages with historical and cinematic styles", zh: "具有历史或纪实风格的创意合成" } }
-    ]
+    ],
+    type: "creative"
   },
   "clip-factory": {
     name: { en: "Clip Factory", zh: "长视频智能切片" },
@@ -135,7 +142,8 @@ const PIPELINES: Record<string, PipelineDef> = {
     model: "kling-v3",
     models: [
       { id: "kling-v3", name: "Kling v3.0", desc: { en: "Intelligent cutting based on visual rhythm", zh: "基于画面节奏的智能镜头裁切" } }
-    ]
+    ],
+    type: "utility"
   }
 };
 
@@ -253,7 +261,12 @@ const I18N = {
     montageDatabase: "Archival Libraries",
     montageMusicMood: "Montage BGM Mood",
     clipDurationLabel: "Target Slice Length",
-    clipFocusLabel: "Clips Highlight Focus"
+    clipFocusLabel: "Clips Highlight Focus",
+    utilityConsoleTitle: "Task Processing Console",
+    utilityConsoleDesc: "Console idle. Click run button to initiate processing logs.",
+    activeNodeUpload: "Upload Media",
+    activeNodeProcess: "Extract & Process",
+    activeNodeOutput: "Compose & Render"
   },
   zh: {
     navCreate: "AI 创作", navProjects: "我的作品",
@@ -310,7 +323,12 @@ const I18N = {
     montageDatabase: "归档历史数据库",
     montageMusicMood: "音乐背景基调",
     clipDurationLabel: "切片单段目标长度",
-    clipFocusLabel: "精彩镜头提取权重"
+    clipFocusLabel: "精彩镜头提取权重",
+    utilityConsoleTitle: "任务处理控制台",
+    utilityConsoleDesc: "控制台空闲。请点击下方按钮启动分析与对齐日志。",
+    activeNodeUpload: "素材上传",
+    activeNodeProcess: "提取分析对齐",
+    activeNodeOutput: "合成渲染导出"
   }
 };
 
@@ -576,7 +594,11 @@ export default function App() {
 
     // 1. Initialise the creation task on Cloudflare proxy
     try {
-      addLog("EP-Orchestrator", `Initializing pipeline: ${pipe.name[lang]}...`, "info");
+      if (pipe.type === "creative") {
+        addLog("EP-Orchestrator", `Initializing creative pipeline: ${pipe.name[lang]}...`, "info");
+      } else {
+        addLog("EP-Orchestrator", `Initializing utility task: ${pipe.name[lang]}...`, "info");
+      }
       
       const res = await fetch("/api/create-task", {
         method: "POST",
@@ -597,35 +619,63 @@ export default function App() {
           step: "brief"
         });
 
-        // Log sequence starting
-        setTimeout(() => {
-          addLog("EP-Orchestrator", `Loaded playbook: [${selectedPlaybook}]`, "info");
-          addLog("Idea-Director", `Analyzing proposal idea. Allocating budget: $${budgetCap.toFixed(2)} USD...`);
-        }, 1000);
+        if (pipe.type === "creative") {
+          // Creative workflow path with checkpoints
+          setTimeout(() => {
+            addLog("EP-Orchestrator", `Loaded playbook: [${selectedPlaybook}]`, "info");
+            addLog("Idea-Director", `Analyzing proposal idea. Allocating budget: $${budgetCap.toFixed(2)} USD...`);
+          }, 1000);
 
-        setTimeout(() => {
-          addLog("Idea-Director", `Drafting proposal brief. Visual schema matched to ratio: ${ratio}.`, "info");
-          addLog("Script-Director", `Generating dialogue script sequence matching target rhythm...`);
-        }, 3000);
+          setTimeout(() => {
+            addLog("Idea-Director", `Drafting proposal brief. Visual schema matched to ratio: ${ratio}.`, "info");
+            addLog("Script-Director", `Generating dialogue script sequence matching target rhythm...`);
+          }, 3000);
 
-        // Stage transition to Scripting
-        setTimeout(() => {
-          const draftText = lang === "en"
-            ? `[Scene 1] Narration: Welcome to this segment! Let us explore the core values. (Visual: Zoom in on main subject)\n[Scene 2] Narration: Notice how this aligns with modern design standards. (Visual: Text transition flat motion)`
-            : `[场景 1] 旁白：欢迎来到本次视频！接下来让我们共同探讨其中的核心秘密。(画面: 镜头推进对焦主讲人)\n[场景 2] 旁白：注意到这些参数是如何完美对齐的吗？(画面: 动态排版文本缩放弹出)`;
+          setTimeout(() => {
+            const draftText = lang === "en"
+              ? `[Scene 1] Narration: Welcome to this segment! Let us explore the core values. (Visual: Zoom in on main subject)\n[Scene 2] Narration: Notice how this aligns with modern design standards. (Visual: Text transition flat motion)`
+              : `[场景 1] 旁白：欢迎来到本次视频！接下来让我们共同探讨其中的核心秘密。(画面: 镜头推进对焦主讲人)\n[场景 2] 旁白：注意到这些参数是如何完美对齐的吗？(画面: 动态排版文本缩放弹出)`;
 
-          setCheckpointDraft(draftText);
-          
-          if (checkpointPolicy === "guided") {
-            // Pause at Guided Checkpoint
-            setActiveTask(prev => prev ? { ...prev, step: "checkpoint", checkpointStage: "script" } : null);
-            addLog("Script-Director", `Draft written. Paused for human approval check.`, "warning");
-          } else {
-            // Autopilot passes directly
-            addLog("Script-Director", `Approved draft via Autopilot.`, "info");
-            proceedToAssets(tId, payloadPrompt, selectedModelId || pipe.model);
-          }
-        }, 6000);
+            setCheckpointDraft(draftText);
+            
+            if (checkpointPolicy === "guided") {
+              // Pause at Guided Checkpoint
+              setActiveTask(prev => prev ? { ...prev, step: "checkpoint", checkpointStage: "script" } : null);
+              addLog("Script-Director", `Draft written. Paused for human approval check.`, "warning");
+            } else {
+              // Autopilot passes directly
+              addLog("Script-Director", `Approved draft via Autopilot.`, "info");
+              proceedToAssets(tId, payloadPrompt, selectedModelId || pipe.model);
+            }
+          }, 6000);
+
+        } else {
+          // Utility workflow path (No checkpoints, direct autopilot)
+          setTimeout(() => {
+            addLog("Media-Director", `Reading source media tracks. Resolving video wrapper...`, "info");
+          }, 1000);
+
+          setTimeout(() => {
+            setActiveTask(prev => prev ? { ...prev, step: "scripting" } : null);
+            if (selectedPipeline === "talking-head") {
+              addLog("Align-Director", `Analyzing video facial anchors and aligning mouth coordinates to audio envelope...`);
+            } else if (selectedPipeline === "localization-dub") {
+              addLog("Translate-Director", `Extracting vocal speech, transcribing, and running GPT translation...`);
+              addLog("Clone-Director", `Extracting speaker audio features to train voice cloning model...`, "info");
+            } else {
+              addLog("Slice-Director", `Analyzing visual flow variance and Whisper transcript timestamps...`);
+            }
+          }, 3000);
+
+          setTimeout(() => {
+            setActiveTask(prev => prev ? { ...prev, step: "rendering" } : null);
+            addLog("Compose-Director", `Blending audio alignment track and re-encoding final video via FFmpeg...`);
+          }, 5500);
+
+          setTimeout(() => {
+            startPoller(tId, payloadPrompt, selectedModelId || pipe.model);
+          }, 7000);
+        }
 
       } else {
         alert(lang === "en" ? `Error: ${result.msg || "Unknown"}` : `错误: ${result.msg || "未知错误"}`);
@@ -1487,47 +1537,67 @@ export default function App() {
             </div>
 
             {/* Pipeline Flow Node Indicators */}
-            <div className="flow-diagram">
-              <span className={`flow-node ${activeTask?.step === "brief" ? "active" : activeTask ? "completed" : ""}`}>
-                {t.activeNodeBrief}
-              </span>
-              <span className="flow-arrow">→</span>
-              <span className={`flow-node ${activeTask?.step === "scripting" || activeTask?.step === "checkpoint" ? "active" : activeTask && activeTask.step !== "brief" ? "completed" : ""}`}>
-                {t.activeNodeScript}
-              </span>
-              <span className="flow-arrow">→</span>
-              <span className={`flow-node ${activeTask?.step === "scene_plan" ? "active" : activeTask && !["brief", "scripting", "checkpoint"].includes(activeTask.step) ? "completed" : ""}`}>
-                {t.activeNodeScene}
-              </span>
-              <span className="flow-arrow">→</span>
-              <span className={`flow-node ${activeTask?.step === "assets" ? "active" : activeTask && ["edit", "rendering"].includes(activeTask.step) ? "completed" : ""}`}>
-                {t.activeNodeAssets}
-              </span>
-              <span className="flow-arrow">→</span>
-              <span className={`flow-node ${activeTask?.step === "edit" ? "active" : activeTask && ["rendering"].includes(activeTask.step) ? "completed" : ""}`}>
-                {t.activeNodeEdit}
-              </span>
-              <span className="flow-arrow">→</span>
-              <span className={`flow-node ${activeTask?.step === "rendering" ? "active" : ""}`}>
-                {t.activeNodeRender}
-              </span>
-            </div>
+            {PIPELINES[selectedPipeline]?.type === "creative" ? (
+              <div className="flow-diagram">
+                <span className={`flow-node ${activeTask?.step === "brief" ? "active" : activeTask ? "completed" : ""}`}>
+                  {t.activeNodeBrief}
+                </span>
+                <span className="flow-arrow">→</span>
+                <span className={`flow-node ${activeTask?.step === "scripting" || activeTask?.step === "checkpoint" ? "active" : activeTask && activeTask.step !== "brief" ? "completed" : ""}`}>
+                  {t.activeNodeScript}
+                </span>
+                <span className="flow-arrow">→</span>
+                <span className={`flow-node ${activeTask?.step === "scene_plan" ? "active" : activeTask && !["brief", "scripting", "checkpoint"].includes(activeTask.step) ? "completed" : ""}`}>
+                  {t.activeNodeScene}
+                </span>
+                <span className="flow-arrow">→</span>
+                <span className={`flow-node ${activeTask?.step === "assets" ? "active" : activeTask && ["edit", "rendering"].includes(activeTask.step) ? "completed" : ""}`}>
+                  {t.activeNodeAssets}
+                </span>
+                <span className="flow-arrow">→</span>
+                <span className={`flow-node ${activeTask?.step === "edit" ? "active" : activeTask && ["rendering"].includes(activeTask.step) ? "completed" : ""}`}>
+                  {t.activeNodeEdit}
+                </span>
+                <span className="flow-arrow">→</span>
+                <span className={`flow-node ${activeTask?.step === "rendering" ? "active" : ""}`}>
+                  {t.activeNodeRender}
+                </span>
+              </div>
+            ) : (
+              <div className="flow-diagram">
+                <span className={`flow-node ${activeTask?.step === "brief" ? "active" : activeTask ? "completed" : ""}`}>
+                  {t.activeNodeUpload}
+                </span>
+                <span className="flow-arrow">→</span>
+                <span className={`flow-node ${activeTask?.step === "scripting" || activeTask?.step === "checkpoint" ? "active" : activeTask && activeTask.step !== "brief" ? "completed" : ""}`}>
+                  {t.activeNodeProcess}
+                </span>
+                <span className="flow-arrow">→</span>
+                <span className={`flow-node ${activeTask?.step === "rendering" ? "active" : ""}`}>
+                  {t.activeNodeOutput}
+                </span>
+              </div>
+            )}
 
             {/* Live Terminal Console logs displaying agentic traces */}
             <div className="terminal-console">
               <div className="terminal-header">
                 <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                   <Terminal style={{ width: "12px", height: "12px" }} />
-                  <span>{t.consoleTitle}</span>
+                  <span>
+                    {PIPELINES[selectedPipeline]?.type === "creative" ? t.consoleTitle : t.utilityConsoleTitle}
+                  </span>
                 </span>
                 <span style={{ fontSize: "0.6rem", color: "var(--text-muted)" }}>
-                  EP_MODE: EXECUTIVE
+                  {PIPELINES[selectedPipeline]?.type === "creative" ? "EP_MODE: EXECUTIVE" : "UTILITY_MODE: PIPED"}
                 </span>
               </div>
               <div className="terminal-body">
                 {consoleLogs.length === 0 ? (
                   <div style={{ color: "var(--text-muted)", fontSize: "0.68rem", textAlign: "center", padding: "40px 0" }}>
-                    Console idle. Click Run Pipeline to initiate AI Orchestrator logs.
+                    {PIPELINES[selectedPipeline]?.type === "creative" 
+                      ? (lang === "en" ? "Console idle. Click Run Pipeline to initiate AI Orchestrator logs." : "制片控制台空闲。点击按钮启动 AI 导演日志。")
+                      : t.utilityConsoleDesc}
                   </div>
                 ) : (
                   consoleLogs.map((log, idx) => (
@@ -1547,7 +1617,15 @@ export default function App() {
               disabled={!!activeTask || uploading}
             >
               <Wand2 />
-              <span>{t.generateBtn}</span>
+              <span>
+                {PIPELINES[selectedPipeline]?.type === "creative"
+                  ? t.generateBtn
+                  : (selectedPipeline === "talking-head" 
+                      ? (lang === "en" ? "Start Lip-Sync" : "开始口型同步")
+                      : selectedPipeline === "localization-dub"
+                      ? (lang === "en" ? "Start Dubbing" : "开始翻译配音")
+                      : (lang === "en" ? "Start Clipping" : "开始智能切片"))}
+              </span>
             </button>
           </section>
         </div>
